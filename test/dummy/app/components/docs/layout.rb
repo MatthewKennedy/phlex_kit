@@ -83,6 +83,7 @@ module Docs
         .docs-slide { display: flex; align-items: center; justify-content: center; height: 130px;
                       border: 1px solid var(--pk-border); border-radius: var(--pk-radius);
                       font-size: 2rem; font-weight: 600; }
+        .docs-repo-row { border: 1px solid var(--pk-border); border-radius: var(--pk-radius); padding: .5rem .75rem; font-size: .875rem; font-family: ui-monospace, monospace; }
         .w-sm { width: 300px; max-width: 100%; } .w-md { width: 380px; max-width: 100%; } .w-lg { width: 560px; max-width: 100%; }
       CSS
     end
