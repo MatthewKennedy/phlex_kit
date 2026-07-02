@@ -66,6 +66,7 @@ module Docs
                font: 15px/1.6 system-ui, -apple-system, sans-serif; }
         .docs-shell { min-height: 100vh; }
         .docs-sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; width: 240px; flex: none; }
+        .docs-sidebar a { text-decoration: none; }
         .docs-brand { font-weight: 700; color: var(--pk-text); text-decoration: none; margin-right: auto; }
         .docs-footer-link { color: var(--pk-muted); text-decoration: none; font-size: .8rem; }
         .docs-main { flex: 1; min-width: 0; padding: 2.5rem clamp(1.5rem, 5vw, 4rem) 6rem; max-width: 960px; }
