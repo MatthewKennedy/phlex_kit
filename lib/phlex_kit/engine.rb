@@ -14,6 +14,9 @@ module PhlexKit
       if app.config.respond_to?(:assets)
         app.config.assets.paths << root.join("app/components")
         app.config.assets.paths << root.join("app/assets/stylesheets")
+        # The Stimulus controllers must be servable too, or every importmap pin
+        # from (4) resolves to a missing asset and gets silently skipped.
+        app.config.assets.paths << root.join("app/javascript")
       end
     end
 

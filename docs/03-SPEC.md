@@ -115,11 +115,14 @@ Invariants (keep all):
   (app assets sort ahead of gem assets), or drop the `_tokens` import and supply their own.
 - **Manifest** (`phlex_kit.css`) imports `_tokens.css` then every component CSS —
   **`@import url("…")` form only** (Propshaft fingerprints `url()`; a bare `@import`
-  ships un-digested and 404s). Regenerate whenever a component is added:
+  ships un-digested and 404s), and **paths relative to the manifest's own
+  `phlex_kit/` directory** (`_tokens.css`, `button/button.css`) — Propshaft resolves
+  bare `url()` paths against the referencing file's dir, so a `phlex_kit/…` prefix
+  doubles up and 404s. Regenerate whenever a component is added:
   ```ruby
   header = File.read(m)[/\A.*?\n(?=@import)/m]
-  lines  = Dir.glob("app/components/phlex_kit/*/*.css").sort.map { |c| %(@import url("#{c.sub("app/components/","")}");) }
-  File.write(m, header + %(@import url("phlex_kit/_tokens.css");\n) + lines.join("\n") + "\n")
+  lines  = Dir.glob("app/components/phlex_kit/*/*.css").sort.map { |c| %(@import url("#{c.sub("app/components/phlex_kit/","")}");) }
+  File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n")
   ```
 
 ## 7. JavaScript / Stimulus

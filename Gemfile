@@ -8,4 +8,5 @@ gem "rails", ">= 7.1", "< 9"
 
 group :development, :test do
   gem "rubocop-rails-omakase", require: false
+  gem "puma", require: false # serves the test/dummy component gallery
 end
