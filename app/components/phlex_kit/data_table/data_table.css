@@ -96,6 +96,9 @@
   padding: .5rem 0;
 }
 .pk-data-table-pagination { margin: 0; width: auto; justify-content: flex-end; }
+/* the per-page <select> sizes intrinsically; border-box needs it wider than
+   its longest option + chevron padding or the text clips */
+.pk-data-table-per-page .pk-native-select-field { min-width: 4.5rem; }
 .pk-data-table-page-disabled {
   display: inline-flex;
   align-items: center;

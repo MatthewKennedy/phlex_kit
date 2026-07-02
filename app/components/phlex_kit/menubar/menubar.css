@@ -56,3 +56,11 @@
 .pk-menubar-item:hover, .pk-menubar-item:focus { background: var(--pk-accent); }
 .pk-menubar-shortcut { margin-left: auto; font-size: .75rem; color: var(--pk-muted); letter-spacing: .1em; }
 .pk-menubar-separator { height: 1px; margin: .25rem -0.25rem; background: var(--pk-border); }
+.pk-menubar-content::before {
+  content: "";
+  position: absolute;
+  top: calc(-.5rem - 1px);
+  left: 0;
+  right: 0;
+  height: calc(.5rem + 1px);
+}

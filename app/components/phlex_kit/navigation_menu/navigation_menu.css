@@ -34,11 +34,14 @@
 .pk-navigation-menu-trigger[aria-expanded="true"] .pk-navigation-menu-chevron { transform: rotate(180deg); }
 .pk-navigation-menu-content {
   position: absolute;
+  /* invisible bridge over the gap so hovering toward the panel doesn't
+     mouseleave the nav and close it */
+  --pk-nav-gap: .375rem;
   top: 100%;
   left: 0;
   z-index: 50;
   min-width: 16rem;
-  margin-top: .375rem;
+  margin-top: var(--pk-nav-gap);
   border: 1px solid var(--pk-border);
   border-radius: var(--pk-radius);
   background: var(--pk-surface);
@@ -53,4 +56,12 @@
   flex-direction: column;
   align-items: flex-start;
   gap: .25rem;
+}
+.pk-navigation-menu-content::before {
+  content: "";
+  position: absolute;
+  top: calc(-1 * var(--pk-nav-gap) - 1px);
+  left: 0;
+  right: 0;
+  height: calc(var(--pk-nav-gap) + 1px);
 }
