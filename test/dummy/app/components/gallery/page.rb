@@ -85,6 +85,7 @@ module Gallery
             shadcn_additions_demo
             slider_otp_drawer_demo
             menubar_nav_resizable_demo
+            attachment_demo
             toast_demo
           end
           # Mounted once, at the end of <body>: receives both the server flash
@@ -203,6 +204,11 @@ module Gallery
         end
         render PhlexKit::Avatar.new(size: :sm) do
           render PhlexKit::AvatarFallback.new { "PK" }
+        end
+        render PhlexKit::AvatarGroup.new do
+          %w[MK PK UI].each do |initials|
+            render PhlexKit::Avatar.new { render PhlexKit::AvatarFallback.new { initials } }
+          end
         end
         div(class: "stack w-sm") do
           render PhlexKit::Skeleton.new(class: "skeleton-line")
@@ -1021,6 +1027,35 @@ module Gallery
             render PhlexKit::ResizableHandle.new
             render PhlexKit::ResizablePanel.new(default_size: 2) do
               div(class: "boxed", style: "height:100%") { "Two (drag the divider)" }
+            end
+          end
+        end
+      end
+    end
+
+    def attachment_demo
+      demo("Attachment") do
+        div(class: "stack w-md") do
+          render PhlexKit::Attachment.new do
+            render PhlexKit::AttachmentMedia.new { "📄" }
+            render PhlexKit::AttachmentContent.new do
+              render PhlexKit::AttachmentTitle.new { "sales-dashboard.pdf" }
+              render PhlexKit::AttachmentDescription.new { "PDF · 2.4 MB" }
+            end
+            render PhlexKit::AttachmentActions.new do
+              render PhlexKit::AttachmentAction.new(aria: { label: "Remove sales-dashboard.pdf" })
+            end
+          end
+          render PhlexKit::Attachment.new do
+            render PhlexKit::AttachmentMedia.new do
+              img(src: "https://i.pravatar.cc/80?img=5", alt: "")
+            end
+            render PhlexKit::AttachmentContent.new do
+              render PhlexKit::AttachmentTitle.new { "team-photo.jpg" }
+              render PhlexKit::AttachmentDescription.new { "JPG · 640 KB" }
+            end
+            render PhlexKit::AttachmentActions.new do
+              render PhlexKit::AttachmentAction.new(aria: { label: "Remove team-photo.jpg" })
             end
           end
         end

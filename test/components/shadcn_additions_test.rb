@@ -112,4 +112,18 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes render(PhlexKit::NavigationMenuContent.new { "x" }), "pk-navigation-menu-content pk-hidden"
     assert_includes render(PhlexKit::NavigationMenuLink.new(href: "/docs") { "Docs" }), %(href="/docs")
   end
+
+  def test_attachment_family
+    assert_includes render(PhlexKit::Attachment.new { "x" }), "pk-attachment"
+    assert_includes render(PhlexKit::AttachmentMedia.new { "x" }), "pk-attachment-media"
+    assert_includes render(PhlexKit::AttachmentTitle.new { "report.pdf" }), "pk-attachment-title"
+    assert_includes render(PhlexKit::AttachmentDescription.new { "PDF · 2.4 MB" }), "pk-attachment-description"
+    action = render(PhlexKit::AttachmentAction.new(aria: { label: "Remove report.pdf" }))
+    assert_includes action, %(aria-label="Remove report.pdf")
+    assert_includes action, "<svg" # default × icon
+  end
+
+  def test_avatar_group_overlaps
+    assert_includes render(PhlexKit::AvatarGroup.new { "x" }), "pk-avatar-group"
+  end
 end

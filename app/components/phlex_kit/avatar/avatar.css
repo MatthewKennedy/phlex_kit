@@ -7,13 +7,13 @@
   flex-shrink: 0;
   overflow: hidden;
   border-radius: 999px;
-  height: 2.5rem;
-  width: 2.5rem;
-  font-size: 1rem;
+  height: 2rem;
+  width: 2rem;
+  font-size: .875rem;
 }
 .pk-avatar.xs { height: 1rem; width: 1rem; font-size: .5rem; }
 .pk-avatar.sm { height: 1.5rem; width: 1.5rem; font-size: .75rem; }
-.pk-avatar.lg { height: 3.5rem; width: 3.5rem; font-size: 1.25rem; }
+.pk-avatar.lg { height: 2.5rem; width: 2.5rem; font-size: 1rem; }
 .pk-avatar.xl { height: 5rem; width: 5rem; font-size: 1.875rem; }
 
 .pk-avatar-image { aspect-ratio: 1 / 1; height: 100%; width: 100%; object-fit: cover; }
@@ -25,6 +25,11 @@
   justify-content: center;
   border-radius: 999px;
   background: var(--pk-surface-2);
-  font-weight: 600;
+  font-weight: 500;
 }
 .pk-avatar-image.hidden, .pk-avatar-fallback.hidden { display: none; }
+
+/* Overlapping row (shadcn's -space-x-2 grouped avatars). */
+.pk-avatar-group { display: flex; }
+.pk-avatar-group .pk-avatar { box-shadow: 0 0 0 2px var(--pk-bg); }
+.pk-avatar-group .pk-avatar:not(:first-child) { margin-left: -.5rem; }
