@@ -36,7 +36,7 @@
   text-align: left;
   cursor: pointer;
 }
-.pk-sidebar-menu-button:hover { background: var(--pk-surface-2); text-decoration: none; }
+.pk-sidebar-menu-button:hover { background: var(--pk-accent); text-decoration: none; }
 .pk-sidebar-menu-button[data-active="true"] { background: var(--pk-brand); color: var(--pk-brand-ink); font-weight: 600; }
 
 .pk-sidebar-inset { flex: 1; min-width: 0; }

@@ -1,6 +1,6 @@
 /* Co-located with codeblock.rb. Plain (unhighlighted) code block. Tokens global. */
 .pk-codeblock {
-  overflow: auto; border: 1px solid var(--pk-border); border-radius: .375rem;
+  overflow: auto; border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px);
   background: var(--pk-surface-2); font-size: .875rem;
 }
 .pk-codeblock pre { margin: 0; padding: 1rem; }

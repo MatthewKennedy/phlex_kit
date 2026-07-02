@@ -27,12 +27,12 @@
   display: flex;
   align-items: center;
   gap: .5rem;
-  border-radius: .25rem;
+  border-radius: calc(var(--pk-radius) - 4px);
   padding: .375rem .5rem;
   font-size: .875rem;
   cursor: pointer;
 }
-.pk-data-table-column-option:hover { background: var(--pk-surface-2); }
+.pk-data-table-column-option:hover { background: var(--pk-accent); }
 
 /* Sortable header link. */
 .pk-data-table-sort-head { color: var(--pk-text); white-space: nowrap; }
@@ -69,16 +69,16 @@
   height: 2rem;
   padding: 0;
   border: 0;
-  border-radius: .375rem;
+  border-radius: calc(var(--pk-radius) - 2px);
   background: transparent;
   color: var(--pk-text);
   cursor: pointer;
   transition: background-color .15s ease;
 }
-.pk-data-table-expand-toggle:hover { background: var(--pk-surface-2); }
+.pk-data-table-expand-toggle:hover { background: var(--pk-accent); }
 .pk-data-table-expand-toggle:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-data-table-expand-toggle svg {
   width: 1rem;

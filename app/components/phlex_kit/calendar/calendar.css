@@ -28,8 +28,8 @@
   width: 1.75rem;
   height: 1.75rem;
   padding: 0;
-  border: 1px solid var(--pk-border);
-  border-radius: .375rem;
+  border: 1px solid var(--pk-input);
+  border-radius: calc(var(--pk-radius) - 2px);
   background: transparent;
   color: var(--pk-text);
   cursor: pointer;
@@ -38,10 +38,10 @@
 }
 .pk-calendar-prev { left: .25rem; }
 .pk-calendar-next { right: .25rem; }
-.pk-calendar-prev:hover, .pk-calendar-next:hover { background: var(--pk-surface-2); opacity: 1; }
+.pk-calendar-prev:hover, .pk-calendar-next:hover { background: var(--pk-accent); opacity: 1; }
 .pk-calendar-prev:focus-visible, .pk-calendar-next:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-calendar-prev:disabled, .pk-calendar-next:disabled { pointer-events: none; opacity: .5; }
 .pk-calendar-prev svg, .pk-calendar-next svg { width: 1rem; height: 1rem; }
@@ -51,7 +51,7 @@
 .pk-calendar-week { display: flex; width: 100%; margin-top: .5rem; }
 .pk-calendar-weekday {
   width: 2rem;
-  border-radius: .375rem;
+  border-radius: calc(var(--pk-radius) - 2px);
   font-size: .8rem;
   font-weight: 400;
   color: var(--pk-muted);
@@ -64,8 +64,8 @@
   font-size: .875rem;
 }
 .pk-calendar-cell:has([aria-selected]) {
-  background: var(--pk-surface-2);
-  border-radius: .375rem;
+  background: var(--pk-accent);
+  border-radius: calc(var(--pk-radius) - 2px);
 }
 .pk-calendar-cell:focus-within { position: relative; z-index: 20; }
 
@@ -78,7 +78,7 @@
   height: 2rem;
   padding: 0;
   border: 0;
-  border-radius: .375rem;
+  border-radius: calc(var(--pk-radius) - 2px);
   background: transparent;
   color: var(--pk-text);
   font: inherit;
@@ -87,13 +87,13 @@
   cursor: pointer;
   transition: background-color .15s ease, color .15s ease;
 }
-.pk-calendar-day:hover { background: var(--pk-surface-2); }
+.pk-calendar-day:hover { background: var(--pk-accent); }
 .pk-calendar-day:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-calendar-day.other { color: var(--pk-muted); }
-.pk-calendar-day.today { background: var(--pk-surface-2); }
+.pk-calendar-day.today { background: var(--pk-accent); }
 .pk-calendar-day.selected {
   background: var(--pk-brand);
   color: var(--pk-brand-ink);

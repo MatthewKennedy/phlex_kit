@@ -1,5 +1,5 @@
 /* Co-located with toggle_group.rb. Theme tokens from the global stylesheet. */
-.pk-toggle-group { display: inline-flex; width: fit-content; align-items: center; border-radius: .375rem; }
+.pk-toggle-group { display: inline-flex; width: fit-content; align-items: center; border-radius: calc(var(--pk-radius) - 2px); }
 .pk-toggle-group.vertical { flex-direction: column; align-items: stretch; }
 .pk-toggle-group.spaced { gap: .25rem; }
 /* Joined (default, unspaced): square the inner corners. */

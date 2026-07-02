@@ -7,8 +7,8 @@
 .pk-input {
   height: 2.25rem;
   width: 100%;
-  border-radius: .375rem;
-  border: 1px solid var(--pk-border);
+  border-radius: calc(var(--pk-radius) - 2px);
+  border: 1px solid var(--pk-input);
   background: var(--pk-bg);
   color: var(--pk-text);
   padding: .25rem .75rem;
@@ -21,7 +21,7 @@
 .pk-input:focus-visible {
   outline: none;
   border-color: var(--pk-brand);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-input:disabled { cursor: not-allowed; opacity: .5; }
 .pk-input[aria-invalid="true"] {

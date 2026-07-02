@@ -25,7 +25,7 @@
   max-height: 100vh;
   overflow-y: auto;
   border: 1px solid var(--pk-border);
-  border-radius: .5rem;
+  border-radius: var(--pk-radius);
   background: var(--pk-surface);
   color: var(--pk-text);
   padding: 1.5rem;

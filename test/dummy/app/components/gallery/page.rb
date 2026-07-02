@@ -9,6 +9,7 @@ module Gallery
   class Page < Phlex::HTML
     include Phlex::Rails::Helpers::StylesheetLinkTag
     include Phlex::Rails::Helpers::JavaScriptImportmapTags
+    include Phlex::Rails::Helpers::JavaScriptIncludeTag
 
     def view_template
       doctype
@@ -18,6 +19,9 @@ module Gallery
           meta(charset: "utf-8")
           meta(name: "viewport", content: "width=device-width,initial-scale=1")
           stylesheet_link_tag "phlex_kit/phlex_kit"
+          # The chart wrapper bundles no library — the dummy host supplies
+          # window.Chart (vendored chart.js), exactly as a real host would.
+          javascript_include_tag "chartjs.umd"
           javascript_importmap_tags
           style { gallery_css }
           # Dev aid: surface JS errors on-page (the gallery is often eyeballed
@@ -773,7 +777,17 @@ module Gallery
           render PhlexKit::DataTableToolbar.new do
             render PhlexKit::DataTableSearch.new(path: "/", frame_id: "gallery-reviews", placeholder: "Search reviews…")
             render PhlexKit::DataTableBulkActions.new do
-              render PhlexKit::Button.new(variant: :destructive, size: :sm) { "Delete selected" }
+              # In a real app this is a submit button inside a DataTableForm
+              # (POSTs the checked ids[]). The demo has no endpoint, so it
+              # toasts the selection instead.
+              render PhlexKit::Button.new(
+                variant: :destructive, size: :sm,
+                onclick: safe(
+                  "const ids = [...this.closest('[data-controller~=\"phlex-kit--data-table\"]')" \
+                  ".querySelectorAll('input[data-phlex-kit--data-table-target=\"rowCheckbox\"]:checked')].map(el => el.value); " \
+                  "PhlexKit.toast.error(`Would delete ${ids.length} review(s)`, { description: `ids: ${ids.join(', ')}` })"
+                )
+              ) { "Delete selected" }
             end
             render PhlexKit::DataTableColumnToggle.new(columns: [ { key: "status", label: "Status" }, { key: "rating", label: "Rating" } ])
           end
@@ -814,15 +828,31 @@ module Gallery
     end
 
     def chart_demo
-      demo("Chart", note: "Thin wrapper — no bundled library. With window.Chart absent it dispatches phlex-kit--chart:connect for the host.") do
-        div(class: "boxed w-lg") do
-          render PhlexKit::Chart.new(
-            height: 140,
-            options: {
-              type: "line",
-              data: { labels: %w[Mon Tue Wed Thu Fri], datasets: [ { label: "Orders", data: [ 3, 7, 4, 9, 6 ] } ] }
-            }
-          )
+      demo("Chart", note: "Thin wrapper — the host supplies the library (this page vendors chart.js as window.Chart). Series take --pk-chart-1..5.") do
+        labels = %w[Jan Feb Mar Apr May Jun]
+        div(class: "chart-frame") do
+          render PhlexKit::Chart.new(options: {
+            type: "line",
+            data: { labels: labels, datasets: [
+              { label: "Desktop", data: [ 186, 305, 237, 173, 209, 214 ], fill: true },
+              { label: "Mobile", data: [ 80, 200, 120, 190, 130, 140 ], fill: true }
+            ] },
+            options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+          })
+        end
+        div(class: "chart-frame") do
+          render PhlexKit::Chart.new(options: {
+            type: "bar",
+            data: { labels: labels, datasets: [ { label: "Revenue", data: [ 12, 19, 14, 22, 17, 25 ], borderWidth: 0, borderRadius: 4 } ] },
+            options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } } } }
+          })
+        end
+        div(class: "chart-frame") do
+          render PhlexKit::Chart.new(options: {
+            type: "doughnut",
+            data: { labels: %w[Chrome Safari Firefox Edge Other], datasets: [ { data: [ 275, 200, 187, 173, 90 ] } ] },
+            options: { cutout: "60%" }
+          })
         end
       end
     end
@@ -904,6 +934,7 @@ module Gallery
         .sidebar-frame { width: 100%; max-width: 640px; height: 300px; overflow: hidden;
                          border: 1px solid var(--pk-border); border-radius: .375rem; }
         .sidebar-frame .pk-sidebar { height: 100%; }
+        .chart-frame { width: 300px; max-width: 100%; }
       CSS
     end
   end

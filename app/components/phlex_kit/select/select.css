@@ -17,8 +17,8 @@
   width: 100%;
   height: 2.25rem;
   white-space: nowrap;
-  border-radius: .375rem;
-  border: 1px solid var(--pk-border);
+  border-radius: calc(var(--pk-radius) - 2px);
+  border: 1px solid var(--pk-input);
   background: transparent;
   color: var(--pk-text);
   padding: .25rem .75rem;
@@ -31,7 +31,7 @@
 .pk-select-trigger:focus-visible {
   outline: none;
   border-color: var(--pk-brand);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-select-trigger:disabled { cursor: not-allowed; opacity: .5; }
 .pk-select-trigger-icon { flex: none; width: 1rem; height: 1rem; margin-left: .5rem; opacity: .5; }
@@ -50,7 +50,7 @@
 .pk-select-viewport {
   max-height: 24rem;
   overflow: auto;
-  border-radius: .375rem;
+  border-radius: calc(var(--pk-radius) - 2px);
   border: 1px solid var(--pk-border);
   background: var(--pk-surface);
   color: var(--pk-text);
@@ -66,7 +66,7 @@
   align-items: center;
   cursor: pointer;
   user-select: none;
-  border-radius: .25rem;
+  border-radius: calc(var(--pk-radius) - 4px);
   padding: .375rem .5rem;
   font-size: .875rem;
   color: var(--pk-text);
@@ -76,6 +76,6 @@
 .pk-select-item:hover,
 .pk-select-item:focus,
 .pk-select-item[aria-current="true"],
-.pk-select-item[aria-selected="true"] { background: var(--pk-surface-2); }
+.pk-select-item[aria-selected="true"] { background: var(--pk-accent); }
 .pk-select-item-check { visibility: hidden; flex: none; width: 1rem; height: 1rem; margin-right: .5rem; }
 .pk-select-item[aria-selected="true"] .pk-select-item-check { visibility: visible; }

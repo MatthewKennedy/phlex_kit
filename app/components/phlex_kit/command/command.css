@@ -29,7 +29,7 @@
   width: 100%;
   max-width: 32rem;
   border: 1px solid var(--pk-border);
-  border-radius: .5rem;
+  border-radius: var(--pk-radius);
   background: var(--pk-surface);
   color: var(--pk-text);
   box-shadow: 0 10px 30px rgb(0 0 0 / .35);
@@ -82,7 +82,7 @@
   display: flex;
   align-items: center;
   gap: .5rem;
-  border-radius: .25rem;
+  border-radius: calc(var(--pk-radius) - 4px);
   padding: .375rem .5rem;
   font-size: .875rem;
   color: var(--pk-text);
@@ -93,7 +93,7 @@
   transition: background-color .12s ease;
 }
 .pk-command-item:hover,
-.pk-command-item[aria-selected="true"] { background: var(--pk-surface-2); }
+.pk-command-item[aria-selected="true"] { background: var(--pk-accent); }
 .pk-command-item[data-disabled] { pointer-events: none; opacity: .5; }
 
 /* Filter empty state (hidden/shown by the controller). */

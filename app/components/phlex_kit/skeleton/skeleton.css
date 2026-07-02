@@ -1,6 +1,6 @@
 /* Co-located with skeleton.rb. Theme tokens come from the global stylesheet. */
 .pk-skeleton {
-  border-radius: .375rem;
+  border-radius: calc(var(--pk-radius) - 2px);
   background: color-mix(in oklab, var(--pk-brand, #6c8cff) 10%, transparent);
   animation: pk-pulse 1.5s cubic-bezier(.4, 0, .6, 1) infinite;
 }

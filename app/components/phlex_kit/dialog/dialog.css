@@ -4,7 +4,7 @@
 .pk-dialog {
   position: fixed; z-index: 50; width: 100%; max-width: 32rem; max-height: 100vh;
   overflow-y: auto; gap: 1rem; border: 1px solid var(--pk-border);
-  border-radius: .5rem; background: var(--pk-surface); color: var(--pk-text);
+  border-radius: var(--pk-radius); background: var(--pk-surface); color: var(--pk-text);
   padding: 1.5rem; box-shadow: 0 10px 30px rgb(0 0 0 / .35);
 }
 .pk-dialog[open] { display: flex; flex-direction: column; }
@@ -21,7 +21,7 @@
 .pk-dialog-middle { padding-block: 1rem; }
 .pk-overlay-close {
   position: absolute; inset-inline-end: 1rem; top: 1rem; border: 0; background: none;
-  cursor: pointer; border-radius: .25rem; opacity: .7; color: var(--pk-text);
+  cursor: pointer; border-radius: calc(var(--pk-radius) - 4px); opacity: .7; color: var(--pk-text);
   transition: opacity .15s ease;
 }
 .pk-overlay-close:hover { opacity: 1; }

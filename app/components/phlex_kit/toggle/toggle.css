@@ -3,11 +3,11 @@
 .pk-toggle {
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   height: 2.25rem; min-width: 2.25rem; padding-inline: .5rem;
-  border-radius: .375rem; border: 1px solid transparent; background: transparent;
+  border-radius: calc(var(--pk-radius) - 2px); border: 1px solid transparent; background: transparent;
   font-size: .875rem; font-weight: 500; white-space: nowrap; color: var(--pk-text);
   cursor: pointer; outline: none; transition: color .15s ease, background-color .15s ease, box-shadow .15s ease;
 }
-.pk-toggle:hover { background: var(--pk-surface-2); color: var(--pk-muted); }
+.pk-toggle:hover { background: var(--pk-accent); color: var(--pk-muted); }
 .pk-toggle:disabled { pointer-events: none; opacity: .5; }
 .pk-toggle[data-state="on"] { background: var(--pk-surface-2); color: var(--pk-text); }
 .pk-toggle.outline { border-color: var(--pk-border); }

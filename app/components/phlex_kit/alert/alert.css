@@ -7,7 +7,7 @@
   position: relative;
   width: 100%;
   border: 1px solid var(--pk-border);
-  border-radius: .5rem;
+  border-radius: var(--pk-radius);
   padding: .85rem 1rem;
   font-size: .875rem;
   background: color-mix(in oklab, var(--pk-surface) 60%, transparent);

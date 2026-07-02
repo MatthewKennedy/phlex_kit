@@ -40,7 +40,7 @@
   width: 356px;
   max-width: 100%;
   border: 1px solid var(--pk-border);
-  border-radius: .5rem;
+  border-radius: var(--pk-radius);
   background: var(--pk-surface);
   color: var(--pk-text);
   padding: 1rem;
@@ -95,7 +95,7 @@
   height: 1.5rem;
   margin-left: auto;
   border: 0;
-  border-radius: .25rem;
+  border-radius: calc(var(--pk-radius) - 4px);
   padding: 0 .5rem;
   font: inherit;
   font-size: .75rem;
@@ -108,7 +108,7 @@
 .pk-toast-action:hover { opacity: .9; }
 .pk-toast-action:focus {
   outline: none;
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-toast-action:disabled { pointer-events: none; opacity: .5; }
 
@@ -121,7 +121,7 @@
   height: 1.5rem;
   margin-left: auto;
   border: 0;
-  border-radius: .25rem;
+  border-radius: calc(var(--pk-radius) - 4px);
   padding: 0 .5rem;
   font: inherit;
   font-size: .75rem;
@@ -134,7 +134,7 @@
 .pk-toast-cancel:hover { background: color-mix(in oklab, var(--pk-text) 15%, transparent); }
 .pk-toast-cancel:focus {
   outline: none;
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 
 /* Corner × close. */
@@ -149,15 +149,15 @@
   height: 1.5rem;
   padding: 0;
   border: 0;
-  border-radius: .375rem;
+  border-radius: calc(var(--pk-radius) - 2px);
   background: transparent;
   cursor: pointer;
   color: color-mix(in oklab, var(--pk-text) 60%, transparent);
   transition: background-color .15s ease, color .15s ease;
 }
-.pk-toast-close:hover { background: var(--pk-surface-2); color: var(--pk-text); }
+.pk-toast-close:hover { background: var(--pk-accent); color: var(--pk-text); }
 .pk-toast-close:focus {
   outline: none;
-  box-shadow: 0 0 0 1px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-toast-close svg { width: .875rem; height: .875rem; }

@@ -3,7 +3,7 @@
 .pk-popover-trigger { display: inline-block; }
 .pk-popover-content {
   position: absolute; z-index: 50; top: calc(100% + .5rem); left: 0;
-  min-width: 12rem; border: 1px solid var(--pk-border); border-radius: .375rem;
+  min-width: 12rem; border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px);
   background: var(--pk-surface); color: var(--pk-text); padding: .75rem;
   box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
 }

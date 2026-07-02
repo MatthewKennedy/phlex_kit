@@ -7,7 +7,7 @@
   align-items: center;
   gap: .25rem;
   border: 1px solid var(--pk-border);
-  border-radius: .25rem;
+  border-radius: calc(var(--pk-radius) - 4px);
   background: var(--pk-surface-2);
   padding-inline: .375rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;

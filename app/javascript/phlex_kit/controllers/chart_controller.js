@@ -49,13 +49,29 @@ export default class extends Controller {
     return getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim()
   }
 
-  defaultThemeColor() {
+  // shadcn-style series colors: dataset N takes --pk-chart-(N%5 + 1). Line/area
+  // datasets get a translucent fill of the same hue; circular charts color each
+  // slice instead (below).
+  seriesColor(index) {
+    return this.getThemeColor(`pk-chart-${(index % 5) + 1}`)
+  }
+
+  defaultThemeColor(index) {
+    const color = this.seriesColor(index)
+    const translucentFill = ["line", "radar"].includes(this.optionsValue.type)
     return {
-      backgroundColor: this.getThemeColor("pk-bg"),
-      hoverBackgroundColor: this.getThemeColor("pk-surface-2"),
-      borderColor: this.getThemeColor("pk-brand"),
-      borderWidth: 1,
+      backgroundColor: this.isCircular() ? undefined : (translucentFill ? color + "33" : color),
+      hoverBackgroundColor: color,
+      borderColor: color,
+      borderWidth: 2,
+      pointRadius: 0,
+      pointHoverRadius: 4,
+      tension: 0.4,
     }
+  }
+
+  isCircular() {
+    return ["pie", "doughnut", "polarArea"].includes(this.optionsValue.type)
   }
 
   setDefaultColorsForChart() {
@@ -76,7 +92,11 @@ export default class extends Controller {
     Chart.defaults.plugins.legend.labels.boxHeight = 12
     Chart.defaults.plugins.legend.labels.borderWidth = 0
     Chart.defaults.plugins.legend.labels.useBorderRadius = true
-    Chart.defaults.plugins.legend.labels.borderRadius = this.getThemeColor("pk-radius")
+    Chart.defaults.plugins.legend.labels.borderRadius = 2
+
+    // shadcn look: hairline grid, no axis borders, muted ticks
+    Chart.defaults.scale.grid = { ...Chart.defaults.scale.grid, color: this.getThemeColor("pk-border"), drawTicks: false }
+    Chart.defaults.scale.border = { ...Chart.defaults.scale.border, display: false }
   }
 
   refreshChart() {
@@ -97,9 +117,15 @@ export default class extends Controller {
       ...this.optionsValue,
       data: {
         ...this.optionsValue.data,
-        datasets: (this.optionsValue.data?.datasets || []).map((dataset) => {
+        datasets: (this.optionsValue.data?.datasets || []).map((dataset, index) => {
+          const defaults = this.defaultThemeColor(index)
+          if (this.isCircular()) {
+            // one dataset, one color per slice
+            defaults.backgroundColor = (dataset.data || []).map((_, i) => this.seriesColor(i))
+            defaults.borderColor = this.getThemeColor("pk-surface")
+          }
           return {
-            ...this.defaultThemeColor(),
+            ...defaults,
             ...dataset,
           }
         })

@@ -14,8 +14,8 @@
   height: 2.25rem;
   appearance: none;
   -webkit-appearance: none;
-  border-radius: .375rem;
-  border: 1px solid var(--pk-border);
+  border-radius: calc(var(--pk-radius) - 2px);
+  border: 1px solid var(--pk-input);
   background: transparent;
   color: var(--pk-text);
   font: inherit;
@@ -28,7 +28,7 @@
 .pk-native-select-field:focus-visible {
   outline: none;
   border-color: var(--pk-brand);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-native-select-field:disabled { cursor: not-allowed; opacity: .5; }
 .pk-native-select-field.sm {
