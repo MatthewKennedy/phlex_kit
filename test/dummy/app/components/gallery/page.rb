@@ -20,6 +20,22 @@ module Gallery
           stylesheet_link_tag "phlex_kit/phlex_kit"
           javascript_importmap_tags
           style { gallery_css }
+          # Dev aid: surface JS errors on-page (the gallery is often eyeballed
+          # over a screenshot where the console isn't visible).
+          script do
+            safe(<<~JS)
+              window.addEventListener("error", (e) => {
+                let bar = document.getElementById("js-errors");
+                if (!bar) {
+                  bar = document.createElement("pre");
+                  bar.id = "js-errors";
+                  bar.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:9999;background:#7f1d1d;color:#fff;padding:8px 12px;font-size:12px;white-space:pre-wrap;margin:0;";
+                  document.body?.appendChild(bar);
+                }
+                bar.textContent += `JS ERROR: ${e.message} @ ${e.filename?.split("/").pop()}:${e.lineno}\\n`;
+              });
+            JS
+          end
         end
         body do
           page_header
@@ -317,12 +333,16 @@ module Gallery
 
     def native_select_demo
       demo("NativeSelect") do
-        render PhlexKit::NativeSelect.new(name: "store", class: "w-sm") do
-          render PhlexKit::NativeSelectOption.new(value: "") { "All stores" }
-          render PhlexKit::NativeSelectGroup.new(label: "Live") do
-            render PhlexKit::NativeSelectOption.new(value: "tkf") { "Tongkat Fitness" }
-            render PhlexKit::NativeSelectOption.new(value: "sts") { "Sole Trader Support" }
-          end
+        div(class: "w-sm") { native_select_field }
+      end
+    end
+
+    def native_select_field
+      render PhlexKit::NativeSelect.new(name: "store") do
+        render PhlexKit::NativeSelectOption.new(value: "") { "All stores" }
+        render PhlexKit::NativeSelectGroup.new(label: "Live") do
+          render PhlexKit::NativeSelectOption.new(value: "tkf") { "Tongkat Fitness" }
+          render PhlexKit::NativeSelectOption.new(value: "sts") { "Sole Trader Support" }
         end
       end
     end
@@ -445,19 +465,13 @@ module Gallery
       demo("Accordion") do
         render PhlexKit::Accordion.new(class: "w-lg") do
           render PhlexKit::AccordionItem.new(open: true) do
-            render PhlexKit::AccordionTrigger.new do
-              render PhlexKit::AccordionDefaultTrigger.new { "Is it accessible?" }
-              render PhlexKit::AccordionIcon.new
-            end
+            render PhlexKit::AccordionDefaultTrigger.new { "Is it accessible?" }
             render PhlexKit::AccordionContent.new do
               render PhlexKit::AccordionDefaultContent.new { "Yes — it keeps ruby_ui's ARIA structure." }
             end
           end
           render PhlexKit::AccordionItem.new do
-            render PhlexKit::AccordionTrigger.new do
-              render PhlexKit::AccordionDefaultTrigger.new { "Is it animated?" }
-              render PhlexKit::AccordionIcon.new
-            end
+            render PhlexKit::AccordionDefaultTrigger.new { "Is it animated?" }
             render PhlexKit::AccordionContent.new do
               render PhlexKit::AccordionDefaultContent.new { "Yes — native Web Animations API, no motion dependency." }
             end

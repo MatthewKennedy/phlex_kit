@@ -1,6 +1,14 @@
 /* Kit utilities used by the interactive controllers (Stimulus toggles these). */
 .pk-hidden { display: none !important; }
 
+/* Kit elements size predictably: width includes padding + border, so
+   `width: 100%` controls (inputs, triggers, option rows) never overflow their
+   container. Scoped to pk-* classes and their subtrees — the host's own box
+   model is untouched. */
+[class^="pk-"], [class*=" pk-"],
+[class^="pk-"] *, [class*=" pk-"] *,
+[class^="pk-"] *::before, [class*=" pk-"] *::after { box-sizing: border-box; }
+
 /* PhlexKit default theme tokens. This file is OPTIONAL — a host that wants its
    own palette can skip importing it (see phlex_kit.css) and define the --pk-*
    custom properties itself. Every component reads these via var(--pk-*, fallback),

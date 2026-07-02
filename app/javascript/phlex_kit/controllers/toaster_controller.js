@@ -42,9 +42,17 @@ export default class extends Controller {
     dir: { type: String, default: "ltr" },
   }
 
-  connect() {
+  // State the target callbacks touch lives here, NOT in connect(): Stimulus
+  // fires toastTargetConnected() BEFORE connect() for toasts already in the
+  // HTML (server-rendered flash), and upstream's connect()-time init crashes
+  // on that path.
+  initialize() {
     this._heights = new Map()
     this._resizeObservers = new WeakMap()
+    this._expanded = false
+  }
+
+  connect() {
     this._expanded = this.expandValue
     this._listEl = this.element.querySelector("ol") || (this.element.tagName === "OL" ? this.element : null)
     this._registerGlobalApi()
@@ -62,6 +70,10 @@ export default class extends Controller {
     this._listEl.addEventListener("pointerenter", this._onPointerEnter)
     this._listEl.addEventListener("pointerleave", this._onPointerLeave)
     document.addEventListener("keydown", this._onKey)
+
+    // Settle any server-rendered toasts (their targetConnected ran pre-connect,
+    // before _listEl existed, so their reflow was a no-op).
+    this._reflow()
   }
 
   disconnect() {
