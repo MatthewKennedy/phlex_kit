@@ -32,7 +32,7 @@ module PhlexKit
     end
 
     def classes
-      "pk-heading ui-heading-#{size_token}"
+      "pk-heading pk-heading-#{size_token}"
     end
   end
 end

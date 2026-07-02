@@ -4,7 +4,7 @@
    tokens come from the global stylesheet. */
 
 /* Heading */
-.pk-heading { margin: 0 0 .6rem; font-weight: 700; line-height: 1.2; letter-spacing: -.01em; }
+.pk-heading { margin: 0 0 .6rem; font-weight: 600; line-height: 1.2; letter-spacing: -.025em; }
 .pk-heading-1 { font-size: .75rem; }
 .pk-heading-2 { font-size: .875rem; }
 .pk-heading-3 { font-size: 1rem; }
@@ -47,4 +47,8 @@
 .pk-inline-link:hover { text-decoration: underline; }
 
 /* Blockquote */
-.pk-blockquote { margin: 1rem 0; border-left: 2px solid var(--pk-border); padding-left: 1rem; font-style: italic; }
+.pk-blockquote { margin: 1.5rem 0; border-left: 2px solid var(--pk-border); padding-left: 1.5rem; font-style: italic; }
+
+/* Prose list (shadcn typography's list style). */
+.pk-list { margin: 1.5rem 0; padding-left: 1.5rem; list-style: disc; }
+.pk-list > li { margin-top: .5rem; }
