@@ -126,4 +126,17 @@ class ShadcnAdditionsTest < Minitest::Test
   def test_avatar_group_overlaps
     assert_includes render(PhlexKit::AvatarGroup.new { "x" }), "pk-avatar-group"
   end
+
+  def test_marker_variants_fail_loud
+    assert_includes render(PhlexKit::Marker.new { "x" }), "pk-marker"
+    assert_includes render(PhlexKit::Marker.new(variant: :border) { "x" }), "pk-marker border"
+    assert_includes render(PhlexKit::Marker.new(variant: :separator) { "x" }), "pk-marker separator"
+    assert_raises(KeyError) { render(PhlexKit::Marker.new(variant: :loud) { "x" }) }
+    assert_includes render(PhlexKit::MarkerIcon.new { "✓" }), "pk-marker-icon"
+    assert_includes render(PhlexKit::MarkerContent.new { "Done" }), "pk-marker-content"
+  end
+
+  def test_stars_is_gone
+    refute PhlexKit.const_defined?(:Stars), "stars was dropped in favour of shadcn parity"
+  end
 end

@@ -190,13 +190,24 @@ triggers), command palette, context menu, data table, date picker, dialog,
 drawer, dropdown menu, empty, form + form field, hover card, input, input
 group, input OTP, item, kbd, label, link, masked input, menubar, message,
 message scroller, native select, navigation menu, pagination, popover,
-progress, radio button + radio group, resizable, scroll area, select,
-separator, sheet, shortcut key, sidebar, skeleton, slider, spinner, stars,
+marker, progress, radio button + radio group, resizable, scroll area, select,
+separator, sheet, shortcut key, sidebar, skeleton, slider, spinner,
 switch, table, tabs, textarea, theme toggle, toast (sonner-style), toggle,
 toggle group, tooltip, typography.
 
+Plus two utility classes: `.pk-shimmer` (gradient sweep for loading text) and
+`.pk-scroll-fade` (edge-masked scroll containers, position-aware via the
+`phlex-kit--scroll-fade` controller).
+
 Inventory and porting notes: [ROADMAP.md](ROADMAP.md). Architecture and
 conventions: [docs/](docs/).
+
+## RTL
+
+shadcn's `Direction` is a React context provider; PhlexKit needs none — set
+`dir="rtl"` on `<html>` and browser layout handles the flex/grid flows. Note
+the caveat: popover-style panels anchor with physical `left`/`top` offsets, so
+fully mirrored overlay alignment in RTL may need small host-side overrides.
 
 ## How the asset wiring works
 

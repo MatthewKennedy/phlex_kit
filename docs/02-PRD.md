@@ -110,8 +110,8 @@ context_menu, data_table, date_picker, dialog, dropdown_menu, empty, form (+
 form_field with live validation), hover_card, input, link, masked_input, message,
 message_scroller, native_select, pagination, popover, progress, radio_button, select,
 separator, sheet, shortcut_key, sidebar, skeleton, switch, table, tabs, textarea,
-theme_toggle*, toast, toggle, toggle_group, tooltip, typography. (*+ a `stars` extra
-not in ruby_ui.)
+theme_toggle, toast, toggle, toggle_group, tooltip, typography. (A `stars` extra
+shipped through v0.2.x and was dropped after — not in ruby_ui or shadcn.)
 
 All §7 dependency decisions held: no `@floating-ui` (CSS positioning), no bundled
 charting lib (`chart` is a thin wrapper — `window.Chart` if the host ships it, else a
@@ -126,4 +126,4 @@ controller) — were completed by PhlexKit rather than skipped.
 - Confirm the three dependency decisions in §7 (codeblock/rouge, chart/lib,
   positioning) — defaults chosen to keep the gem dependency-free.
 - Copy-in vs require-the-gem as the *documented default* adoption path.
-- Whether `stars` stays (useful) or is dropped (not in ruby_ui).
+- ~~Whether `stars` stays or is dropped~~ — resolved: dropped (not in ruby_ui or shadcn).

@@ -86,6 +86,7 @@ module Gallery
             slider_otp_drawer_demo
             menubar_nav_resizable_demo
             attachment_demo
+            marker_and_utilities_demo
             toast_demo
           end
           # Mounted once, at the end of <body>: receives both the server flash
@@ -150,13 +151,12 @@ module Gallery
     end
 
     def badges_demo
-      demo("Badge + ShortcutKey + Stars") do
+      demo("Badge + ShortcutKey") do
         render PhlexKit::Badge.new { "Primary" }
         render PhlexKit::Badge.new(variant: :secondary) { "Secondary" }
         render PhlexKit::Badge.new(size: :sm) { "sm" }
         render PhlexKit::ShortcutKey.new { "⌘" }
         render PhlexKit::ShortcutKey.new { "K" }
-        render PhlexKit::Stars.new(rating: 3.5)
       end
     end
 
@@ -1057,6 +1057,28 @@ module Gallery
             render PhlexKit::AttachmentActions.new do
               render PhlexKit::AttachmentAction.new(aria: { label: "Remove team-photo.jpg" })
             end
+          end
+        end
+      end
+    end
+
+    def marker_and_utilities_demo
+      demo("Marker + shimmer + scroll-fade", note: "AI-chat annotations and the two utility classes.") do
+        div(class: "stack w-lg") do
+          render PhlexKit::Marker.new do
+            render PhlexKit::MarkerIcon.new { "✓" }
+            render PhlexKit::MarkerContent.new { "Explored 4 files" }
+          end
+          render PhlexKit::Marker.new(variant: :border) do
+            render PhlexKit::MarkerIcon.new { "📄" }
+            render PhlexKit::MarkerContent.new { "Opened implementation notes" }
+          end
+          render PhlexKit::Marker.new(variant: :separator) do
+            render PhlexKit::MarkerContent.new { "Today" }
+          end
+          span(class: "pk-shimmer") { "Thinking through the request…" }
+          div(class: "pk-scroll-fade", style: "height: 120px", data: { controller: "phlex-kit--scroll-fade" }) do
+            12.times { |i| div(class: "boxed", style: "margin-bottom: .5rem") { "Fading row #{i + 1}" } }
           end
         end
       end

@@ -14,10 +14,6 @@ navigation_menu (shared controller), resizable, attachment, avatar_group.
 
 ## Next
 
-- **Drop `stars`** (PRD §10 resolved: not in ruby_ui or shadcn — out) and add the
-  last shadcn stragglers: `marker` (AI-chat annotation), a Direction/RTL usage note
-  (shadcn's is a React context provider — ours is documentation), and the
-  `scroll-fade` / `shimmer` utilities.
 - **Sidebar collapsible/offcanvas mode** — ours is the static rail only; upstream's
   cookie-persisted collapse + mobile sheet behaviour was deliberately deferred.
 - **Checkbox group** — ruby_ui's cross-checkbox "at least one required" controller,
@@ -69,7 +65,7 @@ Adapted from revue's production-proven vanilla-CSS kit. All render-tested.
 | Select | 8 parts | `phlex-kit--select` + `--select-item` | custom, CSS-positioned |
 | Separator | — | — | |
 | Sidebar | 10 parts | — | |
-| Stars | — | — | rating display (PhlexKit extra, not in ruby_ui) |
+| ~~Stars~~ | — | — | dropped post-v0.2.1 (not in ruby_ui or shadcn) |
 | Table | header/body/row/cell/head/footer/caption | — | |
 | Textarea | — | — | |
 | Tooltip | trigger/content | — | |

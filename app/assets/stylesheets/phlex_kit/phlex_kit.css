@@ -50,6 +50,7 @@
 @import url("kbd/kbd.css");
 @import url("label/label.css");
 @import url("link/link.css");
+@import url("marker/marker.css");
 @import url("menubar/menubar.css");
 @import url("message/message.css");
 @import url("message_scroller/message_scroller.css");
@@ -70,7 +71,6 @@
 @import url("skeleton/skeleton.css");
 @import url("slider/slider.css");
 @import url("spinner/spinner.css");
-@import url("stars/stars.css");
 @import url("switch/switch.css");
 @import url("table/table.css");
 @import url("tabs/tabs.css");

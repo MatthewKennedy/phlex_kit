@@ -34,6 +34,7 @@ import MenubarController from "phlex_kit/controllers/menubar_controller"
 import MessageScrollerController from "phlex_kit/controllers/message_scroller_controller"
 import PopoverController from "phlex_kit/controllers/popover_controller"
 import ResizableController from "phlex_kit/controllers/resizable_controller"
+import ScrollFadeController from "phlex_kit/controllers/scroll_fade_controller"
 import SelectController from "phlex_kit/controllers/select_controller"
 import SelectItemController from "phlex_kit/controllers/select_item_controller"
 import SheetController from "phlex_kit/controllers/sheet_controller"
@@ -73,6 +74,7 @@ export function registerPhlexKitControllers(application) {
   application.register("phlex-kit--message-scroller", MessageScrollerController)
   application.register("phlex-kit--popover", PopoverController)
   application.register("phlex-kit--resizable", ResizableController)
+  application.register("phlex-kit--scroll-fade", ScrollFadeController)
   application.register("phlex-kit--select", SelectController)
   application.register("phlex-kit--select-item", SelectItemController)
   application.register("phlex-kit--sheet", SheetController)
