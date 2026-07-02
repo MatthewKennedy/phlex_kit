@@ -168,10 +168,12 @@ bin/rails g phlex_kit:component button
 This copies `button.rb` + `button.css` into `app/components/phlex_kit/button/`
 and wires its `@import`. Your copy shadows the gem's.
 
-## The gallery
+## The docs site
 
-A dummy Rails app renders every component on one page — useful as living
-documentation and for eyeballing theme changes:
+The dummy Rails app is a full shadcn-style docs site: a sidebar menu with one
+page per component, every use case demoed with a Preview/Code toggle (the code
+shown is extracted from the running example source, so it can never drift).
+A one-page kitchen-sink gallery lives at /gallery:
 
 ```bash
 git clone https://github.com/MatthewKennedy/phlex_kit && cd phlex_kit
