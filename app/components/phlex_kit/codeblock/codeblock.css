@@ -1,0 +1,7 @@
+/* Co-located with codeblock.rb. Plain (unhighlighted) code block. Tokens global. */
+.pk-codeblock {
+  overflow: auto; border: 1px solid var(--pk-border); border-radius: .375rem;
+  background: var(--pk-surface-2); font-size: .875rem;
+}
+.pk-codeblock pre { margin: 0; padding: 1rem; }
+.pk-codeblock code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--pk-text); }

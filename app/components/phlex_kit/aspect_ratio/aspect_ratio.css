@@ -1,0 +1,12 @@
+/* Co-located with aspect_ratio.rb — UI::AspectRatio. ruby_ui's padding-bottom
+   ratio box; the inner layer fills it and an <img> child covers it. Vanilla CSS;
+   theme tokens come from the global stylesheet. */
+.pk-aspect-ratio { position: relative; width: 100%; }
+.pk-aspect-ratio-inner { position: absolute; inset: 0; }
+.pk-aspect-ratio-inner > img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}

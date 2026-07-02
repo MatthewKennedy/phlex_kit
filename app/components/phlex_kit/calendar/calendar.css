@@ -1,0 +1,109 @@
+/* Co-located with calendar.rb — UI::Calendar. ruby_ui's structure + Stimulus
+   kept (the controller renders week rows from <template>s; its Mustache
+   dependency replaced with a tiny interpolator); Tailwind replaced with vanilla
+   CSS on the palette tokens. Geometry from ruby_ui (p-3 card, h-7 nav buttons,
+   2rem day cells, flex week rows). Theme tokens come from the global
+   stylesheet. */
+.pk-calendar {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: .75rem;
+}
+
+.pk-calendar-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: .25rem;
+}
+.pk-calendar-title { font-size: .875rem; font-weight: 500; }
+
+.pk-calendar-prev, .pk-calendar-next {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid var(--pk-border);
+  border-radius: .375rem;
+  background: transparent;
+  color: var(--pk-text);
+  cursor: pointer;
+  opacity: .5;
+  transition: background-color .15s ease, opacity .15s ease;
+}
+.pk-calendar-prev { left: .25rem; }
+.pk-calendar-next { right: .25rem; }
+.pk-calendar-prev:hover, .pk-calendar-next:hover { background: var(--pk-surface-2); opacity: 1; }
+.pk-calendar-prev:focus-visible, .pk-calendar-next:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+}
+.pk-calendar-prev:disabled, .pk-calendar-next:disabled { pointer-events: none; opacity: .5; }
+.pk-calendar-prev svg, .pk-calendar-next svg { width: 1rem; height: 1rem; }
+
+/* Rows are flex (the controller emits <tr class="pk-calendar-week">). */
+.pk-calendar-weekdays-row { display: flex; }
+.pk-calendar-week { display: flex; width: 100%; margin-top: .5rem; }
+.pk-calendar-weekday {
+  width: 2rem;
+  border-radius: .375rem;
+  font-size: .8rem;
+  font-weight: 400;
+  color: var(--pk-muted);
+}
+
+.pk-calendar-cell {
+  position: relative;
+  padding: 0;
+  text-align: center;
+  font-size: .875rem;
+}
+.pk-calendar-cell:has([aria-selected]) {
+  background: var(--pk-surface-2);
+  border-radius: .375rem;
+}
+.pk-calendar-cell:focus-within { position: relative; z-index: 20; }
+
+/* Day button states (base = current month). */
+.pk-calendar-day {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: .375rem;
+  background: transparent;
+  color: var(--pk-text);
+  font: inherit;
+  font-size: .875rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease;
+}
+.pk-calendar-day:hover { background: var(--pk-surface-2); }
+.pk-calendar-day:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+}
+.pk-calendar-day.other { color: var(--pk-muted); }
+.pk-calendar-day.today { background: var(--pk-surface-2); }
+.pk-calendar-day.selected {
+  background: var(--pk-brand);
+  color: var(--pk-brand-ink);
+}
+.pk-calendar-day.selected:hover, .pk-calendar-day.selected:focus { background: var(--pk-brand); }
+.pk-calendar-day.disabled,
+.pk-calendar-day:disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  background: transparent;
+  color: var(--pk-muted);
+  opacity: .5;
+}

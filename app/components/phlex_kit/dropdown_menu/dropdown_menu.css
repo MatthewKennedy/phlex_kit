@@ -1,0 +1,38 @@
+/* Co-located with dropdown_menu.rb — UI::DropdownMenu (+ Trigger / Content / Item
+   / Label / Separator). ruby_ui's structure + Stimulus kept; @floating-ui dropped
+   in favour of CSS positioning (panel below the trigger, or above with
+   `side: :top`). Tailwind → vanilla. Theme tokens come from the global stylesheet. */
+.pk-dropdown-menu { position: relative; display: inline-block; }
+.pk-dropdown-menu-trigger { display: inline-block; }
+
+.pk-dropdown-menu-content { position: absolute; top: 100%; left: 0; z-index: 50; margin-top: 4px; }
+.pk-dropdown-menu-content-up { top: auto; bottom: 100%; margin-top: 0; margin-bottom: 4px; }
+.pk-dropdown-menu-content.hidden { display: none; }
+.pk-dropdown-menu-viewport {
+  min-width: 10rem;
+  border-radius: .375rem;
+  border: 1px solid var(--pk-border);
+  background: var(--pk-surface);
+  color: var(--pk-text);
+  padding: .25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+}
+
+.pk-dropdown-menu-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  cursor: pointer;
+  user-select: none;
+  border-radius: .25rem;
+  padding: .375rem .5rem;
+  font-size: .875rem;
+  color: var(--pk-text);
+  outline: none;
+}
+.pk-dropdown-menu-item:hover,
+.pk-dropdown-menu-item:focus,
+.pk-dropdown-menu-item[aria-selected="true"] { background: var(--pk-surface-2); text-decoration: none; }
+
+.pk-dropdown-menu-label { margin: 0; padding: .375rem .5rem; font-size: .875rem; font-weight: 600; }
+.pk-dropdown-menu-separator { height: 1px; margin: .25rem -.25rem; background: var(--pk-border); }

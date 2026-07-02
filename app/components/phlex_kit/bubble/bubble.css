@@ -1,0 +1,32 @@
+/* Co-located with bubble.rb. Theme tokens from the global stylesheet. The variant
+   colours the child [data-slot=bubble-content]. */
+.pk-bubble {
+  position: relative; display: flex; width: fit-content; min-width: 0;
+  flex-direction: column; gap: .25rem; max-width: 80%;
+}
+.pk-bubble[data-align="end"] { align-self: flex-end; }
+.pk-bubble-content {
+  width: fit-content; max-width: 100%; min-width: 0; overflow: hidden;
+  overflow-wrap: break-word; border: 1px solid transparent; border-radius: 1.5rem;
+  padding: .625rem .75rem; font-size: .875rem; line-height: 1.625;
+}
+.pk-bubble[data-align="end"] > .pk-bubble-content { align-self: flex-end; }
+/* variants */
+.pk-bubble[data-variant="default"]     > .pk-bubble-content { background: var(--pk-brand); color: var(--pk-brand-ink); }
+.pk-bubble[data-variant="secondary"]   > .pk-bubble-content { background: var(--pk-surface-2); color: var(--pk-text); }
+.pk-bubble[data-variant="muted"]       > .pk-bubble-content { background: var(--pk-surface-2); color: var(--pk-text); }
+.pk-bubble[data-variant="tinted"]      > .pk-bubble-content { background: color-mix(in oklab, var(--pk-brand) 18%, transparent); color: var(--pk-text); }
+.pk-bubble[data-variant="outline"]     > .pk-bubble-content { background: var(--pk-bg); border-color: var(--pk-border); color: var(--pk-text); }
+.pk-bubble[data-variant="ghost"]       > .pk-bubble-content { background: transparent; border-radius: 0; padding: 0; }
+.pk-bubble[data-variant="destructive"] > .pk-bubble-content { background: color-mix(in oklab, var(--pk-red) 12%, transparent); color: var(--pk-red); }
+.pk-bubble-group { display: flex; min-width: 0; flex-direction: column; gap: .5rem; }
+.pk-bubble-reactions {
+  position: absolute; z-index: 10; display: flex; width: fit-content;
+  align-items: center; justify-content: center; border-radius: 9999px;
+  box-shadow: 0 0 0 3px var(--pk-surface); background: var(--pk-surface-2);
+  flex: none; gap: .25rem; padding: .125rem .375rem; font-size: .875rem;
+}
+.pk-bubble-reactions[data-side="bottom"] { bottom: 0; transform: translateY(75%); }
+.pk-bubble-reactions[data-side="top"] { top: 0; transform: translateY(-75%); }
+.pk-bubble-reactions[data-align="end"] { right: .75rem; }
+.pk-bubble-reactions[data-align="start"] { left: .75rem; }

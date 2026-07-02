@@ -1,0 +1,50 @@
+/* Co-located with the Typography family (heading.rb / text.rb / inline_code.rb /
+   inline_link.rb / blockquote.rb). ruby_ui's Tailwind → vanilla CSS on the
+   palette tokens. The size scale mirrors ruby_ui's text-xs … text-5xl. Theme
+   tokens come from the global stylesheet. */
+
+/* Heading */
+.pk-heading { margin: 0 0 .6rem; font-weight: 700; line-height: 1.2; letter-spacing: -.01em; }
+.pk-heading-1 { font-size: .75rem; }
+.pk-heading-2 { font-size: .875rem; }
+.pk-heading-3 { font-size: 1rem; }
+.pk-heading-4 { font-size: 1.125rem; }
+.pk-heading-5 { font-size: 1.25rem; }
+.pk-heading-6 { font-size: 1.5rem; }
+.pk-heading-7 { font-size: 1.875rem; }
+.pk-heading-8 { font-size: 2.25rem; }
+.pk-heading-9 { font-size: 3rem; }
+
+/* Text */
+.pk-text { margin: 0; }
+.pk-text-1 { font-size: .75rem; }
+.pk-text-2 { font-size: .875rem; }
+.pk-text-3 { font-size: 1rem; }
+.pk-text-4 { font-size: 1.125rem; }
+.pk-text-5 { font-size: 1.25rem; }
+.pk-text-6 { font-size: 1.5rem; }
+.pk-text-7 { font-size: 1.875rem; }
+.pk-text-8 { font-size: 2.25rem; }
+.pk-text-9 { font-size: 3rem; }
+.pk-text-light { font-weight: 300; }
+.pk-text-medium { font-weight: 500; }
+.pk-text-semibold { font-weight: 600; }
+.pk-text-bold { font-weight: 700; }
+.pk-text-muted { color: var(--pk-muted); }
+
+/* Inline code */
+.pk-inline-code {
+  font-family: ui-monospace, monospace;
+  font-size: .875rem;
+  background: var(--pk-bg);
+  border: 1px solid var(--pk-border);
+  border-radius: 6px;
+  padding: .15rem .4rem;
+}
+
+/* Inline link */
+.pk-inline-link { color: var(--pk-brand); font-weight: 500; text-underline-offset: 4px; }
+.pk-inline-link:hover { text-decoration: underline; }
+
+/* Blockquote */
+.pk-blockquote { margin: 1rem 0; border-left: 2px solid var(--pk-border); padding-left: 1rem; font-style: italic; }

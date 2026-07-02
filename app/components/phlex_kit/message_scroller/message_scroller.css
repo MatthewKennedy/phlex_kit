@@ -1,0 +1,2 @@
+/* Co-located with message_scroller.rb. Tokens from the global stylesheet. */
+.pk-message-scroller { position: relative; display: flex; height: 100%; width: 100%; min-height: 0; flex-direction: column; overflow: hidden; }

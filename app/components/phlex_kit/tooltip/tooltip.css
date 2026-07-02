@@ -1,0 +1,28 @@
+/* Co-located with tooltip.rb — UI::Tooltip (+ Trigger / Content). CSS-only:
+   the bubble is absolutely positioned above the trigger and revealed on the
+   wrapper's :hover / :focus-within (no JS, no @floating-ui). Theme tokens come
+   from the global stylesheet. */
+.pk-tooltip { position: relative; display: inline-flex; }
+.pk-tooltip-trigger { display: inline-flex; }
+.pk-tooltip-content {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  width: max-content;
+  max-width: min(16rem, calc(100vw - 2rem));
+  padding: .35rem .6rem;
+  border-radius: .375rem;
+  border: 1px solid var(--pk-border);
+  background: var(--pk-surface-2);
+  color: var(--pk-text);
+  font-size: .8rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .12s ease;
+}
+.pk-tooltip:hover .pk-tooltip-content,
+.pk-tooltip:focus-within .pk-tooltip-content { opacity: 1; visibility: visible; }

@@ -1,0 +1,52 @@
+/* Co-located with native_select.rb — UI::NativeSelect (+ Icon / Option / Group).
+   ruby_ui's structure kept verbatim (wrapper > appearance:none select + absolute
+   chevron); only the styling is ours, vanilla CSS on the palette tokens. Geometry
+   from ruby_ui (h-9 default / h-7 sm, rounded-md, pr-8 pl-2.5, ring-on-focus).
+   Theme tokens come from the global stylesheet. */
+.pk-native-select {
+  position: relative;
+  display: inline-flex;
+  width: 100%;
+}
+.pk-native-select-field {
+  width: 100%;
+  min-width: 0;
+  height: 2.25rem;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: .375rem;
+  border: 1px solid var(--pk-border);
+  background: transparent;
+  color: var(--pk-text);
+  font: inherit;
+  font-size: .875rem;
+  padding: .25rem 2rem .25rem .625rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .16);
+  cursor: pointer;
+  transition: color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.pk-native-select-field:focus-visible {
+  outline: none;
+  border-color: var(--pk-brand);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+}
+.pk-native-select-field:disabled { cursor: not-allowed; opacity: .5; }
+.pk-native-select-field.sm {
+  height: 1.75rem;
+  padding-top: .125rem;
+  padding-bottom: .125rem;
+}
+/* Native option lists are OS-drawn; force a readable palette where honoured. */
+.pk-native-select-field option,
+.pk-native-select-field optgroup { background: var(--pk-surface); color: var(--pk-text); }
+.pk-native-select-icon {
+  position: absolute;
+  top: 50%;
+  right: .625rem;
+  transform: translateY(-50%);
+  display: flex;
+  pointer-events: none;
+  user-select: none;
+  color: var(--pk-muted);
+}
+.pk-native-select-icon svg { width: 1rem; height: 1rem; }

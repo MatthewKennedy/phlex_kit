@@ -1,0 +1,50 @@
+/* Co-located with badge.rb — UI::Badge. ruby_ui's Tailwind replaced with vanilla
+   CSS on the palette tokens, at variant/size parity. Geometry from ruby_ui
+   (inline-flex, rounded-md, ring-1 ring-inset → 1px border, bg tint, px-2 py-1
+   text-xs). Theme tokens come from the global stylesheet. */
+.pk-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: .375rem;
+  padding: .25rem .5rem;
+  font-size: .75rem;
+  font-weight: 500;
+  line-height: 1;
+  border: 1px solid transparent;
+}
+
+/* Sizes (md is the base above). */
+.pk-badge.sm { padding: .125rem .375rem; font-size: .7rem; }
+.pk-badge.lg { padding: .25rem .75rem; font-size: .875rem; }
+
+/* Variants — colored text over a faint tint of the same hue + matching ring. */
+.pk-badge.primary {
+  color: var(--pk-brand);
+  background: color-mix(in oklab, var(--pk-brand) 8%, transparent);
+  border-color: color-mix(in oklab, var(--pk-brand) 25%, transparent);
+}
+.pk-badge.secondary {
+  color: var(--pk-muted);
+  background: color-mix(in oklab, var(--pk-muted) 12%, transparent);
+  border-color: color-mix(in oklab, var(--pk-muted) 25%, transparent);
+}
+.pk-badge.outline {
+  color: var(--pk-text);
+  background: transparent;
+  border-color: var(--pk-border);
+}
+.pk-badge.destructive {
+  color: var(--pk-red);
+  background: color-mix(in oklab, var(--pk-red) 10%, transparent);
+  border-color: color-mix(in oklab, var(--pk-red) 25%, transparent);
+}
+.pk-badge.success {
+  color: var(--pk-green);
+  background: color-mix(in oklab, var(--pk-green) 10%, transparent);
+  border-color: color-mix(in oklab, var(--pk-green) 25%, transparent);
+}
+.pk-badge.warning {
+  color: var(--pk-amber);
+  background: color-mix(in oklab, var(--pk-amber) 10%, transparent);
+  border-color: color-mix(in oklab, var(--pk-amber) 25%, transparent);
+}

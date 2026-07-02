@@ -1,0 +1,3 @@
+/* Co-located with collapsible.rb. Theme tokens from the global stylesheet. */
+.pk-collapsible-trigger { cursor: pointer; }
+.pk-collapsible-content { overflow-y: hidden; }

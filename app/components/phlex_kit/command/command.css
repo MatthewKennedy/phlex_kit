@@ -1,0 +1,104 @@
+/* Co-located with command.rb — UI::Command (+ CommandDialog overlay). ruby_ui's
+   structure kept (template cloned into <body>, custom backdrop + centered panel,
+   like the shipped sheet); fuse.js replaced with a substring filter in the
+   controller, Tailwind with vanilla CSS on the palette tokens. Geometry from
+   ruby_ui (h-10 input, p-1 groups, px-2 py-1.5 rows, divide-y list). Theme
+   tokens come from the global stylesheet. */
+.pk-command-dialog-trigger { display: inline-block; }
+
+/* Backdrop of the cloned overlay. */
+.pk-command-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: auto;
+  background: color-mix(in oklab, var(--pk-bg) 80%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+/* Centered palette panel. */
+.pk-command-dialog {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  pointer-events: auto;
+  display: grid;
+  gap: 1rem;
+  width: 100%;
+  max-width: 32rem;
+  border: 1px solid var(--pk-border);
+  border-radius: .5rem;
+  background: var(--pk-surface);
+  color: var(--pk-text);
+  box-shadow: 0 10px 30px rgb(0 0 0 / .35);
+}
+.pk-command-dialog.xs { max-width: 24rem; }
+.pk-command-dialog.sm { max-width: 28rem; }
+.pk-command-dialog.lg { max-width: 42rem; }
+.pk-command-dialog.xl { max-width: 56rem; }
+.pk-command-dialog.full { max-width: 100%; }
+
+/* Search row. */
+.pk-command-input-row {
+  display: flex;
+  align-items: center;
+  padding: 0 .75rem;
+  border-bottom: 1px solid var(--pk-border);
+}
+.pk-command-input-icon { flex: none; width: 1rem; height: 1rem; margin-right: .375rem; }
+.pk-command-input {
+  width: 100%;
+  height: 2.5rem;
+  padding: .75rem 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--pk-text);
+  font: inherit;
+  font-size: .875rem;
+}
+.pk-command-input::placeholder { color: var(--pk-muted); }
+.pk-command-input:disabled { cursor: not-allowed; opacity: .5; }
+
+/* Groups, divided. */
+.pk-command-list > * + * { border-top: 1px solid var(--pk-border); }
+.pk-command-group {
+  overflow: hidden;
+  padding: .25rem;
+  color: var(--pk-text);
+}
+.pk-command-group [group-heading] {
+  padding: .375rem .5rem;
+  font-size: .75rem;
+  font-weight: 500;
+  color: var(--pk-muted);
+}
+
+/* One result row. */
+.pk-command-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  border-radius: .25rem;
+  padding: .375rem .5rem;
+  font-size: .875rem;
+  color: var(--pk-text);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color .12s ease;
+}
+.pk-command-item:hover,
+.pk-command-item[aria-selected="true"] { background: var(--pk-surface-2); }
+.pk-command-item[data-disabled] { pointer-events: none; opacity: .5; }
+
+/* Filter empty state (hidden/shown by the controller). */
+.pk-command-empty {
+  padding: 1.5rem 0;
+  text-align: center;
+  font-size: .875rem;
+}

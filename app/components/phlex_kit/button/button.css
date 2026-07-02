@@ -1,0 +1,74 @@
+/* Co-located with button.rb — UI::Button. ruby_ui's Tailwind replaced with
+   vanilla CSS on the palette tokens, at full variant/size parity. Geometry from
+   ruby_ui (inline-flex centred, rounded-md, h-9 default, font-medium, focus ring,
+   filled variants). Theme tokens come from the global stylesheet. */
+.pk-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  height: 2.25rem;
+  padding: .5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: .375rem;
+  font: inherit;
+  font-size: .875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.pk-button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+}
+.pk-button:disabled, .pk-button[disabled], .pk-button[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: .5;
+}
+
+/* Sizes (md is the base above). */
+.pk-button.sm { height: 2rem; padding: .375rem .75rem; font-size: .75rem; }
+.pk-button.lg { height: 2.5rem; padding: .5rem 1rem; font-size: 1rem; }
+.pk-button.xl { height: 3rem; padding: .75rem 1.5rem; font-size: 1rem; }
+
+/* Icon-only square buttons. */
+.pk-button.icon { width: 2.25rem; padding: 0; }
+.pk-button.icon.sm { width: 2rem; }
+.pk-button.icon.lg { width: 2.5rem; }
+.pk-button.icon.xl { width: 3rem; }
+
+/* Variants. */
+.pk-button.primary {
+  background: var(--pk-brand);
+  color: var(--pk-brand-ink);
+  border-color: var(--pk-brand);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .16);
+}
+.pk-button.primary:hover { background: color-mix(in oklab, var(--pk-brand) 88%, black); }
+
+.pk-button.secondary { background: var(--pk-surface-2); color: var(--pk-text); border-color: var(--pk-border); }
+.pk-button.secondary:hover { border-color: var(--pk-brand); }
+
+.pk-button.destructive {
+  background: var(--pk-red);
+  color: var(--pk-brand-ink);
+  border-color: var(--pk-red);
+  font-weight: 600;
+}
+.pk-button.destructive:hover { background: color-mix(in oklab, var(--pk-red) 88%, black); }
+
+.pk-button.outline { background: transparent; color: var(--pk-text); border-color: var(--pk-border); }
+.pk-button.outline:hover { background: var(--pk-surface-2); }
+
+.pk-button.ghost { background: transparent; border-color: transparent; color: var(--pk-text); }
+.pk-button.ghost:hover { background: var(--pk-surface-2); }
+
+.pk-button.link {
+  height: auto;
+  padding: 0;
+  background: transparent;
+  border-color: transparent;
+  color: var(--pk-brand);
+}
+.pk-button.link:hover { text-decoration: underline; }

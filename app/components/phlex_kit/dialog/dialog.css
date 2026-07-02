@@ -1,0 +1,32 @@
+/* Co-located with dialog.rb. Native <dialog> centered by the UA; we style the box
+   + ::backdrop. Theme tokens from the global stylesheet. */
+.pk-dialog-trigger { display: inline-block; }
+.pk-dialog {
+  position: fixed; z-index: 50; width: 100%; max-width: 32rem; max-height: 100vh;
+  overflow-y: auto; gap: 1rem; border: 1px solid var(--pk-border);
+  border-radius: .5rem; background: var(--pk-surface); color: var(--pk-text);
+  padding: 1.5rem; box-shadow: 0 10px 30px rgb(0 0 0 / .35);
+}
+.pk-dialog[open] { display: flex; flex-direction: column; }
+.pk-dialog::backdrop { background: rgb(0 0 0 / .5); backdrop-filter: blur(2px); }
+.pk-dialog.xs { max-width: 24rem; }
+.pk-dialog.sm { max-width: 28rem; }
+.pk-dialog.lg { max-width: 42rem; }
+.pk-dialog.xl { max-width: 56rem; }
+.pk-dialog.full { max-width: 100%; }
+.pk-dialog-header { display: flex; flex-direction: column; gap: .375rem; text-align: center; }
+.pk-dialog-footer { display: flex; flex-direction: column-reverse; gap: .5rem; }
+.pk-dialog-title { font-size: 1.125rem; font-weight: 600; line-height: 1; letter-spacing: -.01em; }
+.pk-dialog-description { font-size: .875rem; color: var(--pk-muted); }
+.pk-dialog-middle { padding-block: 1rem; }
+.pk-overlay-close {
+  position: absolute; inset-inline-end: 1rem; top: 1rem; border: 0; background: none;
+  cursor: pointer; border-radius: .25rem; opacity: .7; color: var(--pk-text);
+  transition: opacity .15s ease;
+}
+.pk-overlay-close:hover { opacity: 1; }
+@media (min-width: 640px) {
+  .pk-dialog-header { text-align: left; }
+  .pk-dialog-footer { flex-direction: row; justify-content: flex-end; }
+  .pk-dialog-footer > * + * { margin-inline-start: .5rem; }
+}

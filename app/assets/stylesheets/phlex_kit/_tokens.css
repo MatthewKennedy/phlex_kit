@@ -1,0 +1,61 @@
+/* Kit utilities used by the interactive controllers (Stimulus toggles these). */
+.pk-hidden { display: none !important; }
+
+/* PhlexKit default theme tokens. This file is OPTIONAL — a host that wants its
+   own palette can skip importing it (see phlex_kit.css) and define the --pk-*
+   custom properties itself. Every component reads these via var(--pk-*, fallback),
+   so redefining :root after the import re-themes the whole kit with no rebuild.
+
+   Dark is the default; light is opt-in via <html data-theme="light"> (set it
+   server-side to avoid a flash). "system" follows the OS via prefers-color-scheme.
+   Keep the two light token sets in sync. */
+:root {
+  --pk-bg: #0f1115;
+  --pk-surface: #181b22;
+  --pk-surface-2: #1f232c;
+  --pk-border: #2a2f3a;
+  --pk-text: #e7e9ee;
+  --pk-text-2: #c9cdd6;
+  --pk-muted: #9aa3b0;
+  --pk-brand: #6c8cff;
+  --pk-brand-ink: #0b1020;
+  --pk-green: #34d399;
+  --pk-amber: #fbbf24;
+  --pk-red: #f87171;
+  --pk-radius: 10px;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --pk-bg: #f6f7f9;
+  --pk-surface: #ffffff;
+  --pk-surface-2: #f0f2f5;
+  --pk-border: #d9dde4;
+  --pk-text: #1a1d23;
+  --pk-text-2: #3b4250;
+  --pk-muted: #6b7280;
+  --pk-brand: #3b5bdb;
+  --pk-brand-ink: #ffffff;
+  --pk-green: #059669;
+  --pk-amber: #b45309;
+  --pk-red: #dc2626;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] {
+    --pk-bg: #f6f7f9;
+    --pk-surface: #ffffff;
+    --pk-surface-2: #f0f2f5;
+    --pk-border: #d9dde4;
+    --pk-text: #1a1d23;
+    --pk-text-2: #3b4250;
+    --pk-muted: #6b7280;
+    --pk-brand: #3b5bdb;
+    --pk-brand-ink: #ffffff;
+    --pk-green: #059669;
+    --pk-amber: #b45309;
+    --pk-red: #dc2626;
+    color-scheme: light;
+  }
+}

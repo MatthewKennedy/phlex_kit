@@ -1,0 +1,24 @@
+/* Co-located with table.rb — UI::Table (+ Header/Body/Footer/Row/Head/Cell/
+   Caption). ruby_ui's structure kept; Tailwind replaced with vanilla CSS on the
+   palette tokens. Geometry from ruby_ui (text-sm, h-10 px-2 heads, p-2 cells,
+   row bottom-border + hover). Theme tokens come from the global stylesheet. */
+.pk-table-wrapper { position: relative; width: 100%; overflow: auto; }
+.pk-table { width: 100%; border-collapse: collapse; caption-side: bottom; font-size: .875rem; }
+
+.pk-table-header .pk-table-row { border-bottom: 1px solid var(--pk-border); }
+.pk-table-body .pk-table-row:last-child { border-bottom: 0; }
+.pk-table-footer { border-top: 1px solid var(--pk-border); font-weight: 500; }
+
+.pk-table-row { border-bottom: 1px solid var(--pk-border); transition: background-color .12s ease; }
+.pk-table-row:hover { background: color-mix(in oklab, var(--pk-surface-2) 60%, transparent); }
+
+.pk-table-head {
+  height: 2.5rem;
+  padding: 0 .5rem;
+  text-align: left;
+  vertical-align: middle;
+  font-weight: 500;
+  color: var(--pk-muted);
+}
+.pk-table-cell { padding: .5rem; vertical-align: middle; }
+.pk-table-caption { margin-top: 1rem; font-size: .875rem; color: var(--pk-muted); }

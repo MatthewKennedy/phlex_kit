@@ -1,0 +1,6 @@
+/* Co-located with separator.rb — UI::Separator. ruby_ui's Tailwind
+   (`shrink-0 bg-border` + `h-[1px] w-full` / `h-full w-[1px]`) as vanilla CSS on
+   the palette tokens. Theme tokens come from the global stylesheet. */
+.pk-separator { flex-shrink: 0; background: var(--pk-border); border: 0; }
+.pk-separator.horizontal { height: 1px; width: 100%; }
+.pk-separator.vertical { height: 100%; width: 1px; }

@@ -1,0 +1,28 @@
+/* Co-located with textarea.rb — UI::Textarea. Same vanilla treatment as
+   .pk-input (input.css): ruby_ui's geometry (rounded-md / px-3 / text-sm /
+   shadow / ring-on-focus), our palette tokens, height left to the `rows`
+   attribute exactly as ruby_ui does. Theme tokens come from the global
+   stylesheet. */
+.pk-textarea {
+  width: 100%;
+  border-radius: .375rem;
+  border: 1px solid var(--pk-border);
+  background: var(--pk-bg);
+  color: var(--pk-text);
+  padding: .5rem .75rem;
+  font: inherit;
+  font-size: .875rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .16);
+  transition: color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.pk-textarea::placeholder { color: var(--pk-muted); }
+.pk-textarea:focus-visible {
+  outline: none;
+  border-color: var(--pk-brand);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+}
+.pk-textarea:disabled { cursor: not-allowed; opacity: .5; }
+.pk-textarea[aria-invalid="true"] {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 30%, transparent);
+}

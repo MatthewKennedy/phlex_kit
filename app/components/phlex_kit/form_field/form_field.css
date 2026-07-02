@@ -1,0 +1,31 @@
+/* Co-located with form_field.rb — UI::FormField (+ Label / Hint / Error).
+   ruby_ui's structure kept (a vertical stack: label, control, hint, error); only
+   the styling is ours, vanilla CSS on the palette tokens. Geometry from ruby_ui
+   (flex-col gap-2, text-sm, empty:hidden, text-muted-foreground / text-destructive).
+   Theme tokens come from the global stylesheet. */
+.pk-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.pk-form-field-label {
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+.pk-form-field-label:empty { display: none; }
+.pk-form-field-hint {
+  margin: 0;
+  font-size: .875rem;
+  color: var(--pk-muted);
+}
+.pk-form-field-hint:empty { display: none; }
+.pk-form-field-error {
+  margin: 0;
+  font-size: .875rem;
+  font-weight: 500;
+  color: var(--pk-red);
+}
+.pk-form-field-error:empty { display: none; }
+
+/* Form-level layout (.pk-form / .pk-form-actions) lives with form.rb. */

@@ -1,0 +1,17 @@
+/* Co-located with shortcut_key.rb. Theme tokens from the global stylesheet. */
+.pk-shortcut-key {
+  pointer-events: none;
+  user-select: none;
+  display: inline-flex;
+  height: 1.25rem;
+  align-items: center;
+  gap: .25rem;
+  border: 1px solid var(--pk-border);
+  border-radius: .25rem;
+  background: var(--pk-surface-2);
+  padding-inline: .375rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--pk-muted);
+}

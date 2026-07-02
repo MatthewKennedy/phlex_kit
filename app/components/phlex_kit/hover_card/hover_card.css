@@ -1,0 +1,8 @@
+/* Co-located with hover_card.rb. Tokens from the global stylesheet. */
+.pk-hover-card { position: relative; display: inline-block; }
+.pk-hover-card-trigger { display: inline-block; }
+.pk-hover-card-content {
+  position: absolute; z-index: 50; top: calc(100% + .5rem); left: 0; width: 16rem;
+  border: 1px solid var(--pk-border); border-radius: .375rem; background: var(--pk-surface);
+  color: var(--pk-text); padding: 1rem; box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
+}

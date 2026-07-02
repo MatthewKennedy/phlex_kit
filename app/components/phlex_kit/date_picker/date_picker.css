@@ -1,0 +1,28 @@
+/* Co-located with date_picker.rb — UI::DatePicker (an Input + Popover +
+   Calendar composition; those parts bring their own styles). Geometry from
+   ruby_ui (260px column, grid field with gap, full-width trigger). Theme tokens
+   come from the global stylesheet. */
+.pk-date-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 260px;
+}
+.pk-date-picker-trigger { width: 100%; }
+.pk-date-picker-field {
+  display: grid;
+  width: 100%;
+  max-width: 24rem;
+  align-items: center;
+  gap: .375rem;
+}
+.pk-date-picker-label {
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+/* The panel hugs the calendar instead of stretching to the popover minimum. */
+.pk-date-picker .pk-popover-content {
+  width: max-content;
+  padding: 0;
+}

@@ -1,0 +1,32 @@
+/* Co-located with alert.rb — UI::Alert (+ Title / Description). ruby_ui's
+   structure kept; Tailwind replaced with vanilla CSS on the palette tokens.
+   Geometry from ruby_ui (ring-1 ring-inset → border, rounded-lg, px-4 py-4,
+   text-sm). The variant tints reuse the flash colours (success/destructive/
+   warning) the admin already used. Theme tokens come from the global stylesheet. */
+.pk-alert {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--pk-border);
+  border-radius: .5rem;
+  padding: .85rem 1rem;
+  font-size: .875rem;
+  background: color-mix(in oklab, var(--pk-surface) 60%, transparent);
+  color: var(--pk-text);
+}
+.pk-alert.success {
+  border-color: color-mix(in oklab, var(--pk-green) 40%, var(--pk-border));
+  background: color-mix(in oklab, var(--pk-green) 8%, transparent);
+  color: var(--pk-green);
+}
+.pk-alert.destructive {
+  border-color: color-mix(in oklab, var(--pk-red) 40%, var(--pk-border));
+  background: color-mix(in oklab, var(--pk-red) 8%, transparent);
+  color: var(--pk-red);
+}
+.pk-alert.warning {
+  border-color: color-mix(in oklab, var(--pk-amber) 40%, var(--pk-border));
+  background: color-mix(in oklab, var(--pk-amber) 8%, transparent);
+  color: var(--pk-amber);
+}
+.pk-alert-title { margin: 0 0 .25rem; font-weight: 500; line-height: 1.1; letter-spacing: -.01em; }
+.pk-alert-description { font-size: .875rem; }

@@ -1,0 +1,164 @@
+/* Co-located with combobox.rb — UI::Combobox. ruby_ui's structure + Stimulus
+   kept; the @floating-ui/native-popover positioning replaced with plain CSS
+   (panel below the trigger), and Tailwind with vanilla CSS on the palette
+   tokens. Geometry from ruby_ui (h-9 trigger, rounded-lg panel, p-1 list,
+   px-2 py-1 label rows, group labels via ::before content(attr(label))).
+   Theme tokens come from the global stylesheet. */
+.pk-combobox { position: relative; width: 100%; }
+
+/* Closed-state trigger (mirrors .pk-select-trigger geometry). */
+.pk-combobox-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 2.25rem;
+  white-space: nowrap;
+  border-radius: .375rem;
+  border: 1px solid var(--pk-border);
+  background: transparent;
+  color: var(--pk-text);
+  padding: .5rem 1rem;
+  font: inherit;
+  font-size: .875rem;
+  cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.pk-combobox-trigger:hover { background: var(--pk-surface-2); }
+.pk-combobox-trigger:focus-visible {
+  outline: none;
+  border-color: var(--pk-brand);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+}
+.pk-combobox-trigger:disabled,
+.pk-combobox-trigger[aria-disabled="true"] { pointer-events: none; opacity: .5; }
+.pk-combobox-trigger-content { overflow: hidden; text-overflow: ellipsis; }
+.pk-combobox-trigger-icon { flex: none; width: 1rem; height: 1rem; margin-left: .5rem; opacity: .5; }
+
+/* Dropdown panel — opens below the trigger (no floating-ui); the controller
+   toggles .pk-hidden and matches its width to the trigger. */
+.pk-combobox-popover {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  margin-top: .25rem;
+  border: 1px solid var(--pk-border);
+  border-radius: .5rem;
+  background: var(--pk-surface);
+  color: var(--pk-text);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+}
+
+/* Search row. */
+.pk-combobox-search {
+  display: flex;
+  align-items: center;
+  padding: 0 .75rem;
+  border-bottom: 1px solid var(--pk-border);
+  color: var(--pk-muted);
+}
+.pk-combobox-search-icon { flex: none; width: 1rem; height: 1rem; margin-right: .5rem; opacity: .5; }
+.pk-combobox-search-input {
+  width: 100%;
+  height: 2.25rem;
+  padding: .75rem 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--pk-text);
+  font: inherit;
+  font-size: .875rem;
+}
+.pk-combobox-search-input::placeholder { color: var(--pk-muted); }
+.pk-combobox-search-input:disabled { cursor: not-allowed; opacity: .5; }
+
+/* Option list. */
+.pk-combobox-list {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: .25rem;
+  max-height: 18rem;
+  overflow-y: auto;
+  color: var(--pk-text);
+}
+
+/* Labelled group — the label renders from the `label` attribute, and the group
+   hides itself (pure CSS) when filtering leaves no visible item inside. */
+.pk-combobox-group { display: none; }
+.pk-combobox-group:has(label:not(.pk-hidden)) {
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  padding: .25rem 0;
+  border-bottom: 1px solid var(--pk-border);
+}
+.pk-combobox-group::before {
+  content: attr(label);
+  padding: .375rem .5rem;
+  font-size: .75rem;
+  font-weight: 500;
+  font-style: normal;
+  color: var(--pk-muted);
+}
+
+/* Option row (a <label> around the input + text + indicator). */
+.pk-combobox-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: .5rem;
+  width: 100%;
+  border-radius: .25rem;
+  padding: .5rem;
+  font-size: .875rem;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color .12s ease;
+}
+.pk-combobox-item:hover,
+.pk-combobox-item:has(:checked) { background: var(--pk-surface-2); }
+.pk-combobox-item[aria-current="true"] {
+  background: var(--pk-surface-2);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+}
+.pk-combobox-item:has(:disabled) { opacity: .5; cursor: not-allowed; }
+.pk-combobox-item > span, .pk-combobox-item > div {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pk-combobox-item > svg { pointer-events: none; flex: none; width: 1rem; height: 1rem; }
+
+/* The real inputs that carry the selection. */
+.pk-combobox-checkbox, .pk-combobox-radio {
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  accent-color: var(--pk-brand);
+}
+.pk-combobox-checkbox { border-radius: .125rem; }
+.pk-combobox-checkbox:disabled, .pk-combobox-radio:disabled { cursor: not-allowed; opacity: .5; }
+.pk-combobox-checkbox:focus-visible, .pk-combobox-radio:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+}
+
+/* Trailing ✓, visible while the row's input is checked. */
+.pk-combobox-item-indicator {
+  margin-left: auto;
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  opacity: 0;
+}
+.pk-combobox-item :checked ~ .pk-combobox-item-indicator { opacity: 1; }
+
+/* Filter empty state. */
+.pk-combobox-empty {
+  padding: 1.5rem 0;
+  text-align: center;
+  font-size: .875rem;
+}

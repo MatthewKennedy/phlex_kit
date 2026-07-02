@@ -1,0 +1,15 @@
+/* Co-located with form.rb — UI::Form. Form-level layout (ruby_ui applies
+   `space-y-*` on the <form>): `.pk-form` stacks fields with rhythm;
+   `.pk-form-actions` lays the submit/cancel row out horizontally. Field-level
+   styles live with form_field.rb. Theme tokens come from the global
+   stylesheet. */
+.pk-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.pk-form-actions {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+}

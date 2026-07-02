@@ -1,0 +1,9 @@
+/* Co-located with chart.rb — UI::Chart (thin wrapper; the host supplies the
+   charting library). The canvas just fills its container — sizing is the chart
+   library's job once the host wires one up. Theme tokens come from the global
+   stylesheet (the controller reads them for chart.js defaults). */
+.pk-chart {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+}

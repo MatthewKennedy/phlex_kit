@@ -1,0 +1,19 @@
+/* Co-located with context_menu.rb. CSS-positioned at the cursor. Tokens global. */
+.pk-context-menu { position: relative; }
+.pk-context-menu-content {
+  position: absolute; z-index: 50; min-width: 8rem; overflow: hidden;
+  border: 1px solid var(--pk-border); border-radius: .375rem; background: var(--pk-surface);
+  color: var(--pk-text); padding: .25rem; box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
+}
+.pk-context-menu-item {
+  position: relative; display: flex; cursor: pointer; user-select: none; align-items: center;
+  border-radius: .125rem; padding: .375rem .5rem .375rem 2rem; font-size: .875rem;
+  color: inherit; text-decoration: none; outline: none;
+}
+.pk-context-menu-item:hover, .pk-context-menu-item:focus { background: var(--pk-surface-2); color: var(--pk-text); }
+.pk-context-menu-item[data-disabled="true"] { pointer-events: none; opacity: .5; }
+.pk-context-menu-check { position: absolute; left: .5rem; display: inline-flex; height: .875rem; width: .875rem; align-items: center; justify-content: center; }
+.pk-context-menu-shortcut { margin-left: auto; font-size: .75rem; letter-spacing: .1em; color: var(--pk-muted); }
+.pk-context-menu-label { padding: .375rem .5rem; font-size: .875rem; font-weight: 600; color: var(--pk-text); }
+.pk-context-menu-label.inset { padding-left: 2rem; }
+.pk-context-menu-separator { height: 1px; margin: .25rem -.25rem; background: var(--pk-border); }

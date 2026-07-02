@@ -1,0 +1,27 @@
+/* Co-located with checkbox.rb — UI::Checkbox. ruby_ui draws a fully custom box
+   with peer/checked Tailwind utilities; we instead let the native control render
+   and tint it with the brand token via accent-color (themes correctly on the
+   dark background, no SVG). Vanilla CSS, our own look, redesign later. Theme
+   tokens come from the global stylesheet. */
+.pk-checkbox {
+  width: 1rem;
+  height: 1rem;
+  border-radius: .25rem;
+  accent-color: var(--pk-brand);
+  cursor: pointer;
+}
+.pk-checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-brand) 40%, transparent);
+}
+.pk-checkbox:disabled { cursor: not-allowed; opacity: .5; }
+
+/* A checkbox paired inline with its label (ruby_ui's `flex items-center
+   space-x-3` row). Used for checkbox lists like store-assignment; vertical
+   rhythm between rows comes from the enclosing UI::FormField's flex gap. */
+.pk-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 400;
+}

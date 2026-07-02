@@ -1,0 +1,30 @@
+/* Co-located with avatar.rb — UI::Avatar (+ Image / Fallback). ruby_ui's Tailwind
+   → vanilla CSS on the palette tokens. The controller toggles `.hidden` between
+   image and fallback. Theme tokens come from the global stylesheet. */
+.pk-avatar {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 999px;
+  height: 2.5rem;
+  width: 2.5rem;
+  font-size: 1rem;
+}
+.pk-avatar.xs { height: 1rem; width: 1rem; font-size: .5rem; }
+.pk-avatar.sm { height: 1.5rem; width: 1.5rem; font-size: .75rem; }
+.pk-avatar.lg { height: 3.5rem; width: 3.5rem; font-size: 1.25rem; }
+.pk-avatar.xl { height: 5rem; width: 5rem; font-size: 1.875rem; }
+
+.pk-avatar-image { aspect-ratio: 1 / 1; height: 100%; width: 100%; object-fit: cover; }
+.pk-avatar-fallback {
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--pk-surface-2);
+  font-weight: 600;
+}
+.pk-avatar-image.hidden, .pk-avatar-fallback.hidden { display: none; }

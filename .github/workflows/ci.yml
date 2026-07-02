@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ["3.2", "3.3", "3.4"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+      - name: Lint
+        run: bundle exec rubocop || true
+      - name: Test
+        run: bundle exec rake test
+      - name: Build gem (asserts assets are packaged)
+        run: |
+          gem build phlex_kit.gemspec
+          tar -tzf phlex_kit-*.gem | tar -xzO data.tar.gz | tar -tz | grep -q "app/components/phlex_kit/badge/badge.css"

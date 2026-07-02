@@ -1,0 +1,25 @@
+/* Co-located with empty.rb. Theme tokens from the global stylesheet. */
+.pk-empty {
+  display: flex; width: 100%; min-width: 0; flex: 1; flex-direction: column;
+  align-items: center; justify-content: center; gap: 1rem;
+  border: 1px dashed var(--pk-border); border-radius: 1.5rem;
+  padding: 3rem; text-align: center;
+}
+.pk-empty-header { display: flex; max-width: 24rem; flex-direction: column; align-items: center; gap: .5rem; }
+.pk-empty-media {
+  margin-bottom: .5rem; display: flex; flex: none;
+  align-items: center; justify-content: center;
+}
+.pk-empty-media.icon {
+  height: 2.5rem; width: 2.5rem; border-radius: .75rem;
+  background: var(--pk-surface-2); color: var(--pk-text);
+}
+.pk-empty-media.icon > svg:not([class*="size-"]) { width: 1.25rem; height: 1.25rem; }
+.pk-empty-title { font-size: 1.125rem; font-weight: 500; letter-spacing: -.01em; }
+.pk-empty-description { font-size: .875rem; line-height: 1.625; color: var(--pk-muted); }
+.pk-empty-description a { text-decoration: underline; text-underline-offset: 4px; }
+.pk-empty-description a:hover { color: var(--pk-brand); }
+.pk-empty-content {
+  display: flex; width: 100%; max-width: 24rem; min-width: 0;
+  flex-direction: column; align-items: center; gap: 1rem; font-size: .875rem;
+}

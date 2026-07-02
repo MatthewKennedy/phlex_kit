@@ -1,0 +1,20 @@
+/* Co-located with message.rb. Theme tokens from the global stylesheet. */
+.pk-message {
+  position: relative; display: flex; width: 100%; min-width: 0;
+  gap: .5rem; font-size: .875rem;
+}
+.pk-message[data-align="end"] { flex-direction: row-reverse; }
+.pk-message-content { display: flex; width: 100%; min-width: 0; flex-direction: column; gap: .625rem; overflow-wrap: break-word; }
+.pk-message[data-align="end"] .pk-message-content > [data-slot] { align-self: flex-end; }
+.pk-message-group { display: flex; min-width: 0; flex-direction: column; gap: .5rem; }
+.pk-message-header,
+.pk-message-footer {
+  display: flex; max-width: 100%; min-width: 0; align-items: center;
+  padding-inline: .75rem; font-size: .75rem; font-weight: 500; color: var(--pk-muted);
+}
+.pk-message[data-align="end"] .pk-message-footer { justify-content: flex-end; }
+.pk-message-avatar {
+  display: flex; width: fit-content; min-width: 2rem; flex: none;
+  align-items: center; justify-content: center; align-self: flex-end;
+  overflow: hidden; border-radius: 9999px; background: var(--pk-surface-2);
+}

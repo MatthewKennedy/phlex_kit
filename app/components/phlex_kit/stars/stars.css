@@ -1,0 +1,4 @@
+/* Co-located with stars.rb — UI::Stars. The gold rating glyphs; self-colours so
+   product cards / summaries get amber stars too (the old `.review .stars` rule
+   only coloured stars inside a review). Theme tokens come from the global stylesheet. */
+.pk-stars { color: var(--pk-amber); letter-spacing: 1px; }

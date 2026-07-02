@@ -1,0 +1,28 @@
+/* Co-located with switch.rb. Theme tokens from the global stylesheet. */
+.pk-switch {
+  display: inline-flex;
+  height: 1.5rem;
+  width: 2.75rem;
+  flex: none;
+  cursor: pointer;
+  align-items: center;
+  border: 2px solid transparent;
+  border-radius: 9999px;
+  background: var(--pk-border);
+  transition: background-color .15s ease;
+}
+.pk-switch:has(.pk-switch-input:checked) { background: var(--pk-brand); }
+.pk-switch:has(.pk-switch-input:disabled) { cursor: not-allowed; opacity: .5; }
+.pk-switch-input { display: none; }
+.pk-switch-thumb {
+  pointer-events: none;
+  display: block;
+  height: 1.25rem;
+  width: 1.25rem;
+  border-radius: 9999px;
+  background: var(--pk-surface);
+  box-shadow: 0 1px 3px rgb(0 0 0 / .3);
+  transition: transform .15s ease;
+  transform: translateX(0);
+}
+.pk-switch:has(.pk-switch-input:checked) .pk-switch-thumb { transform: translateX(1.25rem); }

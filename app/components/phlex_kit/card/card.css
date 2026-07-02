@@ -1,0 +1,15 @@
+/* Co-located with card.rb — the UI::Card container kit (Card + Header / Title /
+   Description / Content / Footer). Namespaced .pk-card* to avoid colliding with
+   the dashboard stat-tile .card in application.css. Theme tokens come from the
+   global stylesheet; translated from ruby_ui's Tailwind:
+     rounded-xl border bg-background shadow  → border + radius + surface
+     flex flex-col space-y-1.5 p-6           → header column + gap + pad
+     font-semibold leading-none tracking-tight → title
+     text-sm text-muted-foreground           → description
+     p-6 pt-0 / items-center p-6 pt-0         → content / footer (top pad sits in header) */
+.pk-card { background: var(--pk-surface); border: 1px solid var(--pk-border); border-radius: .75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); }
+.pk-card-header { display: flex; flex-direction: column; gap: .375rem; padding: 1.5rem; }
+.pk-card-title { margin: 0; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; }
+.pk-card-description { margin: 0; font-size: .85rem; color: var(--pk-muted); }
+.pk-card-content { padding: 0 1.5rem 1.5rem; }
+.pk-card-footer { display: flex; align-items: center; gap: .5rem; padding: 0 1.5rem 1.5rem; }
