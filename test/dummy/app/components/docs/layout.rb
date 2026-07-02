@@ -80,6 +80,9 @@ module Docs
         .docs-demo-code pre { max-height: 28rem; overflow: auto; margin: 0; }
         .stack { display: flex; flex-direction: column; gap: .75rem; }
         .row { display: flex; align-items: center; gap: .5rem; }
+        .docs-slide { display: flex; align-items: center; justify-content: center; height: 130px;
+                      border: 1px solid var(--pk-border); border-radius: var(--pk-radius);
+                      font-size: 2rem; font-weight: 600; }
         .w-sm { width: 300px; max-width: 100%; } .w-md { width: 380px; max-width: 100%; } .w-lg { width: 560px; max-width: 100%; }
       CSS
     end
