@@ -18,8 +18,9 @@ every one ported to Phlex + co-located vanilla CSS + `--pk-*` tokens.
   `fuse.js` → substring filter (command); `mustache` → tiny {{key}} interpolator
   (calendar); `chart.js` → not bundled (thin wrapper: uses `window.Chart` if the host
   ships it, else dispatches `phlex-kit--chart:connect` with `{ canvas, options }`).
-- Not ported (unfinished upstream): combobox's input/badge trigger variants — their
-  controller actions don't exist in ruby_ui's own combobox controller.
+- Combobox's input/badge trigger variants shipped unfinished upstream (no controller
+  support in ruby_ui itself); PhlexKit completes them — open-on-focus filtering,
+  removable selection chips, backspace removal, clear-all, field-level keyboard nav.
 
 See `docs/` for the feasibility report, PRD, and spec.
 

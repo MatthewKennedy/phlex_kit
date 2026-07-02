@@ -2,8 +2,8 @@ module PhlexKit
   # Carousel, ported from ruby_ui's RubyUI::Carousel. Upstream drives an
   # embla-carousel instance; that npm dependency is dropped — the
   # phlex-kit--carousel controller is a small translate-based engine (loop,
-  # x/y axis from the options value, arrow keys, button disabled state), so only
-  # @hotwired/stimulus is needed. Compose Carousel(orientation:) >
+  # x/y axis from the options value, arrow keys, pointer drag/swipe, button
+  # disabled state), so only @hotwired/stimulus is needed. Compose Carousel(orientation:) >
   # CarouselContent > CarouselItem(s), plus CarouselPrevious / CarouselNext.
   # Tailwind → vanilla `.pk-carousel*` (carousel.css).
   class Carousel < BaseComponent

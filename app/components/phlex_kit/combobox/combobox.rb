@@ -5,11 +5,13 @@ module PhlexKit
   # toggle-all live in the phlex-kit--combobox controller. Like PhlexKit::Select, the
   # @floating-ui/dom + native-popover positioning is replaced with CSS (panel
   # anchored below the trigger, click-outside via window action). Compose
-  # Combobox(term:) > Trigger + Popover(SearchInput + List(ListGroup >
+  # Combobox(term:) > trigger + Popover(SearchInput + List(ListGroup >
   # Item(Checkbox|Radio + text + ItemIndicator)) + EmptyState [+
-  # ToggleAllCheckbox]). ruby_ui's unreleased input/badge trigger variants
-  # (no controller support upstream) are deliberately not ported. Tailwind →
-  # vanilla `.pk-combobox*` (combobox.css).
+  # ToggleAllCheckbox]). Three trigger flavours: ComboboxTrigger (button +
+  # popover search), ComboboxInputTrigger (the field is the filter), and
+  # ComboboxBadgeTrigger (multi-select chips + ComboboxClearButton) — the
+  # latter two shipped unfinished in ruby_ui (no controller support) and are
+  # completed here. Tailwind → vanilla `.pk-combobox*` (combobox.css).
   class Combobox < BaseComponent
     def initialize(term: nil, **attrs)
       @term = term

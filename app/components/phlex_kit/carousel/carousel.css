@@ -4,7 +4,12 @@
    controller and transitions here. Geometry from ruby_ui (1rem slide gap, 2rem
    round edge buttons at -3rem). Theme tokens come from the global stylesheet. */
 .pk-carousel { position: relative; }
-.pk-carousel-viewport { overflow: hidden; }
+.pk-carousel-viewport { overflow: hidden; cursor: grab; }
+.pk-carousel-viewport.dragging { cursor: grabbing; user-select: none; }
+/* Let the free axis keep scrolling the page on touch. */
+.pk-carousel.is-horizontal .pk-carousel-viewport { touch-action: pan-y; }
+.pk-carousel.is-vertical .pk-carousel-viewport { touch-action: pan-x; }
+.pk-carousel-item img { -webkit-user-drag: none; }
 
 .pk-carousel-track {
   display: flex;

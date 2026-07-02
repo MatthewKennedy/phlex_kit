@@ -117,9 +117,9 @@ All §7 dependency decisions held: no `@floating-ui` (CSS positioning), no bundl
 charting lib (`chart` is a thin wrapper — `window.Chart` if the host ships it, else a
 `phlex-kit--chart:connect` event), no `rouge`, no `maska`; additionally
 `embla-carousel`, `fuse.js` and `mustache` were replaced with small vanilla
-equivalents in the ported controllers. One deliberate omission: combobox's
-input/badge trigger variants are unfinished upstream (their controller actions don't
-exist in ruby_ui's own controller) and were not ported.
+equivalents in the ported controllers. Combobox's input/badge trigger variants —
+unfinished upstream (their controller actions don't exist in ruby_ui's own
+controller) — were completed by PhlexKit rather than skipped.
 
 ## 10. Open questions
 

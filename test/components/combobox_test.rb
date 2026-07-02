@@ -58,4 +58,36 @@ class ComboboxTest < Minitest::Test
     assert_includes html, "pk-combobox-empty pk-hidden"
     assert_includes html, %(data-phlex-kit--combobox-target="emptyState")
   end
+
+  def test_input_trigger_filters_and_navigates_from_the_field
+    html = render(PhlexKit::ComboboxInputTrigger.new(placeholder: "Pick a fruit"))
+    assert_includes html, %(data-phlex-kit--combobox-target="trigger")
+    assert_includes html, %(data-phlex-kit--combobox-target="inputTrigger")
+    assert_includes html, "focusin->phlex-kit--combobox#openPopover"
+    assert_includes html, "input->phlex-kit--combobox#filterItems"
+    assert_includes html, "keydown.down->phlex-kit--combobox#keyDownPressed"
+    assert_includes html, "keydown.esc->phlex-kit--combobox#closePopover:prevent"
+    assert_includes html, %(placeholder="Pick a fruit")
+  end
+
+  def test_badge_trigger_renders_container_input_and_backspace
+    html = render(PhlexKit::ComboboxBadgeTrigger.new(placeholder: "Add tags"))
+    assert_includes html, "pk-combobox-badge-container pk-hidden"
+    assert_includes html, %(data-phlex-kit--combobox-target="badgeContainer")
+    assert_includes html, %(data-phlex-kit--combobox-target="badgeInput")
+    assert_includes html, "keydown.backspace->phlex-kit--combobox#handleBadgeInputBackspace"
+    refute_includes html, "pk-combobox-clear-button"
+  end
+
+  def test_badge_trigger_with_clear_button
+    html = render(PhlexKit::ComboboxBadgeTrigger.new(clear_button: true))
+    assert_includes html, "pk-combobox-clear-button pk-hidden"
+    assert_includes html, %(data-phlex-kit--combobox-target="clearButton")
+    assert_includes html, "phlex-kit--combobox#clearAll"
+    assert_includes html, %(aria-label="Clear selection")
+  end
+
+  def test_badge_is_a_chip
+    assert_includes render(PhlexKit::ComboboxBadge.new { "ruby" }), "pk-combobox-badge"
+  end
 end

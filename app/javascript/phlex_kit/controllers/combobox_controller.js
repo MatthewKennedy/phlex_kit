@@ -4,8 +4,12 @@ import { Controller } from "@hotwired/stimulus";
 // @floating-ui/dom dependency and the native Popover API are removed — the panel
 // is a CSS-positioned child of the combobox (.pk-combobox-popover, toggled with
 // .pk-hidden) with click-outside handled by a window action, so only
-// @hotwired/stimulus is needed. Everything else (trigger label, filtering,
-// keyboard nav, toggle-all) is unchanged.
+// @hotwired/stimulus is needed. PhlexKit also COMPLETES upstream's unfinished
+// input/badge trigger variants: the inputTrigger / badgeContainer / badgeInput /
+// clearButton targets, filtering from whichever field fired, chip rendering
+// with per-chip remove, backspace removal, and clearAll all had no upstream
+// implementation. Core behaviour (trigger label, filtering, keyboard nav,
+// toggle-all) is unchanged.
 // Connects to data-controller="phlex-kit--combobox"
 export default class extends Controller {
   static values = {
@@ -21,7 +25,11 @@ export default class extends Controller {
     "emptyState",
     "searchInput",
     "trigger",
-    "triggerContent"
+    "triggerContent",
+    "inputTrigger",
+    "badgeContainer",
+    "badgeInput",
+    "clearButton"
   ]
 
   selectedItemIndex = null
@@ -40,10 +48,27 @@ export default class extends Controller {
     if (this.hasToggleAllTarget && !e.target.checked) {
       this.toggleAllTarget.checked = false
     }
+
+    // Selecting from a chip trigger consumes the query: clear it and reshow
+    // the full list for the next pick.
+    if (this.hasBadgeInputTarget && this.badgeInputTarget.value !== "") {
+      this.badgeInputTarget.value = ""
+      this.applyFilter("")
+    }
   }
 
   inputContent(input) {
-    return input.dataset.text || input.parentElement.textContent
+    return (input.dataset.text || input.parentElement.textContent).trim()
+  }
+
+  checkedInputs() {
+    return this.inputTargets.filter(input => input.checked)
+  }
+
+  selectionLabel(checkedInputs) {
+    if (checkedInputs.length === 0) return ""
+    if (this.termValue && checkedInputs.length > 1) return `${checkedInputs.length} ${this.termValue}`
+    return checkedInputs.map((input) => this.inputContent(input)).join(", ")
   }
 
   toggleAllItems() {
@@ -53,15 +78,81 @@ export default class extends Controller {
   }
 
   updateTriggerContent() {
-    const checkedInputs = this.inputTargets.filter(input => input.checked)
+    const checked = this.checkedInputs()
 
-    if (checkedInputs.length === 0) {
-      this.triggerContentTarget.innerText = this.triggerTarget.dataset.placeholder
-    } else if (this.termValue && checkedInputs.length > 1) {
-      this.triggerContentTarget.innerText = `${checkedInputs.length} ${this.termValue}`
-    } else {
-      this.triggerContentTarget.innerText = checkedInputs.map((input) => this.inputContent(input)).join(", ")
+    if (this.hasTriggerContentTarget) {
+      this.triggerContentTarget.innerText = this.selectionLabel(checked) || this.triggerTarget.dataset.placeholder
     }
+
+    // Input trigger: the field is also the filter, so only reflect the
+    // selection while the popover is closed — never stomp a query mid-typing.
+    if (this.hasInputTriggerTarget && this.triggerTarget.ariaExpanded !== "true") {
+      this.inputTriggerTarget.value = this.selectionLabel(checked)
+    }
+
+    if (this.hasBadgeContainerTarget) {
+      this.renderBadges(checked)
+    }
+
+    if (this.hasClearButtonTarget) {
+      this.clearButtonTarget.classList.toggle("pk-hidden", checked.length === 0)
+    }
+  }
+
+  renderBadges(checked) {
+    this.badgeContainerTarget.replaceChildren(...checked.map((input) => this.buildBadge(input)))
+    this.badgeContainerTarget.classList.toggle("pk-hidden", checked.length === 0)
+    this.triggerTarget.classList.toggle("has-badges", checked.length > 0)
+    if (this.hasBadgeInputTarget) {
+      this.badgeInputTarget.placeholder = checked.length === 0 ? (this.triggerTarget.dataset.placeholder || "") : ""
+    }
+  }
+
+  buildBadge(input) {
+    const text = this.inputContent(input)
+    const badge = document.createElement("span")
+    badge.className = "pk-combobox-badge"
+    badge.append(text)
+
+    const remove = document.createElement("button")
+    remove.type = "button"
+    remove.className = "pk-combobox-badge-remove"
+    remove.setAttribute("aria-label", `Remove ${text}`)
+    remove.textContent = "×"
+    remove.addEventListener("click", (e) => {
+      e.stopPropagation() // don't reopen the popover via the trigger's click action
+      this.uncheck(input)
+    })
+
+    badge.append(remove)
+    return badge
+  }
+
+  uncheck(input) {
+    input.checked = false
+    input.dispatchEvent(new Event("change", { bubbles: true })) // form-field & host listeners
+    this.updateTriggerContent()
+  }
+
+  handleBadgeInputBackspace(e) {
+    if (this.badgeInputTarget.value !== "") return
+
+    const checked = this.checkedInputs()
+    const last = checked[checked.length - 1]
+    if (!last) return
+
+    e.preventDefault()
+    this.uncheck(last)
+  }
+
+  clearAll(e) {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation() // the button sits inside the trigger's click-to-open area
+    }
+    this.inputTargets.forEach(input => input.checked = false)
+    if (this.hasToggleAllTarget) this.toggleAllTarget.checked = false
+    this.updateTriggerContent()
   }
 
   togglePopover(event) {
@@ -76,18 +167,27 @@ export default class extends Controller {
 
   openPopover(event) {
     if (event) event.preventDefault()
+    if (this.triggerTarget.ariaExpanded === "true") return
 
     this.updatePopoverWidth()
     this.triggerTarget.ariaExpanded = "true"
     this.selectedItemIndex = null
     this.itemTargets.forEach(item => item.ariaCurrent = "false")
     this.popoverTarget.classList.remove("pk-hidden")
-    if (this.hasSearchInputTarget) this.searchInputTarget.focus()
+
+    const field = this.filterField()
+    if (field) {
+      field.focus()
+      // In the input trigger the field holds the last selection — select it so
+      // typing starts a fresh query.
+      if (field === (this.hasInputTriggerTarget ? this.inputTriggerTarget : null)) field.select()
+    }
   }
 
   closePopover() {
     this.triggerTarget.ariaExpanded = "false"
     this.popoverTarget.classList.add("pk-hidden")
+    this.updateTriggerContent() // reflect the selection into an input trigger
   }
 
   onClickOutside(event) {
@@ -97,13 +197,27 @@ export default class extends Controller {
     this.closePopover()
   }
 
+  // Whichever filter field this layout has: popover search, input trigger, or
+  // badge trigger field.
+  filterField() {
+    if (this.hasSearchInputTarget) return this.searchInputTarget
+    if (this.hasInputTriggerTarget) return this.inputTriggerTarget
+    if (this.hasBadgeInputTarget) return this.badgeInputTarget
+    return null
+  }
+
   filterItems(e) {
     if (["ArrowDown", "ArrowUp", "Tab", "Enter"].includes(e.key)) {
       return
     }
 
-    const filterTerm = this.searchInputTarget.value.toLowerCase()
+    const field = (e.target instanceof HTMLInputElement) ? e.target : this.filterField()
+    if (!field) return
 
+    this.applyFilter(field.value.toLowerCase())
+  }
+
+  applyFilter(filterTerm) {
     if (this.hasToggleAllTarget) {
       if (filterTerm) this.toggleAllTarget.parentElement.classList.add("pk-hidden")
       else this.toggleAllTarget.parentElement.classList.remove("pk-hidden")
@@ -124,10 +238,14 @@ export default class extends Controller {
       }
     })
 
-    this.emptyStateTarget.classList.toggle("pk-hidden", resultCount !== 0)
+    if (this.hasEmptyStateTarget) {
+      this.emptyStateTarget.classList.toggle("pk-hidden", resultCount !== 0)
+    }
   }
 
-  keyDownPressed() {
+  keyDownPressed(e) {
+    if (e) e.preventDefault()
+
     if (this.selectedItemIndex !== null) {
       this.selectedItemIndex++
     } else {
@@ -137,7 +255,9 @@ export default class extends Controller {
     this.focusSelectedInput()
   }
 
-  keyUpPressed() {
+  keyUpPressed(e) {
+    if (e) e.preventDefault()
+
     if (this.selectedItemIndex !== null) {
       this.selectedItemIndex--
     } else {
@@ -149,6 +269,7 @@ export default class extends Controller {
 
   focusSelectedInput() {
     const visibleInputs = this.inputTargets.filter(input => !input.parentElement.classList.contains("pk-hidden"))
+    if (visibleInputs.length === 0) return
 
     this.wrapSelectedInputIndex(visibleInputs.length)
 

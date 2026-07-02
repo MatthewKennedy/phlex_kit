@@ -5,11 +5,18 @@ const DEFAULT_OPTIONS = {
   axis: "x",
 };
 
+// How far (fraction of a slide) or how fast (px/ms) a drag must travel to
+// advance instead of snapping back — tuned to embla's feel.
+const DRAG_DISTANCE_THRESHOLD = 0.25;
+const DRAG_VELOCITY_THRESHOLD = 0.5;
+
 // Ported from ruby_ui's carousel controller with the embla-carousel dependency
 // removed: a minimal translate-based engine (scrollNext/scrollPrev, loop, x/y
 // axis from the options value) moves the track directly, so only
 // @hotwired/stimulus is needed. Button disabled state mirrors embla's
-// canScrollNext/canScrollPrev.
+// canScrollNext/canScrollPrev, and pointer drag/swipe (threshold + velocity,
+// rubber-band at the ends when not looping, click suppression after a drag)
+// replaces embla's gesture engine.
 export default class extends Controller {
   static values = {
     options: {
@@ -22,13 +29,23 @@ export default class extends Controller {
   connect() {
     this.index = 0;
     this.track = this.viewportTarget.firstElementChild;
+    this.drag = null;
+    this.suppressClick = false;
     this._onResize = () => this._applyTransform();
+    this._onPointerDown = this._onPointerDown.bind(this);
+    this._onPointerMove = this._onPointerMove.bind(this);
+    this._onPointerUp = this._onPointerUp.bind(this);
+    this._onClickCapture = this._onClickCapture.bind(this);
     window.addEventListener("resize", this._onResize);
+    this.viewportTarget.addEventListener("pointerdown", this._onPointerDown);
+    this.viewportTarget.addEventListener("click", this._onClickCapture, true);
     this._update();
   }
 
   disconnect() {
     window.removeEventListener("resize", this._onResize);
+    this.viewportTarget.removeEventListener("pointerdown", this._onPointerDown);
+    this.viewportTarget.removeEventListener("click", this._onClickCapture, true);
   }
 
   scrollNext() {
@@ -69,13 +86,104 @@ export default class extends Controller {
   }
 
   _applyTransform() {
-    const slide = this.slides[this.index];
-    const first = this.slides[0];
-    if (!slide || !first || !this.track) return;
-    if (this.options.axis === "y") {
-      this.track.style.transform = `translate3d(0, ${-(slide.offsetTop - first.offsetTop)}px, 0)`;
-    } else {
-      this.track.style.transform = `translate3d(${-(slide.offsetLeft - first.offsetLeft)}px, 0, 0)`;
+    if (!this.slides[this.index]) return;
+    this._translateTo(this._offsetOf(this.index));
+  }
+
+  // --- drag/swipe ---
+
+  _onPointerDown(e) {
+    if (e.button !== 0 || this.slides.length < 2) return;
+    this.suppressClick = false;
+    this.drag = {
+      start: this._pointerPos(e),
+      startedAt: performance.now(),
+      offset: this._offsetOf(this.index),
+      delta: 0,
+      moved: false,
+    };
+    try { this.viewportTarget.setPointerCapture(e.pointerId); } catch {}
+    this.viewportTarget.addEventListener("pointermove", this._onPointerMove);
+    this.viewportTarget.addEventListener("pointerup", this._onPointerUp);
+    this.viewportTarget.addEventListener("pointercancel", this._onPointerUp);
+  }
+
+  _onPointerMove(e) {
+    const drag = this.drag;
+    if (!drag) return;
+    drag.delta = this._pointerPos(e) - drag.start;
+    if (!drag.moved && Math.abs(drag.delta) > 5) {
+      drag.moved = true;
+      this.track.style.transition = "none";
+      this.viewportTarget.classList.add("dragging");
     }
+    if (!drag.moved) return;
+
+    let offset = drag.offset - drag.delta;
+    if (!this.options.loop) {
+      // rubber-band past the ends
+      const max = this._offsetOf(this.slides.length - 1);
+      if (offset < 0) offset = offset / 3;
+      if (offset > max) offset = max + (offset - max) / 3;
+    }
+    this._translateTo(offset);
+  }
+
+  _onPointerUp() {
+    const drag = this.drag;
+    this.drag = null;
+    this.viewportTarget.removeEventListener("pointermove", this._onPointerMove);
+    this.viewportTarget.removeEventListener("pointerup", this._onPointerUp);
+    this.viewportTarget.removeEventListener("pointercancel", this._onPointerUp);
+    if (!drag || !drag.moved) return;
+
+    this.track.style.transition = "";
+    this.viewportTarget.classList.remove("dragging");
+    this.suppressClick = true; // a drag must not activate links in the slide
+
+    const elapsed = Math.max(performance.now() - drag.startedAt, 1);
+    const velocity = Math.abs(drag.delta) / elapsed;
+    const passed = Math.abs(drag.delta) > this._slideSize() * DRAG_DISTANCE_THRESHOLD
+      || velocity > DRAG_VELOCITY_THRESHOLD;
+
+    if (passed) {
+      drag.delta < 0 ? this.scrollNext() : this.scrollPrev();
+    } else {
+      this._applyTransform(); // snap back
+    }
+  }
+
+  _onClickCapture(e) {
+    if (!this.suppressClick) return;
+    this.suppressClick = false;
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  // --- geometry ---
+
+  _pointerPos(e) {
+    return this.options.axis === "y" ? e.clientY : e.clientX;
+  }
+
+  _offsetOf(index) {
+    const slide = this.slides[index];
+    const first = this.slides[0];
+    if (!slide || !first) return 0;
+    return this.options.axis === "y"
+      ? slide.offsetTop - first.offsetTop
+      : slide.offsetLeft - first.offsetLeft;
+  }
+
+  _slideSize() {
+    const slide = this.slides[this.index];
+    if (!slide) return 1;
+    return (this.options.axis === "y" ? slide.offsetHeight : slide.offsetWidth) || 1;
+  }
+
+  _translateTo(offset) {
+    this.track.style.transform = this.options.axis === "y"
+      ? `translate3d(0, ${-offset}px, 0)`
+      : `translate3d(${-offset}px, 0, 0)`;
   }
 }
