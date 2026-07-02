@@ -81,4 +81,35 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes content, %(role="dialog")
     assert_includes render(PhlexKit::DrawerTrigger.new { "t" }), "click->phlex-kit--sheet#open"
   end
+
+  def test_resizable_group_direction_fails_loud
+    html = render(PhlexKit::ResizablePanelGroup.new { "x" })
+    assert_includes html, "phlex-kit--resizable"
+    assert_includes html, "pk-resizable-group horizontal"
+    assert_raises(KeyError) { render(PhlexKit::ResizablePanelGroup.new(direction: :diagonal) { "x" }) }
+    assert_includes render(PhlexKit::ResizablePanel.new(default_size: 25) { "x" }), "flex-grow: 25"
+    assert_includes render(PhlexKit::ResizableHandle.new), "pointerdown->phlex-kit--resizable#start"
+  end
+
+  def test_menubar_wiring
+    assert_includes render(PhlexKit::Menubar.new { "x" }), %(role="menubar")
+    assert_includes render(PhlexKit::MenubarMenu.new { "x" }), %(data-phlex-kit--menubar-target="menu")
+    trigger = render(PhlexKit::MenubarTrigger.new { "File" })
+    assert_includes trigger, "click->phlex-kit--menubar#toggle"
+    assert_includes trigger, "mouseenter->phlex-kit--menubar#switch"
+    assert_includes render(PhlexKit::MenubarContent.new { "x" }), "pk-menubar-content pk-hidden"
+    item = render(PhlexKit::MenubarItem.new(shortcut: "⌘T") { "New Tab" })
+    assert_includes item, "pk-menubar-shortcut"
+    assert_includes item, "click->phlex-kit--menubar#close"
+  end
+
+  def test_navigation_menu_hover_mode
+    html = render(PhlexKit::NavigationMenu.new { "x" })
+    assert_includes html, "phlex-kit--menubar"
+    assert_includes html, "data-hover-open"
+    assert_includes html, "mouseleave->phlex-kit--menubar#close"
+    assert_includes render(PhlexKit::NavigationMenuItem.new { "x" }), %(data-phlex-kit--menubar-target="menu")
+    assert_includes render(PhlexKit::NavigationMenuContent.new { "x" }), "pk-navigation-menu-content pk-hidden"
+    assert_includes render(PhlexKit::NavigationMenuLink.new(href: "/docs") { "Docs" }), %(href="/docs")
+  end
 end

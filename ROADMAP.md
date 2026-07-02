@@ -3,7 +3,13 @@
 Target: parity with the full [ruby_ui](https://ruby-ui.com) catalog (53 components),
 every one ported to Phlex + co-located vanilla CSS + `--pk-*` tokens.
 
-**Status: 53 / 53 ported — full ruby_ui parity, all render-tested (102 tests, 722 assertions green).**
+**Status: full ruby_ui parity (53/53) PLUS the shadcn/ui-only components — 69 component
+folders, all render-tested (121 tests, 1184 assertions green).** Default theme now
+mirrors ui.shadcn.com's live token system verbatim (neutral palette, accent/input/ring
+tokens, derived radii, --pk-chart-1..5) with control geometry verified numerically
+against the live site. shadcn additions beyond ruby_ui: spinner, kbd, label,
+button_group, item, input_group, radio_group, scroll_area, slider, input_otp, drawer
+(on the sheet machinery), menubar, navigation_menu (shared controller), resizable.
 - Wave 1 (pure style): skeleton, shortcut_key, switch, radio_button, breadcrumb, empty, bubble, message.
 - Wave 2 (Stimulus, self-contained): accordion, collapsible, tabs, toggle, toggle_group.
 - Wave 3 (overlays): dialog, sheet, popover, hover_card, context_menu.

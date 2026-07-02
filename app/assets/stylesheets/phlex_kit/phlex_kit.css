@@ -49,14 +49,17 @@
 @import url("kbd/kbd.css");
 @import url("label/label.css");
 @import url("link/link.css");
+@import url("menubar/menubar.css");
 @import url("message/message.css");
 @import url("message_scroller/message_scroller.css");
 @import url("native_select/native_select.css");
+@import url("navigation_menu/navigation_menu.css");
 @import url("pagination/pagination.css");
 @import url("popover/popover.css");
 @import url("progress/progress.css");
 @import url("radio_button/radio_button.css");
 @import url("radio_group/radio_group.css");
+@import url("resizable/resizable.css");
 @import url("scroll_area/scroll_area.css");
 @import url("select/select.css");
 @import url("separator/separator.css");

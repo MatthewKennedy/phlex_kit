@@ -84,11 +84,12 @@ module Gallery
             sidebar_demo
             shadcn_additions_demo
             slider_otp_drawer_demo
+            menubar_nav_resizable_demo
             toast_demo
           end
           # Mounted once, at the end of <body>: receives both the server flash
           # below and the client spawns from the Toast section's buttons.
-          render PhlexKit::ToastRegion.new(close_button: true, flash: { "notice" => "Gallery loaded — 53/53 components" })
+          render PhlexKit::ToastRegion.new(close_button: true, flash: { "notice" => "Gallery loaded — every component rendered" })
         end
       end
     end
@@ -972,6 +973,54 @@ module Gallery
               render PhlexKit::DrawerClose.new do
                 render PhlexKit::Button.new { "Done" }
               end
+            end
+          end
+        end
+      end
+    end
+
+    def menubar_nav_resizable_demo
+      demo("Menubar + NavigationMenu + Resizable") do
+        render PhlexKit::Menubar.new do
+          render PhlexKit::MenubarMenu.new do
+            render PhlexKit::MenubarTrigger.new { "File" }
+            render PhlexKit::MenubarContent.new do
+              render PhlexKit::MenubarItem.new(shortcut: "⌘T") { "New Tab" }
+              render PhlexKit::MenubarItem.new { "New Window" }
+              render PhlexKit::MenubarSeparator.new
+              render PhlexKit::MenubarItem.new { "Print…" }
+            end
+          end
+          render PhlexKit::MenubarMenu.new do
+            render PhlexKit::MenubarTrigger.new { "Edit" }
+            render PhlexKit::MenubarContent.new do
+              render PhlexKit::MenubarItem.new(shortcut: "⌘Z") { "Undo" }
+              render PhlexKit::MenubarItem.new(shortcut: "⇧⌘Z") { "Redo" }
+            end
+          end
+        end
+        render PhlexKit::NavigationMenu.new do
+          render PhlexKit::NavigationMenuList.new do
+            render PhlexKit::NavigationMenuItem.new do
+              render PhlexKit::NavigationMenuTrigger.new { "Getting started" }
+              render PhlexKit::NavigationMenuContent.new do
+                render PhlexKit::NavigationMenuLink.new(href: "#") { "Installation" }
+                render PhlexKit::NavigationMenuLink.new(href: "#") { "Theming" }
+              end
+            end
+            render PhlexKit::NavigationMenuItem.new do
+              render PhlexKit::NavigationMenuLink.new(href: "#") { "Docs" }
+            end
+          end
+        end
+        div(class: "w-lg", style: "height: 140px") do
+          render PhlexKit::ResizablePanelGroup.new(class: "resizable-frame") do
+            render PhlexKit::ResizablePanel.new do
+              div(class: "boxed", style: "height:100%") { "One" }
+            end
+            render PhlexKit::ResizableHandle.new
+            render PhlexKit::ResizablePanel.new(default_size: 2) do
+              div(class: "boxed", style: "height:100%") { "Two (drag the divider)" }
             end
           end
         end

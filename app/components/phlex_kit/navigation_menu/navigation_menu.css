@@ -1,0 +1,56 @@
+/* Co-located with navigation_menu.rb — UI::NavigationMenu, shadcn parity
+   (Radix replaced by the shared phlex-kit--menubar controller, hover mode). */
+.pk-navigation-menu { position: relative; display: flex; }
+.pk-navigation-menu-list {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.pk-navigation-menu-item { position: relative; }
+.pk-navigation-menu-trigger, .pk-navigation-menu-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .25rem;
+  height: 2.25rem;
+  border: 0;
+  border-radius: calc(var(--pk-radius) - 2px);
+  background: transparent;
+  color: var(--pk-text);
+  padding: .5rem .75rem;
+  font: inherit;
+  font-size: .875rem;
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  transition: background-color .15s ease;
+}
+.pk-navigation-menu-trigger:hover, .pk-navigation-menu-link:hover,
+.pk-navigation-menu-trigger[aria-expanded="true"] { background: var(--pk-accent); }
+.pk-navigation-menu-chevron { width: .75rem; height: .75rem; transition: transform .2s ease; }
+.pk-navigation-menu-trigger[aria-expanded="true"] .pk-navigation-menu-chevron { transform: rotate(180deg); }
+.pk-navigation-menu-content {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 50;
+  min-width: 16rem;
+  margin-top: .375rem;
+  border: 1px solid var(--pk-border);
+  border-radius: var(--pk-radius);
+  background: var(--pk-surface);
+  color: var(--pk-text);
+  padding: .5rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / .3);
+}
+.pk-navigation-menu-content .pk-navigation-menu-link {
+  display: flex;
+  height: auto;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: .25rem;
+}
