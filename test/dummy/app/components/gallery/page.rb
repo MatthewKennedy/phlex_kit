@@ -690,7 +690,7 @@ module Gallery
               render PhlexKit::MessageContent.new do
                 render PhlexKit::MessageHeader.new { "Alice" }
                 render PhlexKit::BubbleGroup.new do
-                  render PhlexKit::Bubble.new do
+                  render PhlexKit::Bubble.new(variant: :secondary) do
                     render PhlexKit::BubbleContent.new { "Hey — did the port land?" }
                   end
                 end
@@ -715,11 +715,15 @@ module Gallery
       demo("MessageScroller", note: "Pinned to bottom; scroll up to unpin.") do
         div(class: "scroller-frame w-lg") do
           render PhlexKit::MessageScroller.new do
-            12.times do |i|
-              render PhlexKit::Message.new(align: i.even? ? :start : :end) do
-                render PhlexKit::MessageContent.new do
-                  render PhlexKit::Bubble.new(align: i.even? ? :start : :end) do
-                    render PhlexKit::BubbleContent.new { "Message #{i + 1}" }
+            div(class: "scroller-viewport", data: { phlex_kit__message_scroller_target: "viewport" }) do
+              div(class: "scroller-content", data: { phlex_kit__message_scroller_target: "content" }) do
+                12.times do |i|
+                  render PhlexKit::Message.new(align: i.even? ? :start : :end) do
+                    render PhlexKit::MessageContent.new do
+                      render PhlexKit::Bubble.new(align: i.even? ? :start : :end, variant: i.even? ? :secondary : :default) do
+                        render PhlexKit::BubbleContent.new { "Message #{i + 1}" }
+                      end
+                    end
                   end
                 end
               end
@@ -893,7 +897,9 @@ module Gallery
         .placeholder-media.slide { height: 140px; font-size: 1.25rem; }
         .skeleton-line { height: 1rem; width: 100%; }
         .skeleton-line.short { width: 60%; }
-        .scroller-frame > * { max-height: 220px; }
+        .scroller-frame { height: 220px; }
+        .scroller-viewport { height: 100%; overflow-y: auto; }
+        .scroller-content { display: flex; flex-direction: column; gap: .5rem; padding: .25rem; }
         .carousel-frame { padding: 0 3.5rem; }
         .sidebar-frame { width: 100%; max-width: 640px; height: 300px; overflow: hidden;
                          border: 1px solid var(--pk-border); border-radius: .375rem; }
