@@ -9,61 +9,65 @@
 [class^="pk-"] *, [class*=" pk-"] *,
 [class^="pk-"] *::before, [class*=" pk-"] *::after { box-sizing: border-box; }
 
-/* PhlexKit default theme tokens. This file is OPTIONAL — a host that wants its
-   own palette can skip importing it (see phlex_kit.css) and define the --pk-*
-   custom properties itself. Every component reads these via var(--pk-*, fallback),
-   so redefining :root after the import re-themes the whole kit with no rebuild.
+/* PhlexKit default theme tokens — shadcn/ui's default (zinc) palette, mapped
+   onto the --pk-* names: bg/surface ← background/card, surface-2 ← muted,
+   brand ← primary (monochrome: near-black in light, near-white in dark),
+   red ← destructive, radius ← 0.5rem. This file is OPTIONAL — a host that
+   wants its own palette can skip importing it (see phlex_kit.css) and define
+   the --pk-* custom properties itself. Every component reads these via
+   var(--pk-*), so redefining :root after the import re-themes the whole kit
+   with no rebuild.
 
    Dark is the default; light is opt-in via <html data-theme="light"> (set it
    server-side to avoid a flash). "system" follows the OS via prefers-color-scheme.
    Keep the two light token sets in sync. */
 :root {
-  --pk-bg: #0f1115;
-  --pk-surface: #181b22;
-  --pk-surface-2: #1f232c;
-  --pk-border: #2a2f3a;
-  --pk-text: #e7e9ee;
-  --pk-text-2: #c9cdd6;
-  --pk-muted: #9aa3b0;
-  --pk-brand: #6c8cff;
-  --pk-brand-ink: #0b1020;
-  --pk-green: #34d399;
-  --pk-amber: #fbbf24;
-  --pk-red: #f87171;
-  --pk-radius: 10px;
+  --pk-bg: hsl(240 10% 3.9%);
+  --pk-surface: hsl(240 10% 3.9%);
+  --pk-surface-2: hsl(240 3.7% 15.9%);
+  --pk-border: hsl(240 3.7% 15.9%);
+  --pk-text: hsl(0 0% 98%);
+  --pk-text-2: hsl(240 5% 84%);
+  --pk-muted: hsl(240 5% 64.9%);
+  --pk-brand: hsl(0 0% 98%);
+  --pk-brand-ink: hsl(240 5.9% 10%);
+  --pk-green: #22c55e;
+  --pk-amber: #f59e0b;
+  --pk-red: hsl(0 84% 71%); /* readable as error text on the dark bg (red-400) */
+  --pk-radius: 0.5rem;
   color-scheme: dark;
 }
 
 :root[data-theme="light"] {
-  --pk-bg: #f6f7f9;
-  --pk-surface: #ffffff;
-  --pk-surface-2: #f0f2f5;
-  --pk-border: #d9dde4;
-  --pk-text: #1a1d23;
-  --pk-text-2: #3b4250;
-  --pk-muted: #6b7280;
-  --pk-brand: #3b5bdb;
-  --pk-brand-ink: #ffffff;
-  --pk-green: #059669;
-  --pk-amber: #b45309;
-  --pk-red: #dc2626;
+  --pk-bg: hsl(0 0% 100%);
+  --pk-surface: hsl(0 0% 100%);
+  --pk-surface-2: hsl(240 4.8% 95.9%);
+  --pk-border: hsl(240 5.9% 90%);
+  --pk-text: hsl(240 10% 3.9%);
+  --pk-text-2: hsl(240 5.9% 26%);
+  --pk-muted: hsl(240 3.8% 46.1%);
+  --pk-brand: hsl(240 5.9% 10%);
+  --pk-brand-ink: hsl(0 0% 98%);
+  --pk-green: #16a34a;
+  --pk-amber: #d97706;
+  --pk-red: hsl(0 84.2% 60.2%);
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: light) {
   :root[data-theme="system"] {
-    --pk-bg: #f6f7f9;
-    --pk-surface: #ffffff;
-    --pk-surface-2: #f0f2f5;
-    --pk-border: #d9dde4;
-    --pk-text: #1a1d23;
-    --pk-text-2: #3b4250;
-    --pk-muted: #6b7280;
-    --pk-brand: #3b5bdb;
-    --pk-brand-ink: #ffffff;
-    --pk-green: #059669;
-    --pk-amber: #b45309;
-    --pk-red: #dc2626;
+    --pk-bg: hsl(0 0% 100%);
+    --pk-surface: hsl(0 0% 100%);
+    --pk-surface-2: hsl(240 4.8% 95.9%);
+    --pk-border: hsl(240 5.9% 90%);
+    --pk-text: hsl(240 10% 3.9%);
+    --pk-text-2: hsl(240 5.9% 26%);
+    --pk-muted: hsl(240 3.8% 46.1%);
+    --pk-brand: hsl(240 5.9% 10%);
+    --pk-brand-ink: hsl(0 0% 98%);
+    --pk-green: #16a34a;
+    --pk-amber: #d97706;
+    --pk-red: hsl(0 84.2% 60.2%);
     color-scheme: light;
   }
 }
