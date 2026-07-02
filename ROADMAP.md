@@ -3,13 +3,29 @@
 Target: parity with the full [ruby_ui](https://ruby-ui.com) catalog (53 components),
 every one ported to Phlex + co-located vanilla CSS + `--pk-*` tokens.
 
-**Status: full ruby_ui parity (53/53) PLUS the shadcn/ui-only components — 69 component
-folders, all render-tested (121 tests, 1184 assertions green).** Default theme now
-mirrors ui.shadcn.com's live token system verbatim (neutral palette, accent/input/ring
-tokens, derived radii, --pk-chart-1..5) with control geometry verified numerically
-against the live site. shadcn additions beyond ruby_ui: spinner, kbd, label,
-button_group, item, input_group, radio_group, scroll_area, slider, input_otp, drawer
-(on the sheet machinery), menubar, navigation_menu (shared controller), resizable.
+**Status: full ruby_ui parity (53/53) PLUS the shadcn/ui-only components — 70 component
+folders, all render-tested (123 tests, 1206 assertions green). Published to
+rubygems.org (v0.2.0).** Default theme mirrors ui.shadcn.com's live token system
+verbatim (neutral palette, accent/input/ring tokens, derived radii, --pk-chart-1..5)
+with control geometry verified numerically against the live site. shadcn additions
+beyond ruby_ui: spinner, kbd, label, button_group, item, input_group, radio_group,
+scroll_area, slider, input_otp, drawer (on the sheet machinery), menubar,
+navigation_menu (shared controller), resizable, attachment, avatar_group.
+
+## Next
+
+- **Drop `stars`** (PRD §10 resolved: not in ruby_ui or shadcn — out) and add the
+  last shadcn stragglers: `marker` (AI-chat annotation), a Direction/RTL usage note
+  (shadcn's is a React context provider — ours is documentation), and the
+  `scroll-fade` / `shimmer` utilities.
+- **Sidebar collapsible/offcanvas mode** — ours is the static rail only; upstream's
+  cookie-persisted collapse + mobile sheet behaviour was deliberately deferred.
+- **Checkbox group** — ruby_ui's cross-checkbox "at least one required" controller,
+  noted as skipped in checkbox.rb.
+- **Menubar/NavigationMenu keyboard nav** — arrow-key movement between triggers and
+  items (we have click/hover/escape).
+- **Dogfood in revue** — swap revue's hand-rolled UI::* for the published gem; the
+  first real production host for the engine wiring and the UI alias path.
 - Wave 1 (pure style): skeleton, shortcut_key, switch, radio_button, breadcrumb, empty, bubble, message.
 - Wave 2 (Stimulus, self-contained): accordion, collapsible, tabs, toggle, toggle_group.
 - Wave 3 (overlays): dialog, sheet, popover, hover_card, context_menu.
