@@ -82,6 +82,7 @@ module Gallery
             data_table_demo
             chart_demo
             sidebar_demo
+            shadcn_additions_demo
             toast_demo
           end
           # Mounted once, at the end of <body>: receives both the server flash
@@ -883,6 +884,63 @@ module Gallery
             render PhlexKit::SidebarInset.new do
               div(class: "boxed") { "Main content beside the sidebar." }
             end
+          end
+        end
+      end
+    end
+
+    def shadcn_additions_demo
+      demo("Spinner + Kbd + Label + ButtonGroup + Item + InputGroup + RadioGroup + ScrollArea",
+        note: "shadcn/ui components beyond the ruby_ui catalog.") do
+        render PhlexKit::Spinner.new
+        render PhlexKit::Spinner.new(size: :lg)
+        render PhlexKit::KbdGroup.new do
+          render PhlexKit::Kbd.new { "⌘" }
+          render PhlexKit::Kbd.new { "K" }
+        end
+        render PhlexKit::ButtonGroup.new do
+          render PhlexKit::Button.new(variant: :outline, size: :sm) { "Day" }
+          render PhlexKit::Button.new(variant: :outline, size: :sm) { "Week" }
+          render PhlexKit::Button.new(variant: :outline, size: :sm) { "Month" }
+        end
+        div(class: "stack w-md") do
+          render PhlexKit::InputGroup.new do
+            render PhlexKit::InputGroupAddon.new do
+              render PhlexKit::InputGroupText.new { "https://" }
+            end
+            render PhlexKit::Input.new(placeholder: "example.com", name: "url")
+            render PhlexKit::InputGroupAddon.new(align: :end) do
+              render PhlexKit::Spinner.new(size: :sm)
+            end
+          end
+          render PhlexKit::RadioGroup.new do
+            render PhlexKit::Label.new do
+              render PhlexKit::RadioButton.new(name: "plan", value: "starter", checked: true)
+              plain "Starter"
+            end
+            render PhlexKit::Label.new do
+              render PhlexKit::RadioButton.new(name: "plan", value: "pro")
+              plain "Pro"
+            end
+          end
+        end
+        div(class: "w-md") do
+          render PhlexKit::ItemGroup.new do
+            render PhlexKit::Item.new(variant: :outline) do
+              render PhlexKit::ItemMedia.new { "📦" }
+              render PhlexKit::ItemContent.new do
+                render PhlexKit::ItemTitle.new { "phlex_kit 0.1.0" }
+                render PhlexKit::ItemDescription.new { "53 → 64 components and counting." }
+              end
+              render PhlexKit::ItemActions.new do
+                render PhlexKit::Button.new(size: :sm, variant: :outline) { "Update" }
+              end
+            end
+          end
+        end
+        div(class: "w-sm", style: "height: 120px") do
+          render PhlexKit::ScrollArea.new(style: "height: 100%") do
+            10.times { |i| div(class: "pk-item") { "Scrollable row #{i + 1}" } }
           end
         end
       end

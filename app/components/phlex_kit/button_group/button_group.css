@@ -1,0 +1,8 @@
+/* Co-located with button_group.rb — UI::ButtonGroup, shadcn parity: children
+   join into one segmented control (shared borders, inner corners squared). */
+.pk-button-group { display: inline-flex; align-items: stretch; }
+.pk-button-group > * { border-radius: 0; }
+.pk-button-group > *:not(:first-child) { margin-left: -1px; }
+.pk-button-group > *:first-child { border-top-left-radius: var(--pk-radius); border-bottom-left-radius: var(--pk-radius); }
+.pk-button-group > *:last-child { border-top-right-radius: var(--pk-radius); border-bottom-right-radius: var(--pk-radius); }
+.pk-button-group > *:focus-visible { position: relative; z-index: 1; }

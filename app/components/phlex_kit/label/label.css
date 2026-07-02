@@ -1,0 +1,12 @@
+/* Co-located with label.rb — UI::Label, shadcn parity (text-sm font-medium,
+   dims when its control is disabled). */
+.pk-label {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: .875rem;
+  font-weight: 500;
+  line-height: 1;
+  user-select: none;
+}
+.pk-label:has(+ :disabled), .pk-label:has(:disabled) { cursor: not-allowed; opacity: .5; }

@@ -1,0 +1,35 @@
+/* Co-located with input_group.rb — UI::InputGroup, shadcn parity: the shell
+   carries the border/fill and focus ring; the inner .pk-input goes naked. */
+.pk-input-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--pk-input);
+  border-radius: var(--pk-radius);
+  background: color-mix(in oklab, var(--pk-input) 30%, transparent);
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.pk-input-group:focus-within {
+  border-color: var(--pk-brand);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+.pk-input-group .pk-input {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  flex: 1;
+}
+.pk-input-group .pk-input:focus-visible { outline: none; box-shadow: none; border: 0; }
+.pk-input-group-addon {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  flex: none;
+  padding: 0 .625rem;
+  color: var(--pk-muted);
+  font-size: .875rem;
+}
+.pk-input-group-addon.start { padding-right: 0; }
+.pk-input-group-addon.end { padding-left: 0; }
+.pk-input-group-addon svg { width: 1rem; height: 1rem; }
+.pk-input-group-text { color: var(--pk-muted); }
