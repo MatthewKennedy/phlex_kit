@@ -24,4 +24,9 @@ jobs:
       - name: Build gem (asserts assets are packaged)
         run: |
           gem build phlex_kit.gemspec
-          tar -tzf phlex_kit-*.gem | tar -xzO data.tar.gz | tar -tz | grep -q "app/components/phlex_kit/badge/badge.css"
+          # A .gem is a plain tar holding data.tar.gz; extract that member to
+          # stdout and check the component CSS ships (bare tar -tzf fails here).
+          contents=$(tar -xOf phlex_kit-*.gem data.tar.gz | tar -tz)
+          echo "$contents" | grep -q "app/components/phlex_kit/badge/badge.css"
+          echo "$contents" | grep -q "app/components/phlex_kit/toast/toast.css"
+          echo "$contents" | grep -q "app/assets/stylesheets/phlex_kit/phlex_kit.css"
