@@ -28,6 +28,7 @@ import DialogController from "phlex_kit/controllers/dialog_controller"
 import DropdownMenuController from "phlex_kit/controllers/dropdown_menu_controller"
 import FormFieldController from "phlex_kit/controllers/form_field_controller"
 import HoverCardController from "phlex_kit/controllers/hover_card_controller"
+import InputOtpController from "phlex_kit/controllers/input_otp_controller"
 import MaskedInputController from "phlex_kit/controllers/masked_input_controller"
 import MessageScrollerController from "phlex_kit/controllers/message_scroller_controller"
 import PopoverController from "phlex_kit/controllers/popover_controller"
@@ -35,6 +36,7 @@ import SelectController from "phlex_kit/controllers/select_controller"
 import SelectItemController from "phlex_kit/controllers/select_item_controller"
 import SheetController from "phlex_kit/controllers/sheet_controller"
 import SheetContentController from "phlex_kit/controllers/sheet_content_controller"
+import SliderController from "phlex_kit/controllers/slider_controller"
 import TabsController from "phlex_kit/controllers/tabs_controller"
 import ThemeToggleController from "phlex_kit/controllers/theme_toggle_controller"
 import ToastController from "phlex_kit/controllers/toast_controller"
@@ -63,6 +65,7 @@ export function registerPhlexKitControllers(application) {
   application.register("phlex-kit--dropdown-menu", DropdownMenuController)
   application.register("phlex-kit--form-field", FormFieldController)
   application.register("phlex-kit--hover-card", HoverCardController)
+  application.register("phlex-kit--input-otp", InputOtpController)
   application.register("phlex-kit--masked-input", MaskedInputController)
   application.register("phlex-kit--message-scroller", MessageScrollerController)
   application.register("phlex-kit--popover", PopoverController)
@@ -70,6 +73,7 @@ export function registerPhlexKitControllers(application) {
   application.register("phlex-kit--select-item", SelectItemController)
   application.register("phlex-kit--sheet", SheetController)
   application.register("phlex-kit--sheet-content", SheetContentController)
+  application.register("phlex-kit--slider", SliderController)
   application.register("phlex-kit--tabs", TabsController)
   application.register("phlex-kit--theme-toggle", ThemeToggleController)
   application.register("phlex-kit--toast", ToastController)

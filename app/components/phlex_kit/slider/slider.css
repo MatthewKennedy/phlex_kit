@@ -1,0 +1,52 @@
+/* Co-located with slider.rb — UI::Slider, shadcn parity on a native range
+   input: muted track, primary filled portion (--pk-slider-progress, kept in
+   sync by the controller), round bordered thumb. */
+.pk-slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 1rem;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.pk-slider:focus-visible { outline: none; }
+.pk-slider::-webkit-slider-runnable-track {
+  height: .375rem;
+  border-radius: 9999px;
+  background: linear-gradient(to right,
+    var(--pk-brand) var(--pk-slider-progress, 50%),
+    var(--pk-surface-2) var(--pk-slider-progress, 50%));
+}
+.pk-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 1rem;
+  height: 1rem;
+  margin-top: -0.3125rem;
+  border-radius: 9999px;
+  border: 1px solid var(--pk-brand);
+  background: var(--pk-bg);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .25);
+  transition: box-shadow .15s ease;
+}
+.pk-slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+.pk-slider::-moz-range-track {
+  height: .375rem;
+  border-radius: 9999px;
+  background: var(--pk-surface-2);
+}
+.pk-slider::-moz-range-progress {
+  height: .375rem;
+  border-radius: 9999px;
+  background: var(--pk-brand);
+}
+.pk-slider::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 9999px;
+  border: 1px solid var(--pk-brand);
+  background: var(--pk-bg);
+}
+.pk-slider:disabled { opacity: .5; cursor: not-allowed; }

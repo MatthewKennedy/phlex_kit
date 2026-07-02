@@ -52,4 +52,33 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes html, "pk-scroll-area"
     assert_includes html, %(tabindex="0")
   end
+
+  def test_slider_syncs_progress
+    html = render(PhlexKit::Slider.new(min: 0, max: 200, value: 50, name: "volume"))
+    assert_includes html, %(type="range")
+    assert_includes html, "--pk-slider-progress: 25.0%"
+    assert_includes html, "input->phlex-kit--slider#update"
+  end
+
+  def test_input_otp_wires_slots_and_hidden_value
+    html = render(PhlexKit::InputOtp.new(length: 4, name: "code"))
+    assert_includes html, %(data-phlex-kit--input-otp-length-value="4")
+    assert_includes html, %(type="hidden")
+    assert_includes render(PhlexKit::InputOtpGroup.new { "x" }), "pk-input-otp-group"
+    slot = render(PhlexKit::InputOtpSlot.new)
+    assert_includes slot, %(autocomplete="one-time-code")
+    assert_includes slot, %(maxlength="1")
+    assert_includes slot, "paste->phlex-kit--input-otp#onPaste"
+  end
+
+  def test_drawer_reuses_sheet_machinery
+    html = render(PhlexKit::Drawer.new { "x" })
+    assert_includes html, "phlex-kit--sheet"
+    content = render(PhlexKit::DrawerContent.new { "body" })
+    assert_includes content, "<template"
+    assert_includes content, "pk-drawer-handle"
+    assert_includes content, "click->phlex-kit--sheet-content#close"
+    assert_includes content, %(role="dialog")
+    assert_includes render(PhlexKit::DrawerTrigger.new { "t" }), "click->phlex-kit--sheet#open"
+  end
 end

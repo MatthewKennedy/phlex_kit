@@ -83,6 +83,7 @@ module Gallery
             chart_demo
             sidebar_demo
             shadcn_additions_demo
+            slider_otp_drawer_demo
             toast_demo
           end
           # Mounted once, at the end of <body>: receives both the server flash
@@ -941,6 +942,37 @@ module Gallery
         div(class: "w-sm", style: "height: 120px") do
           render PhlexKit::ScrollArea.new(style: "height: 100%") do
             10.times { |i| div(class: "pk-item") { "Scrollable row #{i + 1}" } }
+          end
+        end
+      end
+    end
+
+    def slider_otp_drawer_demo
+      demo("Slider + InputOTP + Drawer", note: "Native range slider; OTP with paste distribution; bottom drawer on the sheet machinery.") do
+        div(class: "w-md") { render PhlexKit::Slider.new(name: "volume", value: 35) }
+        render PhlexKit::InputOtp.new(length: 6, name: "code") do
+          render PhlexKit::InputOtpGroup.new do
+            3.times { render PhlexKit::InputOtpSlot.new }
+          end
+          render PhlexKit::InputOtpSeparator.new
+          render PhlexKit::InputOtpGroup.new do
+            3.times { render PhlexKit::InputOtpSlot.new }
+          end
+        end
+        render PhlexKit::Drawer.new do
+          render PhlexKit::DrawerTrigger.new do
+            render PhlexKit::Button.new(variant: :outline) { "Open drawer" }
+          end
+          render PhlexKit::DrawerContent.new do
+            render PhlexKit::DrawerHeader.new do
+              render PhlexKit::DrawerTitle.new { "Move goal" }
+              render PhlexKit::DrawerDescription.new { "Bottom sheet with a grab handle — vaul replaced by the kit's own clone machinery." }
+            end
+            render PhlexKit::DrawerFooter.new do
+              render PhlexKit::DrawerClose.new do
+                render PhlexKit::Button.new { "Done" }
+              end
+            end
           end
         end
       end

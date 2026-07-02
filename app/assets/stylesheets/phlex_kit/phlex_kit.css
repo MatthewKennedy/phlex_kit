@@ -36,6 +36,7 @@
 @import url("data_table/data_table.css");
 @import url("date_picker/date_picker.css");
 @import url("dialog/dialog.css");
+@import url("drawer/drawer.css");
 @import url("dropdown_menu/dropdown_menu.css");
 @import url("empty/empty.css");
 @import url("form/form.css");
@@ -43,6 +44,7 @@
 @import url("hover_card/hover_card.css");
 @import url("input/input.css");
 @import url("input_group/input_group.css");
+@import url("input_otp/input_otp.css");
 @import url("item/item.css");
 @import url("kbd/kbd.css");
 @import url("label/label.css");
@@ -62,6 +64,7 @@
 @import url("shortcut_key/shortcut_key.css");
 @import url("sidebar/sidebar.css");
 @import url("skeleton/skeleton.css");
+@import url("slider/slider.css");
 @import url("spinner/spinner.css");
 @import url("stars/stars.css");
 @import url("switch/switch.css");

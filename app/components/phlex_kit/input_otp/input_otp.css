@@ -1,0 +1,32 @@
+/* Co-located with input_otp.rb — UI::InputOTP, shadcn parity: joined cells
+   (shared borders, outer corners rounded), ring on the active cell. */
+.pk-input-otp { display: flex; align-items: center; gap: .5rem; }
+.pk-input-otp-group { display: flex; align-items: center; }
+.pk-input-otp-slot {
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px solid var(--pk-input);
+  background: color-mix(in oklab, var(--pk-input) 30%, transparent);
+  color: var(--pk-text);
+  font: inherit;
+  font-size: .875rem;
+  text-align: center;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.pk-input-otp-slot:not(:first-child) { margin-left: -1px; }
+.pk-input-otp-group .pk-input-otp-slot:first-child {
+  border-top-left-radius: var(--pk-radius);
+  border-bottom-left-radius: var(--pk-radius);
+}
+.pk-input-otp-group .pk-input-otp-slot:last-child {
+  border-top-right-radius: var(--pk-radius);
+  border-bottom-right-radius: var(--pk-radius);
+}
+.pk-input-otp-slot:focus {
+  position: relative;
+  z-index: 1;
+  border-color: var(--pk-brand);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+.pk-input-otp-separator { color: var(--pk-muted); }
