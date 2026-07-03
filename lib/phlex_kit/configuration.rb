@@ -17,9 +17,16 @@ module PhlexKit
     # call sites work unchanged. Off by default to avoid owning a generic const.
     attr_accessor :define_ui_alias
 
+    # Which icon set PhlexKit::Icon (and every built-in component glyph) draws
+    # from: :lucide (default, shadcn's own), :tabler, :phosphor, or :remix.
+    # HugeIcons is deliberately absent — its free set forbids redistribution,
+    # so its artwork can't ship inside this gem.
+    attr_accessor :icon_library
+
     def initialize
       @reactive = :auto
       @define_ui_alias = false
+      @icon_library = :lucide
     end
   end
 

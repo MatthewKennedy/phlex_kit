@@ -49,34 +49,8 @@ module PhlexKit
 
     def sort_icon
       icon_class = [ "pk-data-table-sort-icon", (current_direction ? nil : "unsorted") ].compact.join(" ")
-      case current_direction
-      when "asc"
-        sort_svg(icon_class) { |s| s.polyline(points: "18 15 12 9 6 15") }
-      when "desc"
-        sort_svg(icon_class) { |s| s.polyline(points: "6 9 12 15 18 9") }
-      else
-        sort_svg(icon_class) do |s|
-          s.polyline(points: "8 15 12 19 16 15")
-          s.polyline(points: "8 9 12 5 16 9")
-        end
-      end
-    end
-
-    def sort_svg(icon_class, &)
-      svg(
-        xmlns: "http://www.w3.org/2000/svg",
-        width: "12",
-        height: "12",
-        viewbox: "0 0 24 24",
-        fill: "none",
-        stroke: "currentColor",
-        "stroke-width": "2",
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        class: icon_class,
-        "aria-hidden": "true",
-        &
-      )
+      glyph = { "asc" => :chevron_up, "desc" => :chevron_down }.fetch(current_direction, :chevrons_up_down)
+      render Icon.new(glyph, size: 12, class: icon_class)
     end
   end
 end
