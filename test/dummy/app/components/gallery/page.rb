@@ -48,6 +48,7 @@ module Gallery
           page_header
           main do
             typography_demo
+            icon_demo
             buttons_demo
             badges_demo
             alerts_demo
@@ -194,6 +195,16 @@ module Gallery
           end
           render PhlexKit::CardFooter.new do
             render PhlexKit::Button.new(size: :sm) { "Action" }
+          end
+        end
+      end
+    end
+
+    def icon_demo
+      demo("Icon", note: "Canonical glyphs from the configured library (PK_ICONS=tabler/phosphor/remix to swap; lucide default).") do
+        div(style: "display:flex;align-items:center;gap:.75rem;flex-wrap:wrap") do
+          %i[chevron_down check x search ellipsis calendar user settings trash mail bell star heart download external_link].each do |name|
+            render PhlexKit::Icon.new(name, size: 18)
           end
         end
       end
