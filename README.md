@@ -213,8 +213,14 @@ Want to own and edit a component's source? Eject it into your app:
 bin/rails g phlex_kit:component button
 ```
 
-This copies `button.rb` + `button.css` into `app/components/phlex_kit/button/`
-and wires its `@import`. Your copy shadows the gem's.
+This copies the whole component folder — `button.rb` (+ any parts), `button.css`,
+and, for interactive components, `button_controller.js` — into
+`app/components/phlex_kit/button/`, prepends its `@import`, and wires
+`config/application.rb` once so your copy fully shadows the gem's — **Ruby, CSS,
+and JS**. (It Zeitwerk-collapses the folder so `button/button.rb` autoloads as
+`PhlexKit::Button`, and puts `app/components` ahead of the gem on Propshaft's
+asset path so the ejected CSS/JS resolve to your copy, not the gem's.) Re-running
+for another component reuses the same wiring — it's injected only once.
 
 ## The docs site
 
