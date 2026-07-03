@@ -23,11 +23,20 @@ module Docs
           end
           render PhlexKit::TabsContent.new(value: "code") do
             div(class: "docs-demo-code") do
-              render PhlexKit::Codeblock.new(source_body, syntax: :ruby)
+              # The kit's Codeblock is plain by design; the docs site is a host,
+              # and hosts bring their own highlighter — rouge, here.
+              highlighted = self.class.highlight(source_body)
+              render PhlexKit::Codeblock.new(syntax: :ruby) do
+                raw safe(highlighted)
+              end
             end
           end
         end
       end
+    end
+
+    def self.highlight(source)
+      Rouge::Formatters::HTML.new.format(Rouge::Lexers::Ruby.new.lex(source))
     end
 
     private

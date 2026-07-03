@@ -5,6 +5,7 @@ require "action_controller/railtie"
 require "propshaft"
 require "importmap-rails"
 require "phlex_kit"
+require "rouge" # docs-site syntax highlighting — the "host adds it" pattern
 
 module Dummy
   # Minimal host app for eyeballing the kit: one gallery page rendering every

@@ -88,6 +88,16 @@ module Docs
                              gap: 1rem; min-height: 9rem; padding: 2.5rem 2rem;
                              border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) + 4px); }
         .docs-demo-code pre { max-height: 28rem; overflow: auto; margin: 0; }
+        /* rouge token colors on the kit palette (hold up in dark and light) */
+        .pk-codeblock .k, .pk-codeblock .kp, .pk-codeblock .kn, .pk-codeblock .kd { color: var(--pk-chart-2); }
+        .pk-codeblock .s, .pk-codeblock .s1, .pk-codeblock .s2, .pk-codeblock .sy,
+        .pk-codeblock .ss, .pk-codeblock .sh { color: var(--pk-green); }
+        .pk-codeblock .nc, .pk-codeblock .no, .pk-codeblock .kc { color: var(--pk-chart-3); }
+        .pk-codeblock .mi, .pk-codeblock .mf { color: var(--pk-amber); }
+        .pk-codeblock .c1, .pk-codeblock .cm { color: var(--pk-muted); font-style: italic; }
+        .pk-codeblock .nf, .pk-codeblock .nb { color: var(--pk-chart-2); }
+        .pk-codeblock .vi, .pk-codeblock .nn { color: var(--pk-text-2); }
+        .pk-codeblock .o { color: var(--pk-muted); }
         .stack { display: flex; flex-direction: column; gap: .75rem; }
         .row { display: flex; align-items: center; gap: .5rem; }
         .docs-slide { display: flex; align-items: center; justify-content: center; height: 130px;
