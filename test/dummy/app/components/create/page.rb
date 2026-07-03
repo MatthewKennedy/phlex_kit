@@ -4,8 +4,10 @@ module Create
   # A PhlexKit recreation of ui.shadcn.com/create: a top navbar (with docs
   # navigation + ⌘K command palette), a floating theming menu whose knobs
   # actually work (?theme= swaps the bundled theme stylesheet, ?icons= swaps
-  # the icon library per-request), and the demo dashboard canvas — every card
-  # built from kit components.
+  # the icon library per-request), and the demo dashboard canvas — a fixed-width
+  # horizontally scrolling grid of top-aligned card columns (one spanning two
+  # tracks for the wide cards), paged by the 01/02 dots — every card built from
+  # kit components.
   class Page < Phlex::HTML
     include Phlex::Rails::Helpers::StylesheetLinkTag
     include Phlex::Rails::Helpers::JavaScriptImportmapTags
@@ -36,25 +38,69 @@ module Create
         body do
           navbar
           menu_panel
-          main(class: "cr-canvas") do
-            tile { contribution_history_card }
-            tile { payout_threshold_card }
-            tile { savings_targets_card }
-            tile { distribute_track_card }
-            tile { claimable_balance_card }
-            tile { recent_transactions_card }
-            tile { qr_connect_card }
-            tile { preferences_card }
-            tile { quick_links_card }
-            tile { dividend_income_card }
-            tile { savings_goal_card }
-            tile { faq_card }
-            tile { dollar_cost_card }
-            tile { kitchen_island_card }
-            tile { holdings_search_card }
-            tile { syncing_card }
+          main(class: "cr-viewport", id: "cr-viewport") do
+            div(class: "cr-canvas") do
+              column do
+                contribution_history_card
+                distribute_track_card
+                qr_connect_card
+                dividend_income_card
+                dollar_cost_card
+                syncing_card
+              end
+              column do
+                payout_threshold_card
+                claimable_balance_card
+                preferences_card
+                savings_goal_card
+                kitchen_island_card
+              end
+              column(wide: true) do
+                duo do
+                  savings_targets_card
+                  buy_investment_card
+                end
+                recent_transactions_card
+                duo do
+                  quick_links_card
+                  payments_menu_card
+                end
+                duo do
+                  faq_card
+                  front_door_card
+                end
+                duo do
+                  holdings_search_card
+                  cover_art_card
+                end
+              end
+              column do
+                account_access_card
+                duo(tight: true) do
+                  card_balance_card
+                  payment_due_card
+                end
+                yearly_activity_card
+                transfer_funds_card
+                connect_bank_card
+              end
+              column do
+                receiving_method_card
+                power_usage_card
+                upcoming_payments_card
+                living_room_card
+              end
+              column do
+                stock_performance_card
+                explore_catalog_card
+                set_milestone_card
+                social_links_card
+                notifications_card
+              end
+            end
           end
-          page_dots
+          pager
+          script { safe(pager_js) }
           render PhlexKit::ToastRegion.new(close_button: true)
         end
       end
@@ -68,8 +114,12 @@ module Create
       render PhlexKit::Icon.new(name, library: @icons&.to_sym, size: size, **attrs)
     end
 
-    def tile(&block)
-      div(class: "cr-tile", &block)
+    def column(wide: false, &block)
+      div(class: "cr-col#{" wide" if wide}", &block)
+    end
+
+    def duo(tight: false, &block)
+      div(class: "cr-duo#{" tight" if tight}", &block)
     end
 
     def query_for(theme:, icons:)
@@ -387,25 +437,39 @@ module Create
 
     def recent_transactions_card
       transactions = [
-        [ :heart, "Blue Bottle Coffee", "Food & Drink" ],
-        [ :shopping_cart, "Whole Foods Market", "Groceries" ],
-        [ :credit_card, "Stripe Payout", "Income" ],
-        [ :map_pin, "Uber Trip", "Transport" ],
-        [ :play, "Netflix Subscription", "Entertainment" ]
+        [ :heart, "Blue Bottle Coffee", "Food & Drink", "Today, 10:24 AM", "-$6.50", false ],
+        [ :shopping_cart, "Whole Foods Market", "Groceries", "Yesterday", "-$142.30", false ],
+        [ :credit_card, "Stripe Payout", "Income", "Oct 12", "+$4,200.00", true ],
+        [ :map_pin, "Uber Technologies", "Transport", "Oct 11", "-$24.10", false ],
+        [ :play, "Netflix Subscription", "Entertainment", "Oct 10", "-$19.99", false ]
       ]
       render PhlexKit::Card.new do
         render PhlexKit::CardHeader.new do
           render PhlexKit::CardTitle.new { "Recent Transactions" }
           render PhlexKit::CardDescription.new { "Your latest account activity." }
+          render PhlexKit::CardAction.new do
+            render PhlexKit::Button.new(variant: :outline, size: :sm) { "View All" }
+          end
         end
         render PhlexKit::CardContent.new do
-          render PhlexKit::ItemGroup.new do
-            transactions.each do |glyph, title, category|
-              render PhlexKit::Item.new do
-                render PhlexKit::ItemMedia.new(class: "cr-tx-icon") { icon(glyph) }
-                render PhlexKit::ItemContent.new do
-                  render PhlexKit::ItemTitle.new { title }
-                  render PhlexKit::ItemDescription.new { category }
+          render PhlexKit::Table.new(class: "cr-tx-table") do
+            render PhlexKit::TableBody.new do
+              transactions.each do |glyph, title, category, date, amount, income|
+                render PhlexKit::TableRow.new do
+                  render PhlexKit::TableCell.new do
+                    div(class: "cr-tx-name") do
+                      span(class: "cr-tx-icon") { icon(glyph) }
+                      div do
+                        strong { title }
+                        span(class: "cr-muted-sm") { category }
+                      end
+                    end
+                  end
+                  render PhlexKit::TableCell.new(class: "cr-muted") { date }
+                  render PhlexKit::TableCell.new(class: "cr-tx-amount#{" income" if income}") { amount }
+                  render PhlexKit::TableCell.new(class: "cr-tx-menu") do
+                    render PhlexKit::Button.new(variant: :ghost, size: :sm, icon: true, aria: { label: "Transaction menu" }) { icon(:ellipsis, size: 14) }
+                  end
                 end
               end
             end
@@ -711,11 +775,558 @@ module Create
       end
     end
 
-    def page_dots
-      div(class: "cr-dots") do
-        span(class: "cr-dot active") { "01" }
-        span(class: "cr-dot") { "02" }
+    def buy_investment_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Buy Investment" }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "Amount to Invest" }
+            render PhlexKit::InputGroup.new do
+              render PhlexKit::InputGroupAddon.new { "$" }
+              render PhlexKit::Input.new(name: "invest_amount", value: "1,000.00")
+            end
+          end
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "Order Type" }
+            render PhlexKit::NativeSelect.new(name: "order_type") do
+              render PhlexKit::NativeSelectOption.new(value: "market", selected: true) { "Market Order" }
+              render PhlexKit::NativeSelectOption.new(value: "limit") { "Limit Order" }
+            end
+            span(class: "cr-muted-sm") { "Market orders execute at the current price." }
+          end
+          render PhlexKit::Separator.new
+          div(class: "cr-ledger") do
+            div(class: "cr-between") do
+              span(class: "cr-muted") { "Estimated Shares" }
+              strong { "1.95" }
+            end
+            div(class: "cr-between") do
+              span(class: "cr-muted") { "Buying Power" }
+              strong { "$12,450.00" }
+            end
+          end
+        end
+        render PhlexKit::CardFooter.new(class: "cr-stack-sm") do
+          render PhlexKit::Button.new(class: "cr-full") { "Review Order" }
+          p(class: "cr-muted-sm cr-center-text") { "Trades are typically executed within minutes during market hours." }
+        end
       end
+    end
+
+    def payments_menu_card
+      entries = [
+        [ :refresh, "Change transfer limit", "Adjust how much you can send from your balance." ],
+        [ :calendar, "Scheduled transfers", "Set up a transfer to send at a later date." ],
+        [ :credit_card, "Direct Debits", "Set up and manage regular payments." ],
+        [ :refresh, "Recurring card payments", "Manage your repeated card transactions." ]
+      ]
+      render PhlexKit::Card.new do
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          render PhlexKit::Breadcrumb.new do
+            render PhlexKit::BreadcrumbList.new do
+              render PhlexKit::BreadcrumbItem.new do
+                render PhlexKit::BreadcrumbLink.new(href: "#") { "Home" }
+              end
+              render PhlexKit::BreadcrumbSeparator.new
+              render PhlexKit::BreadcrumbItem.new do
+                render PhlexKit::BreadcrumbEllipsis.new
+              end
+              render PhlexKit::BreadcrumbSeparator.new
+              render PhlexKit::BreadcrumbItem.new { "Payments" }
+            end
+          end
+          render PhlexKit::ItemGroup.new do
+            entries.each do |glyph, title, description|
+              render PhlexKit::Item.new(variant: :muted) do
+                render PhlexKit::ItemMedia.new(class: "cr-tx-icon") { icon(glyph) }
+                render PhlexKit::ItemContent.new do
+                  render PhlexKit::ItemTitle.new { title }
+                  render PhlexKit::ItemDescription.new { description }
+                end
+                render PhlexKit::ItemActions.new { icon(:chevron_right, size: 14) }
+              end
+            end
+          end
+        end
+      end
+    end
+
+    def front_door_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Front Door" }
+          render PhlexKit::CardDescription.new { "Smart Lock Pro" }
+          render PhlexKit::CardAction.new(class: "cr-lock-state") do
+            span { "Locked" }
+            icon(:lock, size: 14)
+          end
+        end
+        render PhlexKit::CardContent.new do
+          div(class: "cr-camera") do
+            span(class: "cr-live") { "Live" }
+          end
+        end
+      end
+    end
+
+    def account_access_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Account Access" }
+          render PhlexKit::CardDescription.new { "Update your credentials or re-authenticate." }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "Email Address" }
+            render PhlexKit::Input.new(type: "email", name: "email", value: "artist@studio.inc")
+          end
+          div(class: "cr-field") do
+            div(class: "cr-between") do
+              render PhlexKit::Label.new { "Current Password" }
+              a(href: "#", class: "cr-forgot") { "Forgot?" }
+            end
+            render PhlexKit::Input.new(type: "password", name: "current_password", value: "hunter2hunter")
+          end
+          render PhlexKit::Button.new(class: "cr-full") do
+            icon(:lock, size: 14)
+            plain " Update Security"
+          end
+          render PhlexKit::Item.new(variant: :muted) do
+            render PhlexKit::ItemMedia.new(class: "cr-danger") { icon(:circle_alert) }
+            render PhlexKit::ItemContent.new do
+              render PhlexKit::ItemTitle.new { "Danger Zone" }
+              render PhlexKit::ItemDescription.new { "Archive account and remove catalog" }
+            end
+            render PhlexKit::ItemActions.new { icon(:arrow_right, size: 14) }
+          end
+        end
+      end
+    end
+
+    def card_balance_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardDescription.new { "Card Balance" }
+          render PhlexKit::CardTitle.new(class: "cr-amount") { "US$12.94" }
+        end
+        render PhlexKit::CardContent.new do
+          span(class: "cr-muted-sm") { "US$11,337.06 Available" }
+        end
+      end
+    end
+
+    def payment_due_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardDescription.new { "Payment Due" }
+          render PhlexKit::CardTitle.new(class: "cr-amount") { "1 Apr" }
+        end
+        render PhlexKit::CardContent.new do
+          render PhlexKit::Button.new(variant: :outline, size: :sm, class: "cr-full") { "Pay Early" }
+        end
+      end
+    end
+
+    def yearly_activity_card
+      months = [ 35, 55, 30, 70, 45, 60, 80, 40, 55, 75, 45, 90 ]
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Yearly Activity" }
+          render PhlexKit::CardAction.new do
+            render PhlexKit::Badge.new(variant: :secondary) { "+US$0.25 Daily Cash" }
+          end
+        end
+        render PhlexKit::CardContent.new do
+          div(class: "cr-months") do
+            months.each_with_index do |h, i|
+              div(class: "cr-month") do
+                span(class: "cr-month-bar", style: "height: #{h}%")
+                span(class: "cr-month-label") { "JFMAMJJASOND"[i] }
+              end
+            end
+          end
+        end
+      end
+    end
+
+    def transfer_funds_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Transfer Funds" }
+          render PhlexKit::CardDescription.new { "Move money between your connected accounts." }
+          render PhlexKit::CardAction.new do
+            render PhlexKit::Button.new(variant: :ghost, size: :sm, icon: true, aria: { label: "Dismiss" }) { icon(:x, size: 14) }
+          end
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "Amount to Transfer" }
+            render PhlexKit::InputGroup.new do
+              render PhlexKit::InputGroupAddon.new { "$" }
+              render PhlexKit::Input.new(name: "transfer_amount", value: "1,200.00")
+            end
+          end
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "From Account" }
+            render PhlexKit::NativeSelect.new(name: "from_account") do
+              render PhlexKit::NativeSelectOption.new(value: "checking", selected: true) { "Main Checking (··8402) — $12,450.00" }
+              render PhlexKit::NativeSelectOption.new(value: "savings") { "High Yield Savings (··1192) — $42,100.00" }
+            end
+          end
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "To Account" }
+            render PhlexKit::NativeSelect.new(name: "to_account") do
+              render PhlexKit::NativeSelectOption.new(value: "savings", selected: true) { "High Yield Savings (··1192) — $42,100.00" }
+              render PhlexKit::NativeSelectOption.new(value: "checking") { "Main Checking (··8402) — $12,450.00" }
+            end
+          end
+          div(class: "cr-ledger") do
+            div(class: "cr-between") do
+              span(class: "cr-muted") { "Estimated arrival" }
+              strong { "Today, Apr 14" }
+            end
+            render PhlexKit::Separator.new
+            div(class: "cr-between") do
+              span(class: "cr-muted") { "Transaction fee" }
+              span { "$0.00" }
+            end
+            render PhlexKit::Separator.new
+            div(class: "cr-between") do
+              span(class: "cr-muted") { "Total amount" }
+              strong { "$1,200.00" }
+            end
+          end
+        end
+        render PhlexKit::CardFooter.new do
+          render PhlexKit::Button.new(class: "cr-full") { "Confirm Transfer" }
+        end
+      end
+    end
+
+    def connect_bank_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardContent.new do
+          render PhlexKit::Empty.new do
+            render PhlexKit::EmptyHeader.new do
+              render PhlexKit::EmptyMedia.new { icon(:credit_card, size: 20) }
+              render PhlexKit::EmptyTitle.new { "Connect Bank" }
+              render PhlexKit::EmptyDescription.new { "Link your payout method to receive monthly royalty distributions automatically." }
+            end
+            render PhlexKit::EmptyContent.new do
+              render PhlexKit::Button.new { "Set Up Payouts" }
+            end
+          end
+        end
+      end
+    end
+
+    def receiving_method_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardDescription.new { "Payout Preferences" }
+          render PhlexKit::CardTitle.new { "Receiving Method" }
+          render PhlexKit::CardAction.new do
+            render PhlexKit::Button.new(variant: :ghost, size: :sm, icon: true, aria: { label: "Dismiss" }) { icon(:x, size: 14) }
+          end
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "Account Holder Name" }
+            render PhlexKit::Input.new(name: "account_holder", value: "Synthetic Horizons Music LLC")
+          end
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "Receiving Method" }
+            render PhlexKit::RadioGroup.new(class: "cr-method-tiles") do
+              label(class: "cr-method-tile") do
+                render PhlexKit::RadioButton.new(name: "receiving_method", value: "bank", checked: true)
+                div do
+                  strong { "Bank Transfer" }
+                  span(class: "cr-muted-sm") { "SWIFT / IBAN" }
+                end
+              end
+              label(class: "cr-method-tile") do
+                render PhlexKit::RadioButton.new(name: "receiving_method", value: "paypal")
+                div do
+                  strong { "PayPal" }
+                  span(class: "cr-muted-sm") { "Instant Payout" }
+                end
+              end
+            end
+          end
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "IBAN / Account Number" }
+            render PhlexKit::Input.new(name: "iban", placeholder: "DE89 3704 0044 ....")
+          end
+        end
+        render PhlexKit::CardFooter.new do
+          render PhlexKit::Button.new(variant: :secondary, class: "cr-full", disabled: true) { "Save Payout Settings" }
+        end
+      end
+    end
+
+    def power_usage_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Power Usage" }
+          render PhlexKit::CardDescription.new { "Whole Home" }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          render PhlexKit::Chart.new(options: {
+            type: "bar",
+            data: {
+              labels: %w[6a 8a 10a 12p 2p 4p 6p 8p],
+              datasets: [ { label: "kW", data: [ 1.2, 2.8, 2.6, 2.1, 3.1, 2.4, 3.4, 2.9 ], borderWidth: 0, borderRadius: 4 } ]
+            },
+            options: { plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { display: false } } }
+          })
+          div(class: "cr-stat-row") do
+            div(class: "cr-stat") do
+              span(class: "cr-stat-label") { "Currently Using" }
+              strong { "3.4 kW" }
+            end
+            div(class: "cr-stat") do
+              span(class: "cr-stat-label") { "Solar Gen" }
+              strong(class: "cr-muted") { "+1.2 kW" }
+            end
+          end
+          render PhlexKit::Separator.new
+          div(class: "cr-between") do
+            span(class: "cr-muted-sm") { "Battery Level" }
+            span(class: "cr-muted-sm") { "85%" }
+          end
+          render PhlexKit::Progress.new(value: 85)
+        end
+      end
+    end
+
+    def upcoming_payments_card
+      payments = [
+        [ "Netflix Subscription", "Apr 15, 2024", "$19.99" ],
+        [ "Rent Payment", "Apr 1, 2024", "$2,400.00" ],
+        [ "Auto Insurance", "Apr 22, 2024", "$186.00" ]
+      ]
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Upcoming Payments" }
+          render PhlexKit::CardDescription.new { "Select a date to view scheduled payments." }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          render PhlexKit::Calendar.new(selected_date: Date.new(2026, 7, 4))
+          render PhlexKit::ItemGroup.new do
+            payments.each do |title, date, amount|
+              render PhlexKit::Item.new(variant: :muted) do
+                render PhlexKit::ItemContent.new do
+                  render PhlexKit::ItemTitle.new { title }
+                  render PhlexKit::ItemDescription.new { date }
+                end
+                render PhlexKit::ItemActions.new { strong(class: "cr-payment-amount") { amount } }
+              end
+            end
+          end
+        end
+      end
+    end
+
+    def living_room_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Living Room" }
+          render PhlexKit::CardDescription.new { "Roller Shades" }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          div(class: "cr-shade") { div(class: "cr-shade-blind") }
+          div(class: "cr-slider-row cr-shade-slider") do
+            span(class: "cr-stat-label") { "Open" }
+            render PhlexKit::Slider.new(name: "shade_position", value: 50)
+            span(class: "cr-stat-label") { "Close" }
+          end
+        end
+        render PhlexKit::CardFooter.new(class: "cr-trio") do
+          render PhlexKit::Button.new(variant: :outline, size: :sm) { "Open" }
+          render PhlexKit::Button.new(variant: :secondary, size: :sm) { "Half" }
+          render PhlexKit::Button.new(variant: :outline, size: :sm) { "Closed" }
+        end
+      end
+    end
+
+    def stock_performance_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Stock Performance" }
+          render PhlexKit::CardDescription.new { "6-month price history." }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "Ticker" }
+            render PhlexKit::NativeSelect.new(name: "ticker") do
+              render PhlexKit::NativeSelectOption.new(value: "voo", selected: true) { "VOO" }
+              render PhlexKit::NativeSelectOption.new(value: "vig") { "VIG" }
+              render PhlexKit::NativeSelectOption.new(value: "aapl") { "AAPL" }
+            end
+          end
+          render PhlexKit::Chart.new(options: {
+            type: "line",
+            data: {
+              labels: %w[Nov Dec Jan Feb Mar Apr],
+              datasets: [ { label: "VOO", data: [ 412, 428, 419, 445, 452, 471 ], borderWidth: 2, pointRadius: 0, tension: 0.4, fill: false } ]
+            },
+            options: { plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { display: false } } }
+          })
+        end
+      end
+    end
+
+    def explore_catalog_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardContent.new do
+          render PhlexKit::Empty.new do
+            render PhlexKit::EmptyHeader.new do
+              render PhlexKit::EmptyMedia.new { icon(:mic, size: 20) }
+              render PhlexKit::EmptyTitle.new { "Explore Catalog" }
+              render PhlexKit::EmptyDescription.new { "Check your ISRC codes, metadata, and visual assets before going live." }
+            end
+            render PhlexKit::EmptyContent.new do
+              render PhlexKit::Button.new { "View Catalog" }
+            end
+          end
+        end
+      end
+    end
+
+    def set_milestone_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Set a new milestone" }
+          render PhlexKit::CardDescription.new { "Define your financial target and we'll help you pace your savings." }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          div(class: "cr-field") do
+            render PhlexKit::Label.new { "Goal Name" }
+            render PhlexKit::Input.new(name: "goal_name", placeholder: "e.g. New Car, Home Downpayment")
+          end
+          div(class: "cr-duo tight") do
+            div(class: "cr-field") do
+              render PhlexKit::Label.new { "Target Amount" }
+              render PhlexKit::Input.new(name: "target_amount", value: "$15,000")
+            end
+            div(class: "cr-field") do
+              render PhlexKit::Label.new { "Target Date" }
+              render PhlexKit::Input.new(name: "target_date", value: "Dec 2025")
+            end
+          end
+        end
+        render PhlexKit::CardFooter.new(class: "cr-stack-sm") do
+          render PhlexKit::Button.new(class: "cr-full") { "Create Goal" }
+          render PhlexKit::Button.new(variant: :outline, class: "cr-full") { "Cancel" }
+        end
+      end
+    end
+
+    def social_links_card
+      links = [
+        [ "Spotify Artist URL", :link, "spotify.com/artist/3j...2k", nil ],
+        [ "Instagram Handle", :camera, "@julianduryea_music", nil ],
+        [ "SoundCloud URL", :cloud, nil, "soundcloud.com/username" ],
+        [ "Website", :globe, nil, "https://yoursite.com" ]
+      ]
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Social Links" }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          links.each do |label, glyph, value, placeholder|
+            div(class: "cr-field") do
+              render PhlexKit::Label.new { label }
+              render PhlexKit::InputGroup.new do
+                render PhlexKit::InputGroupAddon.new { icon(glyph, size: 14) }
+                render PhlexKit::Input.new(name: label.parameterize(separator: "_"), value: value, placeholder: placeholder)
+              end
+            end
+          end
+        end
+        render PhlexKit::CardFooter.new(class: "cr-footer-end") do
+          render PhlexKit::Button.new(variant: :ghost, size: :sm) { "Discard" }
+          render PhlexKit::Button.new(size: :sm) { "Save Changes" }
+        end
+      end
+    end
+
+    def cover_art_card
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardDescription.new(class: "cr-stat-label") { "Cover Art" }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          div(class: "cr-dropzone") { icon(:image, size: 24) }
+          render PhlexKit::Button.new(variant: :secondary, class: "cr-full") { "Upload Artwork" }
+          p(class: "cr-muted-sm cr-center-text") { "Minimum 3000 × 3000px — JPEG or PNG only" }
+        end
+      end
+    end
+
+    def notifications_card
+      alerts = [
+        [ "Transaction alerts", "Deposits, withdrawals, and transfers.", true ],
+        [ "Security alerts", "Login attempts and account changes.", true ],
+        [ "Goal milestones", "Updates at 25%, 50%, 75%, and 100%.", false ],
+        [ "Market updates", "Daily portfolio summary and price alerts.", false ]
+      ]
+      render PhlexKit::Card.new do
+        render PhlexKit::CardHeader.new do
+          render PhlexKit::CardTitle.new { "Notifications" }
+          render PhlexKit::CardDescription.new { "Choose what you want to be notified about." }
+        end
+        render PhlexKit::CardContent.new(class: "cr-stack") do
+          label(class: "cr-check-row") do
+            render PhlexKit::Checkbox.new(name: "select_all")
+            div { strong(class: "cr-switch-title") { "Select all" } }
+          end
+          alerts.each do |title, description, checked|
+            label(class: "cr-check-row") do
+              render PhlexKit::Checkbox.new(name: title.parameterize(separator: "_"), checked: checked)
+              div do
+                strong(class: "cr-switch-title") { title }
+                p(class: "cr-muted-sm") { description }
+              end
+            end
+          end
+        end
+        render PhlexKit::CardFooter.new do
+          render PhlexKit::Button.new(class: "cr-full") { "Save Preferences" }
+        end
+      end
+    end
+
+    # --- pager ---------------------------------------------------------------
+
+    # Scroll pagination for the horizontal canvas, like ui.shadcn.com/create's
+    # 01/02 dots: 01 scrolls home, 02 scrolls to the far end, and the active
+    # dot tracks scroll position.
+    def pager
+      div(class: "cr-dots") do
+        button(type: "button", class: "cr-dot active", data_page: "0") { "01" }
+        button(type: "button", class: "cr-dot", data_page: "1") { "02" }
+      end
+    end
+
+    def pager_js
+      <<~JS
+        (() => {
+          const viewport = document.getElementById("cr-viewport");
+          const dots = Array.from(document.querySelectorAll(".cr-dot"));
+          const max = () => viewport.scrollWidth - viewport.clientWidth;
+          dots.forEach((dot, i) => dot.addEventListener("click", () => {
+            viewport.scrollTo({ left: i === 0 ? 0 : max(), behavior: "smooth" });
+          }));
+          viewport.addEventListener("scroll", () => {
+            const second = max() > 0 && viewport.scrollLeft > max() / 2;
+            dots[0].classList.toggle("active", !second);
+            dots[1].classList.toggle("active", second);
+          }, { passive: true });
+        })();
+      JS
     end
 
     # Chrome for this page only — not part of the kit.
@@ -757,11 +1368,24 @@ module Create
         .cr-menu-actions { display: flex; flex-direction: column; gap: .5rem; }
         .cr-menu-actions > * { width: 100%; justify-content: center; }
 
-        /* canvas masonry */
-        .cr-canvas { columns: 3; column-gap: 1rem; padding: 1.5rem 1.5rem 5rem calc(200px + 4.5rem); }
-        .cr-tile { break-inside: avoid; margin-bottom: 1rem; }
-        @media (max-width: 1280px) { .cr-canvas { columns: 2; } }
-        @media (max-width: 900px)  { .cr-canvas { columns: 1; padding-left: 1.5rem; } .cr-menu { position: static; width: auto; margin: 1.5rem; } }
+        /* canvas — fixed-width horizontal scroller of top-aligned columns,
+           like ui.shadcn.com/create (7 tracks, one column spans two). The
+           scroller is an inset, rounded, muted container sitting to the right
+           of the menu — cards clip at its edge rather than scrolling under
+           the menu panel. */
+        .cr-viewport { overflow-x: auto; margin: 1.5rem 1.5rem 1.5rem calc(200px + 4.5rem);
+                       border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) + 8px);
+                       background: var(--pk-surface-2); }
+        html[data-theme="dark"] .cr-viewport { background: var(--pk-bg); }
+        .cr-canvas { display: grid; grid-template-columns: repeat(7, 383px); gap: 2.5rem;
+                     align-items: start; width: max-content; padding: 2.5rem; }
+        .cr-col { display: flex; flex-direction: column; gap: 2.5rem; min-width: 0; }
+        .cr-col.wide { grid-column: span 2; }
+        .cr-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
+        .cr-duo.tight { gap: 1rem; }
+        @media (max-width: 900px) { .cr-canvas { grid-template-columns: repeat(7, 300px); }
+                                    .cr-viewport { margin: 1.5rem; }
+                                    .cr-menu { position: static; width: auto; margin: 1.5rem; } }
 
         /* shared card internals */
         .cr-stack { display: flex; flex-direction: column; gap: 1rem; }
@@ -815,11 +1439,61 @@ module Create
         .cr-slider-row .pk-slider { flex: 1; }
         .cr-slider-row svg { color: var(--pk-muted); flex: none; }
 
+        /* new-card internals */
+        .cr-stack-sm { display: flex; flex-direction: column; gap: .5rem; }
+        .cr-tx-table td { vertical-align: middle; }
+        .cr-tx-name { display: flex; align-items: center; gap: .625rem; }
+        .cr-tx-name > div { display: flex; flex-direction: column; }
+        .cr-tx-name strong { font-size: .875rem; }
+        .cr-tx-amount { text-align: right; font-weight: 600; white-space: nowrap; }
+        .cr-tx-amount.income { color: var(--pk-green); }
+        .cr-tx-menu { width: 1%; text-align: right; }
+        .cr-forgot { font-size: .6875rem; letter-spacing: .05em; text-transform: uppercase;
+                     color: var(--pk-muted); text-decoration: none; }
+        .cr-forgot:hover { color: var(--pk-text); }
+        .cr-danger { color: var(--pk-red, #dc2626); }
+        .cr-lock-state { display: flex; align-items: center; gap: .375rem; font-size: .8125rem; color: var(--pk-muted); }
+        .cr-camera { position: relative; height: 180px; border-radius: calc(var(--pk-radius) - 2px);
+                     border: 1px solid var(--pk-border);
+                     background: repeating-linear-gradient(45deg, transparent, transparent 6px,
+                                 color-mix(in oklab, var(--pk-muted) 12%, transparent) 6px,
+                                 color-mix(in oklab, var(--pk-muted) 12%, transparent) 7px); }
+        .cr-live { position: absolute; top: .625rem; right: .625rem; padding: .125rem .5rem;
+                   font-size: .75rem; font-weight: 600; border-radius: 999px;
+                   color: var(--pk-red, #dc2626);
+                   background: color-mix(in oklab, var(--pk-red, #dc2626) 12%, transparent); }
+        .cr-months { display: flex; align-items: flex-end; gap: 4px; height: 72px; }
+        .cr-month { flex: 1; display: flex; flex-direction: column; align-items: center; gap: .25rem;
+                    height: 100%; justify-content: flex-end; }
+        .cr-month-bar { width: 100%; background: var(--pk-chart-1, var(--pk-text)); border-radius: 3px; opacity: .85; }
+        .cr-month-label { font-size: .625rem; color: var(--pk-muted); }
+        .cr-method-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: .625rem; }
+        .cr-method-tile { display: flex; align-items: flex-start; gap: .5rem; padding: .625rem .75rem;
+                          border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px);
+                          cursor: pointer; }
+        .cr-method-tile:has(:checked) { border-color: var(--pk-ring); background: var(--pk-accent); }
+        .cr-method-tile > div { display: flex; flex-direction: column; }
+        .cr-method-tile strong { font-size: .8125rem; }
+        .cr-payment-amount { font-size: .875rem; white-space: nowrap; }
+        .cr-shade { height: 120px; border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px);
+                    background: var(--pk-surface-2, var(--pk-surface)); overflow: hidden; }
+        .cr-shade-blind { height: 50%; background: color-mix(in oklab, var(--pk-muted) 55%, transparent); }
+        .cr-shade-slider { border: none; padding: 0; }
+        .cr-trio { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .5rem; }
+        .cr-trio > * { width: 100%; justify-content: center; }
+        .cr-footer-end { display: flex; justify-content: flex-end; gap: .5rem; }
+        .cr-dropzone { display: flex; align-items: center; justify-content: center; height: 180px;
+                       border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px);
+                       color: var(--pk-muted); }
+        .cr-check-row { display: flex; align-items: flex-start; gap: .625rem; cursor: pointer; }
+        .cr-check-row .pk-checkbox { margin-top: .125rem; }
+
         /* page dots */
         .cr-dots { position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 30; display: flex; gap: .25rem;
                    padding: .25rem; border: 1px solid var(--pk-border); border-radius: 999px;
                    background: var(--pk-surface); }
-        .cr-dot { padding: .125rem .625rem; font-size: .75rem; border-radius: 999px; color: var(--pk-muted); }
+        .cr-dot { padding: .125rem .625rem; font: inherit; font-size: .75rem; border-radius: 999px;
+                  color: var(--pk-muted); background: none; border: none; cursor: pointer; }
         .cr-dot.active { background: var(--pk-brand); color: var(--pk-brand-ink); }
       CSS
     end
