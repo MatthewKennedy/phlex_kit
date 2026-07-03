@@ -20,6 +20,7 @@ module Dummy
     config.hosts.clear
     config.consider_all_requests_local = true
     config.server_timing = false
+    config.assets.paths << Rails.root.join("app/assets/fonts") # vendored Geist for the docs site
     config.logger = Logger.new($stdout)
     config.log_level = :warn
   end

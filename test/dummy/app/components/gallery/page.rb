@@ -23,7 +23,7 @@ module Gallery
           # window.Chart (vendored chart.js), exactly as a real host would.
           javascript_include_tag "chartjs.umd"
           javascript_importmap_tags
-          style { gallery_css }
+          style { safe(gallery_css) }
           # Dev aid: surface JS errors on-page (the gallery is often eyeballed
           # over a screenshot where the console isn't visible).
           script do
@@ -1099,7 +1099,7 @@ module Gallery
     def gallery_css
       <<~CSS
         body { margin: 0; padding: 2rem clamp(1rem, 4vw, 3rem) 6rem; background: var(--pk-bg); color: var(--pk-text);
-               font: 15px/1.5 system-ui, -apple-system, sans-serif; }
+               font: 15px/1.5 var(--pk-font-sans, system-ui, sans-serif); }
         .gallery-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 2rem; }
         .gallery-header h1 { margin: 0 0 .25rem; font-size: 1.5rem; }
         .gallery-header p { margin: 0; color: var(--pk-muted); }

@@ -34,7 +34,7 @@
 
 /* Inline code */
 .pk-inline-code {
-  font-family: ui-monospace, monospace;
+  font-family: var(--pk-font-mono, ui-monospace, monospace);
   font-size: .875rem;
   background: var(--pk-bg);
   border: 1px solid var(--pk-border);

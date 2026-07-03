@@ -78,6 +78,8 @@
   --pk-chart-4: #1d4ed8;
   --pk-chart-5: #1e40af;
   --pk-radius: 0.625rem;
+  --pk-font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --pk-font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
   color-scheme: dark;
 }
 

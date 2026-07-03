@@ -8,6 +8,7 @@ module Docs
     include Phlex::Rails::Helpers::StylesheetLinkTag
     include Phlex::Rails::Helpers::JavaScriptImportmapTags
     include Phlex::Rails::Helpers::JavaScriptIncludeTag
+    include Phlex::Rails::Helpers::AssetPath
 
     def initialize(current:)
       @current = current
@@ -23,7 +24,7 @@ module Docs
           stylesheet_link_tag "phlex_kit/phlex_kit"
           javascript_include_tag "chartjs.umd"
           javascript_importmap_tags
-          style { docs_css }
+          style { safe(docs_css) }
         end
         body do
           render PhlexKit::SidebarWrapper.new(class: "docs-shell") do
@@ -62,8 +63,16 @@ module Docs
 
     def docs_css
       <<~CSS
+        /* shadcn's typefaces, vendored (OFL). Overriding the font tokens here is
+           exactly how a host adopts them. */
+        @font-face { font-family: "Geist"; src: url("#{asset_path("geist-variable.woff2")}") format("woff2");
+                     font-weight: 100 900; font-display: swap; }
+        @font-face { font-family: "Geist Mono"; src: url("#{asset_path("geist-mono-variable.woff2")}") format("woff2");
+                     font-weight: 100 900; font-display: swap; }
+        :root { --pk-font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+                --pk-font-mono: "Geist Mono", ui-monospace, monospace; }
         body { margin: 0; background: var(--pk-bg); color: var(--pk-text);
-               font: 15px/1.6 system-ui, -apple-system, sans-serif; }
+               font: 16px/1.5 var(--pk-font-sans); }
         .docs-shell { min-height: 100vh; }
         .docs-sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; width: 240px; flex: none; }
         .docs-sidebar a { text-decoration: none; }
@@ -85,7 +94,7 @@ module Docs
                       border: 1px solid var(--pk-border); border-radius: var(--pk-radius);
                       font-size: 2rem; font-weight: 600; }
         .docs-panel { display:flex; align-items:center; justify-content:center; height:100%; font-size:.875rem; font-weight:600; }
-        .docs-repo-row { border: 1px solid var(--pk-border); border-radius: var(--pk-radius); padding: .5rem .75rem; font-size: .875rem; font-family: ui-monospace, monospace; }
+        .docs-repo-row { border: 1px solid var(--pk-border); border-radius: var(--pk-radius); padding: .5rem .75rem; font-size: .875rem; font-family: var(--pk-font-mono); }
         .w-sm { width: 300px; max-width: 100%; } .w-md { width: 380px; max-width: 100%; } .w-lg { width: 560px; max-width: 100%; }
       CSS
     end

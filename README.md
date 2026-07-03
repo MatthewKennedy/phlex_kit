@@ -120,7 +120,9 @@ The full token surface: `--pk-bg`, `--pk-surface`, `--pk-surface-2`,
 `--pk-accent` (hover fills), `--pk-border`, `--pk-input` (control borders),
 `--pk-ring` (focus rings), `--pk-text`, `--pk-text-2`, `--pk-muted`,
 `--pk-brand`, `--pk-brand-ink`, `--pk-green`, `--pk-amber`, `--pk-red`,
-`--pk-chart-1..5`, `--pk-radius`. Want a fully custom palette? Drop the
+`--pk-chart-1..5`, `--pk-radius`, plus `--pk-font-sans` / `--pk-font-mono`
+(system stacks by default — override them after an @font-face to adopt Geist
+like shadcn, as the docs site does). Want a fully custom palette? Drop the
 `_tokens.css` import and define them all yourself.
 
 ## Charts
