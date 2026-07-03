@@ -125,6 +125,33 @@ The full token surface: `--pk-bg`, `--pk-surface`, `--pk-surface-2`,
 like shadcn, as the docs site does). Want a fully custom palette? Drop the
 `_tokens.css` import and define them all yourself.
 
+## Icons
+
+Every built-in glyph renders through `PhlexKit::Icon`, which draws from a
+vendored icon library — pick one kit-wide in an initializer:
+
+```ruby
+PhlexKit.configure do |c|
+  c.icon_library = :tabler   # :lucide (default), :tabler, :phosphor, :remix
+end
+```
+
+Use it directly with canonical semantic names (the per-library vocabulary is
+pre-resolved — `:chevron_down` is Phosphor's `caret-down`, Remix's
+`arrow-down-s-line`, and so on):
+
+```ruby
+render PhlexKit::Icon.new(:calendar)                     # 16px, configured library
+render PhlexKit::Icon.new(:search, size: 24)
+render PhlexKit::Icon.new(:check, library: :phosphor)    # per-instance override
+```
+
+`PhlexKit::Icons.names` lists the full catalog (~70 glyphs, all guaranteed to
+resolve in all four libraries); unknown names fail loud. HugeIcons is not
+included — its free set forbids redistributing the artwork inside a gem. Icon
+path data licenses ship in `THIRD_PARTY_LICENSES` (Lucide ISC, Tabler MIT,
+Phosphor MIT, Remix Apache-2.0).
+
 ## Charts
 
 `PhlexKit::Chart` is deliberately a thin wrapper — **no charting library is
