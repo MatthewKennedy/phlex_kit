@@ -8,6 +8,7 @@ require "phlex-rails"
 
 require "phlex_kit/version"
 require "phlex_kit/configuration"
+require "phlex_kit/icons"
 require "phlex_kit/base_component"
 
 # The Rails engine (asset path, Zeitwerk collapse, Propshaft guard, JS) is only

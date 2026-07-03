@@ -23,20 +23,7 @@ module PhlexKit
     private
 
     def icon
-      svg(
-        xmlns: "http://www.w3.org/2000/svg",
-        viewbox: "0 0 24 24",
-        fill: "none",
-        stroke: "currentColor",
-        "stroke-width": "2",
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        class: "pk-select-trigger-icon",
-        "aria-hidden": "true"
-      ) do |s|
-        s.path(d: "m7 15 5 5 5-5")
-        s.path(d: "m7 9 5-5 5 5")
-      end
+      render Icon.new(:chevrons_up_down, size: nil, class: "pk-select-trigger-icon")
     end
   end
 end

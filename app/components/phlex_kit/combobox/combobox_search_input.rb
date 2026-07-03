@@ -30,20 +30,7 @@ module PhlexKit
     private
 
     def icon
-      svg(
-        xmlns: "http://www.w3.org/2000/svg",
-        viewbox: "0 0 24 24",
-        fill: "none",
-        stroke: "currentColor",
-        "stroke-width": "2",
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        class: "pk-combobox-search-icon",
-        "aria-hidden": "true"
-      ) do |s|
-        s.circle(cx: "11", cy: "11", r: "8")
-        s.path(d: "m21 21-4.3-4.3")
-      end
+      render Icon.new(:search, size: nil, class: "pk-combobox-search-icon")
     end
   end
 end

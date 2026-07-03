@@ -25,10 +25,7 @@ module PhlexKit
     private
 
     def check_icon
-      svg(xmlns: "http://www.w3.org/2000/svg", viewbox: "0 0 24 24", fill: "none", stroke: "currentColor",
-          "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round") do |s|
-        s.path(d: "M20 6 9 17l-5-5")
-      end
+      render Icon.new(:check, size: nil)
     end
   end
 end

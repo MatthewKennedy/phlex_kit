@@ -26,3 +26,7 @@ module Dummy
     config.log_level = :warn
   end
 end
+
+# Opt-in icon-library override (e.g. PK_ICONS=tabler), mirroring PK_THEME —
+# the default gallery stays the shadcn-parity baseline (lucide).
+PhlexKit.config.icon_library = ENV["PK_ICONS"].to_sym if ENV["PK_ICONS"]

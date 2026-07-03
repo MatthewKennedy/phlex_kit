@@ -10,18 +10,13 @@ module PhlexKit
     end
 
     def view_template
-      svg(**mix({
-        xmlns: "http://www.w3.org/2000/svg",
-        viewbox: "0 0 24 24",
-        fill: "none",
-        stroke: "currentColor",
-        "stroke-width": "2",
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
+      # A visible loader, not decoration: role=status + label, aria-hidden off.
+      render Icon.new(:loader, size: nil, **mix({
         class: [ "pk-spinner", SIZES.fetch(@size) ].compact.join(" "),
         role: "status",
-        aria: { label: "Loading" }
-      }, @attrs)) { |s| s.path(d: "M21 12a9 9 0 1 1-6.219-8.56") }
+        aria: { label: "Loading" },
+        "aria-hidden": false
+      }, @attrs))
     end
   end
 end

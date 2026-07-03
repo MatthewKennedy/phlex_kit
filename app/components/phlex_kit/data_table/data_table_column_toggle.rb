@@ -43,19 +43,7 @@ module PhlexKit
     private
 
     def chevron_icon
-      svg(
-        xmlns: "http://www.w3.org/2000/svg",
-        width: "16",
-        height: "16",
-        viewbox: "0 0 24 24",
-        fill: "none",
-        stroke: "currentColor",
-        "stroke-width": "2",
-        "stroke-linecap": "round",
-        "stroke-linejoin": "round",
-        class: "pk-data-table-column-toggle-icon",
-        "aria-hidden": "true"
-      ) { |s| s.polyline(points: "6 9 12 15 18 9") }
+      render Icon.new(:chevron_down, class: "pk-data-table-column-toggle-icon")
     end
   end
 end
