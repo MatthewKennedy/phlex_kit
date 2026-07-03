@@ -15,7 +15,13 @@
 .pk-dialog.xl { max-width: 56rem; }
 .pk-dialog.full { max-width: 100%; }
 .pk-dialog-header { display: flex; flex-direction: column; gap: .375rem; text-align: center; }
-.pk-dialog-footer { display: flex; flex-direction: column-reverse; gap: .5rem; }
+.pk-dialog-footer {
+  display: flex; flex-direction: column-reverse; gap: .5rem;
+  margin: 0 calc(-1 * var(--pk-dialog-spacing)) calc(-1 * var(--pk-dialog-spacing));
+  padding: var(--pk-dialog-spacing);
+  border-top: 1px solid var(--pk-border);
+  background: color-mix(in oklab, var(--pk-surface-2) 50%, transparent);
+}
 .pk-dialog-title { font-size: 1.125rem; font-weight: 600; line-height: 1; letter-spacing: -.01em; }
 .pk-dialog-description { font-size: .875rem; color: var(--pk-muted); }
 .pk-dialog-middle { padding-block: 1rem; }

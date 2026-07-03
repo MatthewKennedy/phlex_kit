@@ -28,10 +28,11 @@
   border-radius: var(--pk-radius);
   background: var(--pk-surface);
   color: var(--pk-text);
-  padding: 1.5rem;
+  --pk-dialog-spacing: 1.5rem;
+  padding: var(--pk-dialog-spacing);
   box-shadow: 0 10px 40px rgba(0, 0, 0, .5);
 }
-.pk-alert-dialog-panel.sm { max-width: 24rem; padding: 1rem; gap: .75rem; }
+.pk-alert-dialog-panel.sm { max-width: 24rem; --pk-dialog-spacing: 1rem; gap: .75rem; }
 .pk-alert-dialog-panel.sm .pk-alert-dialog-title { font-size: 1rem; }
 
 .pk-alert-dialog-header { display: flex; flex-direction: column; gap: .5rem; }
@@ -64,4 +65,14 @@
 }
 .pk-alert-dialog-title { margin: 0; font-size: 1.125rem; font-weight: 600; }
 .pk-alert-dialog-description { margin: 0; font-size: .875rem; color: var(--pk-muted); }
-.pk-alert-dialog-footer { display: flex; justify-content: flex-end; gap: .5rem; flex-wrap: wrap; }
+/* Footer: shadcn's full-bleed muted band (escapes the panel padding). */
+.pk-alert-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: .5rem;
+  flex-wrap: wrap;
+  margin: 0 calc(-1 * var(--pk-dialog-spacing)) calc(-1 * var(--pk-dialog-spacing));
+  padding: var(--pk-dialog-spacing);
+  border-top: 1px solid var(--pk-border);
+  background: color-mix(in oklab, var(--pk-surface-2) 50%, transparent);
+}
