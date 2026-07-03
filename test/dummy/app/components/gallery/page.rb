@@ -19,6 +19,9 @@ module Gallery
           meta(charset: "utf-8")
           meta(name: "viewport", content: "width=device-width,initial-scale=1")
           stylesheet_link_tag "phlex_kit/phlex_kit"
+          # Opt-in theme override (e.g. PK_THEME=claude) — the gallery's
+          # default look stays the shadcn-parity baseline.
+          stylesheet_link_tag "phlex_kit/themes/#{ENV["PK_THEME"]}" if ENV["PK_THEME"]
           # The chart wrapper bundles no library — the dummy host supplies
           # window.Chart (vendored chart.js), exactly as a real host would.
           javascript_include_tag "chartjs.umd"

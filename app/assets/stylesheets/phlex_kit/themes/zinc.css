@@ -1,0 +1,85 @@
+/* PhlexKit theme: Zinc — translated from a ui.shadcn.com/create export
+   (preset b6mHLWLL2u, shadcn's stock zinc palette). Pure token override:
+   load AFTER the phlex_kit.css manifest and the cascade re-themes every
+   component.
+
+   Translation notes (the recipe for any shadcn/create export):
+   - background → bg; card/popover → surface; secondary/muted/accent →
+     surface-2/accent; foreground → text; secondary-foreground → text-2;
+     muted-foreground → muted; primary/primary-foreground → brand/brand-ink;
+     destructive → red; border/input/ring/chart-1..5/radius map 1:1.
+   - shadcn is light-default with a .dark class; PhlexKit themes are
+     dark-default with data-theme="light" opt-in — blocks swapped.
+   - sidebar-* has no --pk-* slots (the kit's sidebar reads the shared
+     surface tokens) and shadcn/create exports no green/amber — both fall
+     through to _tokens.css defaults.
+   - dark text-2 has no shadcn source (every dark *-foreground is 0.985);
+     zinc-300 is used, matching the kit's own dark text-2 weight. */
+:root {
+  --pk-bg: oklch(0.141 0.005 285.823);
+  --pk-surface: oklch(0.21 0.006 285.885);
+  --pk-surface-2: oklch(0.274 0.006 286.033);
+  --pk-accent: oklch(0.274 0.006 286.033);
+  --pk-border: oklch(1 0 0 / 10%);
+  --pk-input: oklch(1 0 0 / 15%);
+  --pk-ring: oklch(0.552 0.016 285.938);
+  --pk-text: oklch(0.985 0 0);
+  --pk-text-2: oklch(0.871 0.006 286.286);
+  --pk-muted: oklch(0.705 0.015 286.067);
+  --pk-brand: oklch(0.92 0.004 286.32);
+  --pk-brand-ink: oklch(0.21 0.006 285.885);
+  --pk-red: oklch(0.704 0.191 22.216);
+  --pk-chart-1: oklch(0.871 0.006 286.286);
+  --pk-chart-2: oklch(0.552 0.016 285.938);
+  --pk-chart-3: oklch(0.442 0.017 285.786);
+  --pk-chart-4: oklch(0.37 0.013 285.805);
+  --pk-chart-5: oklch(0.274 0.006 286.033);
+  --pk-radius: 0.625rem;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --pk-bg: oklch(1 0 0);
+  --pk-surface: oklch(1 0 0);
+  --pk-surface-2: oklch(0.967 0.001 286.375);
+  --pk-accent: oklch(0.967 0.001 286.375);
+  --pk-border: oklch(0.92 0.004 286.32);
+  --pk-input: oklch(0.92 0.004 286.32);
+  --pk-ring: oklch(0.705 0.015 286.067);
+  --pk-text: oklch(0.141 0.005 285.823);
+  --pk-text-2: oklch(0.21 0.006 285.885);
+  --pk-muted: oklch(0.552 0.016 285.938);
+  --pk-brand: oklch(0.21 0.006 285.885);
+  --pk-brand-ink: oklch(0.985 0 0);
+  --pk-red: oklch(0.577 0.245 27.325);
+  --pk-chart-1: oklch(0.871 0.006 286.286);
+  --pk-chart-2: oklch(0.552 0.016 285.938);
+  --pk-chart-3: oklch(0.442 0.017 285.786);
+  --pk-chart-4: oklch(0.37 0.013 285.805);
+  --pk-chart-5: oklch(0.274 0.006 286.033);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] {
+    --pk-bg: oklch(1 0 0);
+    --pk-surface: oklch(1 0 0);
+    --pk-surface-2: oklch(0.967 0.001 286.375);
+    --pk-accent: oklch(0.967 0.001 286.375);
+    --pk-border: oklch(0.92 0.004 286.32);
+    --pk-input: oklch(0.92 0.004 286.32);
+    --pk-ring: oklch(0.705 0.015 286.067);
+    --pk-text: oklch(0.141 0.005 285.823);
+    --pk-text-2: oklch(0.21 0.006 285.885);
+    --pk-muted: oklch(0.552 0.016 285.938);
+    --pk-brand: oklch(0.21 0.006 285.885);
+    --pk-brand-ink: oklch(0.985 0 0);
+    --pk-red: oklch(0.577 0.245 27.325);
+    --pk-chart-1: oklch(0.871 0.006 286.286);
+    --pk-chart-2: oklch(0.552 0.016 285.938);
+    --pk-chart-3: oklch(0.442 0.017 285.786);
+    --pk-chart-4: oklch(0.37 0.013 285.805);
+    --pk-chart-5: oklch(0.274 0.006 286.033);
+    color-scheme: light;
+  }
+}

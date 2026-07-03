@@ -1,0 +1,86 @@
+/* PhlexKit theme: Claude — warm ivory/charcoal neutrals + terracotta brand,
+   after the claude.ai palette. Pure token override: load AFTER the
+   phlex_kit.css manifest (stylesheet_link_tag "phlex_kit/themes/claude")
+   and the cascade re-themes every component; no component CSS is touched.
+
+   Same contract as _tokens.css: dark is the default, light is opt-in via
+   <html data-theme="light">, "system" follows the OS. Keep the two light
+   blocks in sync.
+
+   Anthropic's brand faces (Styrene, Tiempos/Copernicus) are licensed and
+   not shipped; --pk-font-serif falls back through Georgia. A host that has
+   the real fonts re-points the token. */
+:root {
+  --pk-bg: #262624;
+  --pk-surface: #30302e;
+  --pk-surface-2: #3a3a37;
+  --pk-accent: #45453f;
+  --pk-border: #faf9f51f;
+  --pk-input: #faf9f52e;
+  --pk-ring: #d97757;
+  --pk-text: #f5f4ee;
+  --pk-text-2: #d9d8d0;
+  --pk-muted: #a3a094;
+  --pk-brand: #d97757;
+  --pk-brand-ink: #ffffff;
+  --pk-green: #22c55e;
+  --pk-amber: #f59e0b;
+  --pk-red: #ff6568;
+  --pk-chart-1: #ecb4a0;
+  --pk-chart-2: #e19477;
+  --pk-chart-3: #d97757;
+  --pk-chart-4: #b85c3e;
+  --pk-chart-5: #8f4630;
+  --pk-radius: 0.75rem;
+  --pk-font-serif: "Copernicus", "Tiempos Text", Georgia, "Times New Roman", serif;
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  --pk-bg: #faf9f5;
+  --pk-surface: #ffffff;
+  --pk-surface-2: #f0eee6;
+  --pk-accent: #f0eee6;
+  --pk-border: #e5e2d9;
+  --pk-input: #d9d6ca;
+  --pk-ring: #d97757;
+  --pk-text: #1f1e1d;
+  --pk-text-2: #4a4844;
+  --pk-muted: #83817b;
+  --pk-brand: #d97757;
+  --pk-brand-ink: #ffffff;
+  --pk-green: #16a34a;
+  --pk-amber: #d97706;
+  --pk-red: #d13415;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] {
+    --pk-bg: #faf9f5;
+    --pk-surface: #ffffff;
+    --pk-surface-2: #f0eee6;
+    --pk-accent: #f0eee6;
+    --pk-border: #e5e2d9;
+    --pk-input: #d9d6ca;
+    --pk-ring: #d97757;
+    --pk-text: #1f1e1d;
+    --pk-text-2: #4a4844;
+    --pk-muted: #83817b;
+    --pk-brand: #d97757;
+    --pk-brand-ink: #ffffff;
+    --pk-green: #16a34a;
+    --pk-amber: #d97706;
+    --pk-red: #d13415;
+    color-scheme: light;
+  }
+}
+
+/* The one non-token rule: Claude's signature serif display over a sans body.
+   Serifs carry less inherent weight than the sans they replace, so headings
+   ease off the tracking the sans sizes wanted. */
+.pk-heading {
+  font-family: var(--pk-font-serif);
+  font-weight: 500;
+  letter-spacing: 0;
+}

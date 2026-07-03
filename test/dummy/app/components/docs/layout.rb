@@ -22,6 +22,9 @@ module Docs
           meta(charset: "utf-8")
           meta(name: "viewport", content: "width=device-width,initial-scale=1")
           stylesheet_link_tag "phlex_kit/phlex_kit"
+          # Opt-in theme override (e.g. PK_THEME=claude) — default look stays
+          # the shadcn-parity baseline.
+          stylesheet_link_tag "phlex_kit/themes/#{ENV["PK_THEME"]}" if ENV["PK_THEME"]
           javascript_include_tag "chartjs.umd"
           javascript_importmap_tags
           style { safe(docs_css) }
