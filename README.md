@@ -125,6 +125,19 @@ The full token surface: `--pk-bg`, `--pk-surface`, `--pk-surface-2`,
 like shadcn, as the docs site does). Want a fully custom palette? Drop the
 `_tokens.css` import and define them all yourself.
 
+Prefer a ready-made palette? The gem ships theme files under
+`app/assets/stylesheets/phlex_kit/themes/` (`neutral`, `zinc`, `claude`) —
+link one after the manifest and the cascade re-themes everything:
+
+```ruby
+stylesheet_link_tag "phlex_kit/phlex_kit"
+stylesheet_link_tag "phlex_kit/themes/neutral"
+```
+
+The three knobs from ui.shadcn.com/create map directly: **Radius** →
+`--pk-radius`; **Icon Library** → `PhlexKit.config.icon_library` (see Icons
+below); **Menu** → `PhlexKit::Sidebar.new(menu: :default | :solid)`.
+
 ## Icons
 
 Every built-in glyph renders through `PhlexKit::Icon`, which draws from a
