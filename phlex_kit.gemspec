@@ -8,11 +8,12 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Kennedy"]
   spec.email   = ["m.kennedy@aypex.io"]
 
-  spec.summary     = "A ruby_ui-style Phlex component kit styled with vanilla CSS and design tokens."
-  spec.description = "PhlexKit ports ruby_ui's components to Phlex, replacing Tailwind with " \
-                     "co-located vanilla CSS per component plus a global :root design-token " \
-                     "theme. phlex-reactive is an optional, per-component integration — never a " \
-                     "required dependency. Assets ship precompiled-static, so no host build step."
+  spec.summary     = "shadcn/ui-style component system for Phlex, styled with vanilla CSS and design tokens."
+  spec.description = "PhlexKit brings the shadcn/ui component catalog to Phlex and Rails, " \
+                     "replacing Tailwind with co-located vanilla CSS per component plus a " \
+                     "global :root design-token theme. phlex-reactive is an optional, " \
+                     "per-component integration — never a required dependency. Assets ship " \
+                     "precompiled-static, so no host build step."
   spec.homepage = "https://github.com/MatthewKennedy/phlex_kit"
   spec.license  = "MIT"
   spec.required_ruby_version = ">= 3.2"

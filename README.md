@@ -224,6 +224,26 @@ bundle exec puma -p 3999 test/dummy/config.ru
 # open http://127.0.0.1:3999
 ```
 
+By default the docs site renders the shadcn-parity baseline (default tokens,
+lucide icons). Two env vars re-skin the whole site, handy for eyeballing a
+theme or icon set across every component:
+
+```bash
+# Boot with a bundled theme (neutral, zinc, or claude)
+PK_THEME=claude bundle exec puma -p 3999 test/dummy/config.ru
+
+# Boot with a different icon library (lucide is the default; tabler, phosphor, remix)
+PK_ICONS=tabler bundle exec puma -p 3999 test/dummy/config.ru
+
+# Or both
+PK_THEME=zinc PK_ICONS=phosphor bundle exec puma -p 3999 test/dummy/config.ru
+```
+
+`PK_THEME` links the matching file from
+`app/assets/stylesheets/phlex_kit/themes/` after the manifest — the same
+mechanism a host app uses. Light/dark/system switching is in the site's
+header regardless of theme.
+
 ## Components
 
 Everything in ruby_ui (53/53) plus shadcn/ui's own catalog: accordion, alert,
