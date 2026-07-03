@@ -12,7 +12,9 @@
      dark-default with data-theme="light" opt-in — blocks swapped.
    - sidebar-* maps onto the kit's optional --pk-sidebar-* overrides, set
      only where the export differs from the shared tokens: here that's the
-     dark sidebar-primary (a distinct blue) + its ink. shadcn/create exports
+     dark sidebar-primary (a distinct blue) + its ink. Like the shadcn create
+     page, the blue only shows on active items under Sidebar's menu: :solid —
+     the :default menu highlights with the accent role. shadcn/create exports
      no green/amber — those fall through to _tokens.css defaults.
    - dark text-2 has no shadcn source (every dark *-foreground is 0.985);
      chart-1's 0.87 step (neutral-300) is used, matching the kit's own dark
