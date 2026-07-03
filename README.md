@@ -58,6 +58,11 @@ registerPhlexKitControllers(application)
 
 That's it — no Tailwind config, no content globs, no bundler.
 
+For a full step-by-step walkthrough on the default Propshaft + importmap stack —
+including how the `@import` chain and the Stimulus registration wire up, and how
+to verify the install — see
+[docs/05-PROPSHAFT-INSTALL.md](docs/05-PROPSHAFT-INSTALL.md).
+
 ## Usage
 
 ```ruby
