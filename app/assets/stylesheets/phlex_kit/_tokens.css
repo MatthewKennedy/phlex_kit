@@ -85,6 +85,13 @@
    var(--pk-*), so redefining :root after the import re-themes the whole kit
    with no rebuild.
 
+   Optional sidebar overrides (shadcn sidebar-* parity) — deliberately NOT
+   defined here: --pk-sidebar / -text / -accent / -border / -primary /
+   -primary-ink. sidebar.css consumes them via token→token fallbacks
+   (e.g. var(--pk-sidebar-primary, var(--pk-brand))), so unset they fall back
+   to surface/text/accent/border/brand/brand-ink; a theme sets one only when
+   its value differs from the shared token.
+
    Dark is the default; light is opt-in via <html data-theme="light"> (set it
    server-side to avoid a flash). "system" follows the OS via prefers-color-scheme.
    Keep the two light token sets in sync. */

@@ -43,12 +43,31 @@ cleanly).
 | `chart-1`..`chart-5` | `--pk-chart-1`..`--pk-chart-5` |
 | `radius` | `--pk-radius` |
 | `font-sans` / `font-mono` (tweakcn exports) | `--pk-font-sans` / `--pk-font-mono` (only if the family is a system font or the host loads it — never point at a font the gem doesn't ship) |
+| `sidebar` | `--pk-sidebar` (optional — see sidebar note) |
+| `sidebar-foreground` | `--pk-sidebar-text` (optional) |
+| `sidebar-accent` | `--pk-sidebar-accent` (optional) |
+| `sidebar-border` | `--pk-sidebar-border` (optional) |
+| `sidebar-primary` | `--pk-sidebar-primary` (optional) |
+| `sidebar-primary-foreground` | `--pk-sidebar-primary-ink` (optional) |
 
-**Dropped — no `--pk-*` slots:** `sidebar-*` (the kit's sidebar reads the
-shared surface/brand tokens), `card-foreground` / `popover-foreground` /
-`accent-foreground` (kit text tokens cover them), `destructive-foreground`,
-tweakcn's `shadow-*`. Say so in the summary if a dropped token carried a
-distinct color (e.g. a tinted sidebar) — that nuance is lost.
+**Sidebar tokens are optional overrides:** sidebar.css consumes them via
+token→token fallbacks onto surface/text/accent/border/brand/brand-ink, so
+**set one only when the export's value differs from its shared counterpart**
+(compare against the tokens you already mapped; identical values are covered
+by the fallback and just add noise). Setting `--pk-sidebar-primary` almost
+always requires `--pk-sidebar-primary-ink` too — the fallback ink is
+`--pk-brand-ink`, which is usually wrong on a different fill.
+
+**Cascade trap:** setting a sidebar token in the dark `:root` block leaks
+into light mode — `var()` fallbacks only apply when the property is UNSET,
+and `:root` custom properties cascade into `:root[data-theme="light"]`. If
+you set one in either mode, restate its other-mode value in BOTH light
+blocks (even when that value merely equals the shared token).
+
+**Dropped — no `--pk-*` slots:** `sidebar-ring` / `sidebar-accent-foreground`
+(the kit's sidebar styles no focus ring and doesn't change hover text color),
+`card-foreground` / `popover-foreground` / `accent-foreground` (kit text
+tokens cover them), `destructive-foreground`, tweakcn's `shadow-*`.
 
 **Inherited — omit, don't invent:** `--pk-green` and `--pk-amber` have no
 shadcn source. Leave them out and they fall through to `_tokens.css`

@@ -56,7 +56,7 @@ matches (parts/props), and its metrics have been compared.
 - [ ] select
 - [ ] separator
 - [ ] sheet
-- [ ] sidebar
+- [ ] sidebar — static part set at parity (GroupLabel/GroupContent/GroupAction/MenuAction/MenuBadge/MenuSkeleton/MenuSub*/Separator/Input added, 16rem width, optional --pk-sidebar-* tokens); collapsible/offcanvas/icon + Provider/Trigger/Rail behavior deliberately omitted — page not fully audited
 - [ ] skeleton
 - [ ] slider
 - [ ] sonner (maps to our toast — audit together with toast)

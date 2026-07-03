@@ -109,6 +109,12 @@ Invariants (keep all):
   | `bg-destructive` / `text-destructive` | `var(--pk-red)` |
   | `bg-primary/10` etc. | `color-mix(in oklab, var(--pk-brand) 10%, transparent)` |
 
+- **Optional component-scoped parity slots** use a token→token fallback —
+  `var(--pk-sidebar-primary, var(--pk-brand))` — for shadcn tokens the kit collapses
+  onto shared tokens (currently only the sidebar's `--pk-sidebar[-text|-accent|-border|-primary|-primary-ink]`).
+  They are defined nowhere by default; themes set one only when its value differs
+  from the shared token.
+
 - **Tokens** live in `_tokens.css`: `:root` (dark default), `:root[data-theme="light"]`,
   and `@media (prefers-color-scheme: light) :root[data-theme="system"]`. Plus utilities
   `.pk-hidden` and `.pk-contents`. Hosts override by redefining `:root` after the import
