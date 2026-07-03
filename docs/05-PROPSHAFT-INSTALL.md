@@ -259,5 +259,27 @@ To own and edit a component's source (shadcn-style), eject it into your app:
 bin/rails g phlex_kit:component button
 ```
 
-This copies `button.rb` + `button.css` into `app/components/phlex_kit/button/`
-and wires its `@import`; your copy shadows the gem's.
+This copies the whole component folder into `app/components/phlex_kit/button/` —
+`button.rb` (+ any parts), `button.css`, and (for interactive components)
+`button_controller.js` — prepends its `@import`, and wires `config/application.rb`
+once so your copy **fully shadows** the gem's: Ruby, CSS, and JS.
+
+Two things make the shadow complete, and the generator injects both (idempotently,
+after `config.load_defaults`) so you don't have to:
+
+```ruby
+# config/application.rb — added by the first eject
+Rails.autoloaders.main.collapse(Rails.root.join("app/components/phlex_kit/*"))
+config.assets.paths.unshift(Rails.root.join("app/components"))
+```
+
+- The **collapse** makes `button/button.rb` autoload as `PhlexKit::Button` (not
+  `PhlexKit::Button::Button`) — this is what makes the ejected Ruby take effect.
+- The **asset-path unshift** puts your `app/components` ahead of the gem on
+  Propshaft's load path, so the ejected `button.css` and `button_controller.js`
+  resolve to *your* copy. Without it, only the Ruby would shadow — the CSS and JS
+  would silently keep serving the gem's originals.
+
+Re-running the generator for another component reuses the same wiring (it's
+injected only once). If your app doesn't have a `config/application.rb` the
+generator can edit, add those two lines yourself.
