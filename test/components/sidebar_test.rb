@@ -1,0 +1,92 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+# Sidebar — the static part set at shadcn/ui parity (no collapsible/trigger/rail).
+# The suite can't nest `render`, so each part renders on its own.
+class SidebarTest < Minitest::Test
+  include RenderHelper
+
+  def test_shell_parts_render_their_elements_and_classes
+    {
+      PhlexKit::SidebarWrapper => [ "div", "pk-sidebar-wrapper" ],
+      PhlexKit::Sidebar => [ "div", "pk-sidebar" ],
+      PhlexKit::SidebarHeader => [ "div", "pk-sidebar-header" ],
+      PhlexKit::SidebarContent => [ "div", "pk-sidebar-content" ],
+      PhlexKit::SidebarFooter => [ "div", "pk-sidebar-footer" ],
+      PhlexKit::SidebarGroup => [ "div", "pk-sidebar-group" ],
+      PhlexKit::SidebarGroupLabel => [ "div", "pk-sidebar-group-label" ],
+      PhlexKit::SidebarGroupContent => [ "div", "pk-sidebar-group-content" ],
+      PhlexKit::SidebarGroupAction => [ "button", "pk-sidebar-group-action" ],
+      PhlexKit::SidebarMenu => [ "ul", "pk-sidebar-menu" ],
+      PhlexKit::SidebarMenuItem => [ "li", "pk-sidebar-menu-item" ],
+      PhlexKit::SidebarMenuAction => [ "button", "pk-sidebar-menu-action" ],
+      PhlexKit::SidebarMenuBadge => [ "span", "pk-sidebar-menu-badge" ],
+      PhlexKit::SidebarMenuSub => [ "ul", "pk-sidebar-menu-sub" ],
+      PhlexKit::SidebarMenuSubItem => [ "li", "pk-sidebar-menu-sub-item" ],
+      PhlexKit::SidebarInset => [ "main", "pk-sidebar-inset" ]
+    }.each do |part, (tag, css)|
+      html = render(part.new { "x" })
+      assert_includes html, "<#{tag}", "#{part} tag"
+      assert_includes html, css, "#{part} class"
+    end
+  end
+
+  def test_parts_pass_attrs_through_mix
+    html = render(PhlexKit::Sidebar.new(class: "extra", id: "nav") { "x" })
+    assert_includes html, "pk-sidebar extra"
+    assert_includes html, %(id="nav")
+  end
+
+  def test_menu_button_defaults_to_inactive_button
+    html = render(PhlexKit::SidebarMenuButton.new { "Home" })
+    assert_includes html, "<button"
+    assert_includes html, "pk-sidebar-menu-button"
+    assert_includes html, %(data-active="false")
+  end
+
+  def test_menu_button_as_anchor_with_active
+    html = render(PhlexKit::SidebarMenuButton.new(as: :a, href: "/x", active: true) { "X" })
+    assert_includes html, "<a"
+    assert_includes html, %(href="/x")
+    assert_includes html, %(data-active="true")
+  end
+
+  def test_menu_sub_button_defaults_to_anchor
+    html = render(PhlexKit::SidebarMenuSubButton.new(href: "/sub") { "Sub" })
+    assert_includes html, "<a"
+    assert_includes html, "pk-sidebar-menu-sub-button"
+    assert_includes html, %(data-active="false")
+  end
+
+  def test_menu_sub_button_active_as_button
+    html = render(PhlexKit::SidebarMenuSubButton.new(as: :button, active: true) { "Sub" })
+    assert_includes html, "<button"
+    assert_includes html, %(data-active="true")
+  end
+
+  def test_menu_skeleton_renders_text_shimmer_with_random_width
+    html = render(PhlexKit::SidebarMenuSkeleton.new)
+    assert_includes html, "pk-sidebar-menu-skeleton"
+    assert_includes html, "pk-skeleton text"
+    assert_match(/--pk-skeleton-width: (5\d|6\d|7\d|8\d|90)%/, html)
+    refute_includes html, "pk-skeleton icon"
+  end
+
+  def test_menu_skeleton_show_icon
+    html = render(PhlexKit::SidebarMenuSkeleton.new(show_icon: true))
+    assert_includes html, "pk-skeleton icon"
+  end
+
+  def test_separator_wraps_kit_separator
+    html = render(PhlexKit::SidebarSeparator.new)
+    assert_includes html, "pk-separator"
+    assert_includes html, "pk-sidebar-separator"
+  end
+
+  def test_input_wraps_kit_input
+    html = render(PhlexKit::SidebarInput.new(placeholder: "Search"))
+    assert_includes html, "pk-input pk-sidebar-input"
+    assert_includes html, %(placeholder="Search")
+  end
+end

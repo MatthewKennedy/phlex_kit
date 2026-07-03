@@ -10,10 +10,10 @@
      destructive → red; border/input/ring/chart-1..5/radius map 1:1.
    - shadcn is light-default with a .dark class; PhlexKit themes are
      dark-default with data-theme="light" opt-in — blocks swapped.
-   - sidebar-* has no --pk-* slots (the kit's sidebar reads the shared
-     surface tokens) and shadcn/create exports no green/amber — both fall
-     through to _tokens.css defaults. The export's dark sidebar-primary was
-     a distinct blue (oklch(0.488 0.243 264.376)) — that nuance is lost.
+   - sidebar-* maps onto the kit's optional --pk-sidebar-* overrides, set
+     only where the export differs from the shared tokens: here that's the
+     dark sidebar-primary (a distinct blue) + its ink. shadcn/create exports
+     no green/amber — those fall through to _tokens.css defaults.
    - dark text-2 has no shadcn source (every dark *-foreground is 0.985);
      chart-1's 0.87 step (neutral-300) is used, matching the kit's own dark
      text-2 weight. */
@@ -36,12 +36,16 @@
   --pk-chart-3: oklch(0.439 0 0);
   --pk-chart-4: oklch(0.371 0 0);
   --pk-chart-5: oklch(0.269 0 0);
+  --pk-sidebar-primary: oklch(0.488 0.243 264.376);
+  --pk-sidebar-primary-ink: oklch(0.985 0 0);
   --pk-radius: 0.625rem;
   color-scheme: dark;
 }
 
 :root[data-theme="light"] {
   --pk-bg: oklch(1 0 0);
+  --pk-sidebar-primary: oklch(0.205 0 0);
+  --pk-sidebar-primary-ink: oklch(0.985 0 0);
   --pk-surface: oklch(1 0 0);
   --pk-surface-2: oklch(0.97 0 0);
   --pk-accent: oklch(0.97 0 0);
@@ -65,6 +69,8 @@
 @media (prefers-color-scheme: light) {
   :root[data-theme="system"] {
     --pk-bg: oklch(1 0 0);
+    --pk-sidebar-primary: oklch(0.205 0 0);
+    --pk-sidebar-primary-ink: oklch(0.985 0 0);
     --pk-surface: oklch(1 0 0);
     --pk-surface-2: oklch(0.97 0 0);
     --pk-accent: oklch(0.97 0 0);

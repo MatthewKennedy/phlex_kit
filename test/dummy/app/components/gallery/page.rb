@@ -877,15 +877,27 @@ module Gallery
               render PhlexKit::SidebarHeader.new { "Aypex Admin" }
               render PhlexKit::SidebarContent.new do
                 render PhlexKit::SidebarGroup.new do
-                  render PhlexKit::SidebarMenu.new do
-                    render PhlexKit::SidebarMenuItem.new do
-                      render PhlexKit::SidebarMenuButton.new(active: true) { "Dashboard" }
-                    end
-                    render PhlexKit::SidebarMenuItem.new do
-                      render PhlexKit::SidebarMenuButton.new { "Reviews" }
-                    end
-                    render PhlexKit::SidebarMenuItem.new do
-                      render PhlexKit::SidebarMenuButton.new { "Settings" }
+                  render PhlexKit::SidebarGroupLabel.new { "Store" }
+                  render PhlexKit::SidebarGroupContent.new do
+                    render PhlexKit::SidebarMenu.new do
+                      render PhlexKit::SidebarMenuItem.new do
+                        render PhlexKit::SidebarMenuButton.new(active: true) { "Dashboard" }
+                      end
+                      render PhlexKit::SidebarMenuItem.new do
+                        render PhlexKit::SidebarMenuButton.new { "Reviews" }
+                        render PhlexKit::SidebarMenuBadge.new { "12" }
+                      end
+                      render PhlexKit::SidebarMenuItem.new do
+                        render PhlexKit::SidebarMenuButton.new { "Settings" }
+                        render PhlexKit::SidebarMenuSub.new do
+                          render PhlexKit::SidebarMenuSubItem.new do
+                            render PhlexKit::SidebarMenuSubButton.new(href: "#", active: true) { "General" }
+                          end
+                          render PhlexKit::SidebarMenuSubItem.new do
+                            render PhlexKit::SidebarMenuSubButton.new(href: "#") { "Team" }
+                          end
+                        end
+                      end
                     end
                   end
                 end
