@@ -175,6 +175,13 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes render(PhlexKit::DropdownMenuSubContent.new { "x" }), "pk-dropdown-menu-viewport"
   end
 
+  def test_accordion_type_and_disabled
+    assert_includes render(PhlexKit::Accordion.new { "x" }), %(data-type="single")
+    assert_includes render(PhlexKit::Accordion.new(type: :multiple) { "x" }), %(data-type="multiple")
+    assert_raises(KeyError) { render(PhlexKit::Accordion.new(type: :tabs) { "x" }) }
+    assert_includes render(PhlexKit::AccordionItem.new(disabled: true) { "x" }), "data-disabled"
+  end
+
   def test_stars_is_gone
     refute PhlexKit.const_defined?(:Stars), "stars was dropped in favour of shadcn parity"
   end

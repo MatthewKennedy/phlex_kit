@@ -7,7 +7,7 @@ matches (parts/props), and its metrics have been compared.
 
 ## Components (ui.shadcn.com/docs/components/radix/…)
 
-- [ ] accordion
+- [x] accordion — added type: :single (shadcn default, closes siblings)/:multiple, disabled items, bordered modifier; five examples
 - [ ] alert
 - [x] alert-dialog — added AlertDialogMedia, size: :sm, action variants, footer band, centered media stack
 - [x] aspect-ratio — square + portrait examples (component already at parity)

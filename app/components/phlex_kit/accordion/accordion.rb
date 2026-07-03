@@ -4,7 +4,16 @@ module PhlexKit
   # AccordionContent). Animated open/close via the phlex-kit--accordion controller
   # (native Web Animations API — no `motion` dependency).
   class Accordion < BaseComponent
-    def initialize(**attrs) = (@attrs = attrs)
-    def view_template(&) = div(**mix({ class: "pk-accordion" }, @attrs), &)
+    # single (default, shadcn's): opening an item closes the others.
+    TYPES = { single: "single", multiple: "multiple" }.freeze
+
+    def initialize(type: :single, **attrs)
+      @type = type.to_sym
+      @attrs = attrs
+    end
+
+    def view_template(&)
+      div(**mix({ class: "pk-accordion", data: { type: TYPES.fetch(@type) } }, @attrs), &)
+    end
   end
 end

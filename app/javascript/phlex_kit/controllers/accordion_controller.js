@@ -18,7 +18,23 @@ export default class extends Controller {
     this.animationDurationValue = d
   }
 
-  toggle() { this.openValue = !this.openValue }
+  toggle() {
+    const next = !this.openValue
+    if (next) this.closeSiblings()
+    this.openValue = next
+  }
+
+  // In a type="single" accordion (shadcn's default), opening one item closes
+  // the rest.
+  closeSiblings() {
+    const root = this.element.closest(".pk-accordion")
+    if (!root || root.dataset.type !== "single") return
+    root.querySelectorAll('[data-controller~="phlex-kit--accordion"]').forEach((el) => {
+      if (el === this.element) return
+      const ctrl = this.application.getControllerForElementAndIdentifier(el, "phlex-kit--accordion")
+      if (ctrl && ctrl.openValue) ctrl.openValue = false
+    })
+  }
   openValueChanged(isOpen) { isOpen ? this.open() : this.close() }
 
   open() {

@@ -12,3 +12,16 @@
 .pk-accordion-icon svg { width: 1rem; height: 1rem; }
 .pk-accordion-content { overflow-y: hidden; }
 .pk-accordion-default-content { padding-bottom: 1rem; padding-top: 0; font-size: .875rem; }
+
+/* Disabled items: inert trigger, dimmed. */
+.pk-accordion-item[data-disabled] .pk-accordion-trigger {
+  pointer-events: none;
+  opacity: .5;
+}
+
+/* Bordered flavour (shadcn's "Borders" example): outer border, inset rows. */
+.pk-accordion.bordered {
+  border: 1px solid var(--pk-border);
+  border-radius: var(--pk-radius);
+  padding-inline: 1rem;
+}
