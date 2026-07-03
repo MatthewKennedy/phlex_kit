@@ -3,7 +3,11 @@ module PhlexKit
   # cloned div carries its own `phlex-kit--alert-dialog` controller so Cancel
   # (#dismiss) can remove it. Holds Header + Footer. See alert_dialog.rb.
   class AlertDialogContent < BaseComponent
-    def initialize(**attrs)
+    # size => panel modifier; :sm is shadcn's compact variant.
+    SIZES = { default: nil, sm: "sm" }.freeze
+
+    def initialize(size: :default, **attrs)
+      @size = size.to_sym
       @attrs = attrs
     end
 
@@ -11,7 +15,7 @@ module PhlexKit
       template(**mix({ data: { phlex_kit__alert_dialog_target: "content" } }, @attrs)) do
         div(data: { controller: "phlex-kit--alert-dialog" }) do
           div(class: "pk-alert-dialog-overlay", "aria-hidden": "true")
-          div(role: "alertdialog", "aria-modal": "true", class: "pk-alert-dialog-panel", &block)
+          div(role: "alertdialog", "aria-modal": "true", class: [ "pk-alert-dialog-panel", SIZES.fetch(@size) ].compact.join(" "), &block)
         end
       end
     end

@@ -3,12 +3,13 @@ module PhlexKit
   # non-GET destructive action, use a `button_to` in the footer instead, so it
   # submits a real form.) See alert_dialog.rb.
   class AlertDialogAction < BaseComponent
-    def initialize(**attrs)
+    def initialize(variant: :primary, **attrs)
+      @variant = variant
       @attrs = attrs
     end
 
     def view_template(&block)
-      render PhlexKit::Button.new(variant: :primary, **@attrs, &block)
+      render PhlexKit::Button.new(variant: @variant, **@attrs, &block)
     end
   end
 end

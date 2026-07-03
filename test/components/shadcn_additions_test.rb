@@ -142,6 +142,13 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_raises(KeyError) { render(PhlexKit::Card.new(size: :xl) { "x" }) }
   end
 
+  def test_alert_dialog_media_size_and_destructive_action
+    assert_includes render(PhlexKit::AlertDialogMedia.new { "x" }), "pk-alert-dialog-media"
+    assert_includes render(PhlexKit::AlertDialogContent.new(size: :sm) { "x" }), "pk-alert-dialog-panel sm"
+    assert_raises(KeyError) { render(PhlexKit::AlertDialogContent.new(size: :xl) { "x" }) }
+    assert_includes render(PhlexKit::AlertDialogAction.new(variant: :destructive) { "Delete" }), "pk-button destructive"
+  end
+
   def test_stars_is_gone
     refute PhlexKit.const_defined?(:Stars), "stars was dropped in favour of shadcn parity"
   end
