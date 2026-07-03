@@ -23,11 +23,11 @@ examples of every pattern below.
 lib/phlex_kit.rb                     # requires; loads engine under Rails
 lib/phlex_kit/{version,configuration,base_component,engine,propshaft_skip_source}.rb
 lib/generators/phlex_kit/{install,component}/…
-app/components/phlex_kit/<name>/<name>.rb (+ parts) + <name>.css   # one folder per component
+app/components/phlex_kit/<name>/<name>.rb (+ parts) + <name>.css + <name>_controller.js  # one folder per component
 app/assets/stylesheets/phlex_kit/_tokens.css                      # default --pk-* theme + utilities
 app/assets/stylesheets/phlex_kit/phlex_kit.css                    # manifest (@import url(...) each css)
-app/javascript/phlex_kit/controllers/*.js + index.js             # Stimulus, phlex-kit--* identifiers
-config/importmap.rb                                              # pin_all_from the controllers dir
+app/javascript/phlex_kit/controllers/index.js                    # central registry, phlex-kit--* identifiers
+config/importmap.rb                                              # globs component folders, re-pins each _controller.js
 test/…                                                           # render + wiring + asset-guard tests
 ```
 
@@ -139,10 +139,13 @@ Invariants (keep all):
 
 ## 7. JavaScript / Stimulus
 
-- Interactive components ship a Stimulus controller under
-  `app/javascript/phlex_kit/controllers/<name>_controller.js`, connected via
-  `phlex-kit--<name>`, and registered in `controllers/index.js`
-  (`registerPhlexKitControllers`).
+- Interactive components ship a Stimulus controller co-located in the component
+  folder at `app/components/phlex_kit/<name>/<name>_controller.js`, connected via
+  `phlex-kit--<name>`, and registered in the central
+  `app/javascript/phlex_kit/controllers/index.js` (`registerPhlexKitControllers`).
+  The module id stays flat (`phlex_kit/controllers/<name>_controller`):
+  `config/importmap.rb` globs the component folders and re-pins each file under
+  that stable namespace, so hosts and `index.js` never change.
 - **No non-Stimulus npm imports.** ruby_ui's external deps are replaced:
   - `motion` (accordion animation) → native **Web Animations API** (`element.animate`).
   - `@floating-ui/dom` (popover/hover_card/context_menu/clipboard/combobox placement) →

@@ -284,8 +284,9 @@ fully mirrored overlay alignment in RTL may need small host-side overrides.
 Four engine initializers make the zero-build story hold:
 
 1. `app/components`, the stylesheet dir, and `app/javascript` go on
-   Propshaft's load path, so CSS sits beside each `.rb` and the importmap pins
-   resolve.
+   Propshaft's load path, so each component's `.css` and `_controller.js` sit
+   beside its `.rb` and the importmap pins resolve (`app/javascript` still serves
+   the central `controllers/index.js` registry).
 2. Component folders are Zeitwerk-`collapse`d, so `button/button.rb` is
    `PhlexKit::Button` and `card/card_header.rb` is `PhlexKit::CardHeader`.
 3. A guard keeps Propshaft from serving Ruby source out of `public/assets/`.

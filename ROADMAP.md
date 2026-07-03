@@ -77,7 +77,8 @@ Adapted from revue's production-proven vanilla-CSS kit. All render-tested.
 2. Create `app/components/phlex_kit/<name>/<name>.rb` (+ parts), `module PhlexKit`,
    `< BaseComponent`, `VARIANTS`/`SIZES` constants, `mix`-passthrough, `.fetch` fail-loud.
 3. Co-locate `<name>.css` — `.pk-<name>` classes, `var(--pk-*)` tokens, no hardcoded colours.
-4. Rename any Stimulus identifiers to `phlex-kit--<name>`; ship the controller under
-   `app/javascript/phlex_kit/controllers/` and register it in `controllers/index.js`.
+4. Rename any Stimulus identifiers to `phlex-kit--<name>`; co-locate the controller
+   at `app/components/phlex_kit/<name>/<name>_controller.js` (importmap.rb auto-pins
+   it) and register it in the central `app/javascript/phlex_kit/controllers/index.js`.
 5. Regenerate the manifest (add the `@import url(...)` line).
 6. Add `test/components/<name>_test.rb` (class list, fail-loud, attrs pass-through).
