@@ -102,6 +102,9 @@ browser tools are connected. When they send side-by-side screenshots, treat
 every visible difference as a bug until explained (media tile shape, button
 widths, blur strength — all were real).
 
+Check the page off in PARITY.md (repo root) with a one-line note of what
+the audit found — that file is the sweep's source of truth across sessions.
+
 Commit per page, message shaped like:
 
     <Component> to shadcn's current spec; docs page with their examples
