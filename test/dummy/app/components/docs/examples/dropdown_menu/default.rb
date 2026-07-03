@@ -10,13 +10,16 @@ module Docs
               render PhlexKit::Button.new(variant: :outline) { "Open" }
             end
             render PhlexKit::DropdownMenuContent.new do
-              render PhlexKit::DropdownMenuLabel.new { "My Account" }
+              render PhlexKit::DropdownMenuGroup.new do
+                render PhlexKit::DropdownMenuLabel.new { "My Account" }
+                render PhlexKit::DropdownMenuItem.new(href: "#") { "Profile" }
+                render PhlexKit::DropdownMenuItem.new(href: "#") { "Billing" }
+              end
               render PhlexKit::DropdownMenuSeparator.new
-              render PhlexKit::DropdownMenuItem.new(href: "#") { "Profile" }
-              render PhlexKit::DropdownMenuItem.new(href: "#") { "Billing" }
-              render PhlexKit::DropdownMenuItem.new(href: "#") { "Team" }
-              render PhlexKit::DropdownMenuSeparator.new
-              render PhlexKit::DropdownMenuItem.new(href: "#") { "Log out" }
+              render PhlexKit::DropdownMenuGroup.new do
+                render PhlexKit::DropdownMenuItem.new(href: "#") { "Team" }
+                render PhlexKit::DropdownMenuItem.new(href: "#") { "Subscription" }
+              end
             end
           end
         end

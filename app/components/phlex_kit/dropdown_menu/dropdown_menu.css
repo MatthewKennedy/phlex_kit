@@ -21,6 +21,7 @@
 .pk-dropdown-menu-item {
   display: flex;
   align-items: center;
+  gap: .5rem;
   width: 100%;
   cursor: pointer;
   user-select: none;
@@ -36,3 +37,66 @@
 
 .pk-dropdown-menu-label { margin: 0; padding: .375rem .5rem; font-size: .875rem; font-weight: 600; }
 .pk-dropdown-menu-separator { height: 1px; margin: .25rem -.25rem; background: var(--pk-border); }
+
+.pk-dropdown-menu-item > svg { flex: none; width: 1rem; height: 1rem; color: var(--pk-muted); }
+.pk-dropdown-menu-group { display: contents; }
+
+/* Destructive rows (irreversible actions). */
+.pk-dropdown-menu-item.destructive { color: var(--pk-red); }
+.pk-dropdown-menu-item.destructive > svg { color: var(--pk-red); }
+.pk-dropdown-menu-item.destructive:hover,
+.pk-dropdown-menu-item.destructive:focus {
+  background: color-mix(in oklab, var(--pk-red) 12%, transparent);
+  color: var(--pk-red);
+}
+
+/* Keyboard hint, pushed to the row's end. */
+.pk-dropdown-menu-shortcut {
+  margin-left: auto;
+  font-size: .75rem;
+  letter-spacing: .1em;
+  color: var(--pk-muted);
+}
+
+/* Checkbox / radio rows: real (hidden) inputs; indicator shows via :has. */
+.pk-dropdown-menu-item-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.pk-dropdown-menu-checkbox-item,
+.pk-dropdown-menu-radio-item { position: relative; }
+.pk-dropdown-menu-item-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  visibility: hidden;
+}
+.pk-dropdown-menu-item-indicator svg { width: .875rem; height: .875rem; }
+.pk-dropdown-menu-radio-item .pk-dropdown-menu-item-indicator svg { width: .5rem; height: .5rem; }
+.pk-dropdown-menu-item:has(.pk-dropdown-menu-item-input:checked) .pk-dropdown-menu-item-indicator { visibility: visible; }
+.pk-dropdown-menu-item:has(.pk-dropdown-menu-item-input:focus-visible) {
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+
+/* Submenu: trigger row + side panel, revealed on hover/focus — pure CSS. */
+.pk-dropdown-menu-sub { position: relative; }
+.pk-dropdown-menu-sub-chevron { margin-left: auto; width: 1rem; height: 1rem; }
+.pk-dropdown-menu-sub-content {
+  position: absolute;
+  top: -0.25rem;
+  left: 100%;
+  z-index: 60;
+  min-width: 10rem;
+  padding-left: .25rem; /* hover bridge over the gap */
+  display: none;
+}
+.pk-dropdown-menu-sub:hover > .pk-dropdown-menu-sub-content,
+.pk-dropdown-menu-sub:focus-within > .pk-dropdown-menu-sub-content { display: block; }
+.pk-dropdown-menu-sub:hover > .pk-dropdown-menu-sub-trigger,
+.pk-dropdown-menu-sub:focus-within > .pk-dropdown-menu-sub-trigger { background: var(--pk-accent); }

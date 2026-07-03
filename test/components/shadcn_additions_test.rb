@@ -161,6 +161,20 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes group, %(data-phlex-kit--scroll-fade-axis-value="x")
   end
 
+  def test_dropdown_menu_shadcn_parts
+    assert_includes render(PhlexKit::DropdownMenuGroup.new { "x" }), %(role="group")
+    assert_includes render(PhlexKit::DropdownMenuShortcut.new { "⌘K" }), "pk-dropdown-menu-shortcut"
+    assert_includes render(PhlexKit::DropdownMenuItem.new(variant: :destructive) { "Delete" }), "pk-dropdown-menu-item destructive"
+    assert_raises(KeyError) { render(PhlexKit::DropdownMenuItem.new(variant: :loud) { "x" }) }
+    cb = render(PhlexKit::DropdownMenuCheckboxItem.new(checked: true, name: "status") { "Status Bar" })
+    assert_includes cb, %(role="menuitemcheckbox")
+    assert_includes cb, "checked"
+    radio = render(PhlexKit::DropdownMenuRadioItem.new(name: "pos", value: "top", checked: true) { "Top" })
+    assert_includes radio, %(role="menuitemradio")
+    assert_includes render(PhlexKit::DropdownMenuSubTrigger.new { "More" }), %(aria-haspopup="menu")
+    assert_includes render(PhlexKit::DropdownMenuSubContent.new { "x" }), "pk-dropdown-menu-viewport"
+  end
+
   def test_stars_is_gone
     refute PhlexKit.const_defined?(:Stars), "stars was dropped in favour of shadcn parity"
   end
