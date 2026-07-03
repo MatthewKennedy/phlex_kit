@@ -12,12 +12,12 @@ module Docs
             render PhlexKit::AlertDialogContent.new(size: :sm) do
               render PhlexKit::AlertDialogHeader.new do
                 render PhlexKit::AlertDialogMedia.new { "ᛒ" }
-                render PhlexKit::AlertDialogTitle.new { "Allow Bluetooth?" }
-                render PhlexKit::AlertDialogDescription.new { "Nearby devices will be able to discover this computer." }
+                render PhlexKit::AlertDialogTitle.new { "Allow accessory to connect?" }
+                render PhlexKit::AlertDialogDescription.new { "Do you want to allow the USB accessory to connect to this device?" }
               end
               render PhlexKit::AlertDialogFooter.new do
-                render PhlexKit::AlertDialogCancel.new(size: :sm) { "Don't Allow" }
-                render PhlexKit::AlertDialogAction.new(size: :sm) { "Allow" }
+                render PhlexKit::AlertDialogCancel.new { "Don't allow" }
+                render PhlexKit::AlertDialogAction.new { "Allow" }
               end
             end
           end

@@ -16,8 +16,8 @@ module Docs
                 render PhlexKit::AlertDialogDescription.new { "This will permanently delete the conversation and remove it from your history." }
               end
               render PhlexKit::AlertDialogFooter.new do
-                render PhlexKit::AlertDialogCancel.new(size: :sm) { "Cancel" }
-                render PhlexKit::AlertDialogAction.new(variant: :destructive, size: :sm) { "Delete" }
+                render PhlexKit::AlertDialogCancel.new { "Cancel" }
+                render PhlexKit::AlertDialogAction.new(variant: :destructive) { "Delete" }
               end
             end
           end

@@ -15,8 +15,8 @@ module Docs
                 render PhlexKit::AlertDialogDescription.new { "Your unsaved changes will be lost." }
               end
               render PhlexKit::AlertDialogFooter.new do
-                render PhlexKit::AlertDialogCancel.new(size: :sm) { "Cancel" }
-                render PhlexKit::AlertDialogAction.new(size: :sm) { "Discard" }
+                render PhlexKit::AlertDialogCancel.new { "Cancel" }
+                render PhlexKit::AlertDialogAction.new { "Discard" }
               end
             end
           end

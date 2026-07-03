@@ -8,7 +8,7 @@
   padding: 1.5rem; box-shadow: 0 10px 30px rgb(0 0 0 / .35);
 }
 .pk-dialog[open] { display: flex; flex-direction: column; }
-.pk-dialog::backdrop { background: rgb(0 0 0 / .5); backdrop-filter: blur(2px); }
+.pk-dialog::backdrop { background: rgb(0 0 0 / .5); backdrop-filter: blur(8px); }
 .pk-dialog.xs { max-width: 24rem; }
 .pk-dialog.sm { max-width: 28rem; }
 .pk-dialog.lg { max-width: 42rem; }
