@@ -195,6 +195,11 @@ render PhlexKit::Chart.new(options: {
 No `window.Chart`? The controller dispatches `phlex-kit--chart:connect` with
 `{ canvas, options }` so you can drive any other library.
 
+For the full walkthrough — pinning Chart.js through **importmap** (and the
+gotcha that makes the obvious `bin/importmap pin chart.js` fail), the UMD
+alternative, and end-to-end verification — see
+[docs/06-CHARTS.md](docs/06-CHARTS.md).
+
 ## phlex-reactive (optional)
 
 For components that own server-state behavior, add phlex-reactive and include
