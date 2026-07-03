@@ -75,6 +75,12 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
 - Gallery JS errors surface in an on-page red banner (screenshot-reviewable);
   the dummy app vendors Stimulus and Chart.js under
   `test/dummy/vendor/javascript/`.
+- **Custom-property cascade trap**: a `--pk-*` token set only in the dark
+  `:root` block leaks into light mode — `var()` fallbacks apply to *unset*
+  properties only, and `:root` values cascade into `:root[data-theme="light"]`.
+  Any mode-varying token (incl. the optional `--pk-sidebar-*` overrides) must
+  be restated in BOTH light blocks (bit the neutral theme's blue
+  sidebar-primary).
 
 ## Releasing
 
