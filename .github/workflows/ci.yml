@@ -6,6 +6,20 @@ on:
   pull_request:
 
 jobs:
+  js-syntax:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax-check every JS file (node --check)
+        run: |
+          # Syntax-only gate for the Stimulus controllers + JS entrypoints.
+          # No bundler/runtime — just parse each file so a broken controller
+          # can't merge. node --check auto-detects the ESM `import` syntax.
+          find app -name "*.js" -print0 | xargs -0 -I{} -n1 node --check {}
+
   test:
     runs-on: ubuntu-latest
     strategy:
