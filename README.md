@@ -9,7 +9,11 @@ instead of Tailwind**. The full [ruby_ui](https://ruby-ui.com) catalog plus
 shadcn's own additions — 70 component families, 38 Stimulus controllers —
 with the default theme lifted verbatim from shadcn/ui's current token system.
 
-![The docs site's /create page — shadcn/ui's theme-builder demo rebuilt entirely from PhlexKit components](docs/images/create-page.png)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/create-page-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/create-page-light.png">
+  <img alt="The docs site's /create page — shadcn/ui's theme-builder demo rebuilt entirely from PhlexKit components" src="docs/images/create-page-light.png">
+</picture>
 
 *Every pixel above is PhlexKit: [shadcn's /create demo](https://ui.shadcn.com/create)
 rebuilt in the dummy app from kit components — cards, charts, sliders,
