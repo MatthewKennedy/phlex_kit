@@ -23,6 +23,12 @@ If the user gives a URL instead of pasted CSS, fetch it (or ask for the
 copied CSS — the create page renders tokens client-side and may not fetch
 cleanly).
 
+The create page's non-token options don't travel in the CSS export but map
+to kit features — mention them if the user picked non-defaults: Radius is
+the `--radius` token (already in the table); Icon Library is
+`PhlexKit.config.icon_library` (:lucide/:tabler/:phosphor/:remix — HugeIcons
+excluded for licensing); Menu Default/Solid is `Sidebar.new(menu:)`.
+
 ## Token mapping (shadcn → --pk-*)
 
 | shadcn | PhlexKit |
