@@ -18,12 +18,16 @@ module PhlexKit
   #     render PhlexKit::CardFooter.new { render PhlexKit::Button.new { "Action" } }
   #   end
   class Card < BaseComponent
-    def initialize(**attrs)
+    # size => modifier class; :sm tightens --pk-card-spacing (shadcn's size prop).
+    SIZES = { default: nil, sm: "sm" }.freeze
+
+    def initialize(size: :default, **attrs)
+      @size = size.to_sym
       @attrs = attrs
     end
 
     def view_template(&block)
-      div(**mix({ class: "pk-card" }, @attrs), &block)
+      div(**mix({ class: [ "pk-card", SIZES.fetch(@size) ].compact.join(" ") }, @attrs), &block)
     end
   end
 end

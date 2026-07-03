@@ -136,6 +136,12 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes render(PhlexKit::MarkerContent.new { "Done" }), "pk-marker-content"
   end
 
+  def test_card_action_and_size
+    assert_includes render(PhlexKit::CardAction.new { "x" }), "pk-card-action"
+    assert_includes render(PhlexKit::Card.new(size: :sm) { "x" }), "pk-card sm"
+    assert_raises(KeyError) { render(PhlexKit::Card.new(size: :xl) { "x" }) }
+  end
+
   def test_stars_is_gone
     refute PhlexKit.const_defined?(:Stars), "stars was dropped in favour of shadcn parity"
   end

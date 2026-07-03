@@ -1,15 +1,51 @@
 /* Co-located with card.rb — the UI::Card container kit (Card + Header / Title /
-   Description / Content / Footer). Namespaced .pk-card* to avoid colliding with
-   the dashboard stat-tile .card in application.css. Theme tokens come from the
-   global stylesheet; translated from ruby_ui's Tailwind:
-     rounded-xl border bg-background shadow  → border + radius + surface
-     flex flex-col space-y-1.5 p-6           → header column + gap + pad
-     font-semibold leading-none tracking-tight → title
-     text-sm text-muted-foreground           → description
-     p-6 pt-0 / items-center p-6 pt-0         → content / footer (top pad sits in header) */
-.pk-card { background: var(--pk-surface); border: 1px solid var(--pk-border); border-radius: .75rem; box-shadow: 0 1px 3px rgba(0, 0, 0, .3); }
-.pk-card-header { display: flex; flex-direction: column; gap: .375rem; padding: 1.5rem; }
-.pk-card-title { margin: 0; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; }
-.pk-card-description { margin: 0; font-size: .85rem; color: var(--pk-muted); }
-.pk-card-content { padding: 0 1.5rem 1.5rem; }
-.pk-card-footer { display: flex; align-items: center; gap: .5rem; padding: 0 1.5rem 1.5rem; }
+   Description / Action / Content / Footer), matching shadcn/ui's current card:
+   every gap and inset derives from --pk-card-spacing (1rem; .75rem for
+   size :sm — or set it inline per card), the header becomes a 1fr/auto grid
+   when a CardAction is present, the footer is a full-bleed muted band, and a
+   leading <img> child runs edge-to-edge. Theme tokens come from the global
+   stylesheet. */
+.pk-card {
+  --pk-card-spacing: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--pk-card-spacing);
+  overflow: hidden;
+  border: 1px solid var(--pk-border);
+  border-radius: calc(var(--pk-radius) + 4px);
+  background: var(--pk-surface);
+  color: var(--pk-text);
+  padding-block: var(--pk-card-spacing);
+  font-size: .875rem;
+}
+.pk-card.sm { --pk-card-spacing: .75rem; }
+/* the footer band and a leading image supply their own inset */
+.pk-card:has(> .pk-card-footer:last-child) { padding-bottom: 0; }
+.pk-card:has(> img:first-child) { padding-top: 0; }
+.pk-card > img { width: 100%; object-fit: cover; }
+
+.pk-card-header {
+  display: grid;
+  grid-auto-rows: min-content;
+  align-items: start;
+  gap: .25rem;
+  padding-inline: var(--pk-card-spacing);
+}
+.pk-card-header:has(.pk-card-action) { grid-template-columns: 1fr auto; }
+.pk-card-title { margin: 0; font-weight: 600; line-height: 1.25; }
+.pk-card-description { margin: 0; font-size: .875rem; color: var(--pk-muted); }
+.pk-card-action {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  justify-self: end;
+  align-self: start;
+}
+.pk-card-content { padding-inline: var(--pk-card-spacing); }
+.pk-card-footer {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  border-top: 1px solid var(--pk-border);
+  background: color-mix(in oklab, var(--pk-surface-2) 50%, transparent);
+  padding: var(--pk-card-spacing);
+}
