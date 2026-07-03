@@ -1,6 +1,10 @@
 /* Co-located with attachment.rb — UI::Attachment, shadcn parity: bordered
-   file chip (icon/preview tile, name + meta, trailing actions). */
+   file chip (icon/image media, name + meta, trailing actions), upload states
+   (uploading/processing shimmer the title; error goes destructive), three
+   sizes, vertical orientation, a full-card trigger behind the actions, and a
+   scrollable snapping group with an edge fade. */
 .pk-attachment {
+  position: relative;
   display: flex;
   align-items: center;
   gap: .5rem;
@@ -39,7 +43,14 @@
   text-overflow: ellipsis;
 }
 .pk-attachment-description { color: var(--pk-muted); font-size: .75rem; }
-.pk-attachment-actions { display: flex; align-items: center; gap: .25rem; flex: none; }
+.pk-attachment-actions {
+  position: relative; /* above the full-card trigger */
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+  flex: none;
+}
 .pk-attachment-action {
   display: inline-flex;
   align-items: center;
@@ -60,3 +71,92 @@
   box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-attachment-action svg { width: .875rem; height: .875rem; }
+
+/* Sizes. */
+.pk-attachment.sm { padding: .375rem; gap: .375rem; }
+.pk-attachment.sm .pk-attachment-media { width: 2rem; height: 2rem; }
+.pk-attachment.xs { padding: .25rem .375rem; gap: .375rem; font-size: .8125rem; }
+.pk-attachment.xs .pk-attachment-media { width: 1.5rem; height: 1.5rem; border-radius: calc(var(--pk-radius) - 4px); }
+
+/* Vertical: media stacks above the content (image-preview cards). */
+.pk-attachment.vertical {
+  flex-direction: column;
+  align-items: stretch;
+  width: 10rem;
+}
+.pk-attachment.vertical .pk-attachment-media.image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+}
+.pk-attachment.vertical .pk-attachment-actions {
+  position: absolute;
+  top: .75rem;
+  right: .75rem;
+}
+.pk-attachment.vertical .pk-attachment-action {
+  background: color-mix(in oklab, var(--pk-bg) 60%, transparent);
+  color: var(--pk-text);
+  backdrop-filter: blur(4px);
+}
+
+/* Upload states: uploading/processing shimmer the title (same recipe as
+   .pk-shimmer); error goes destructive. */
+.pk-attachment[data-state="uploading"] .pk-attachment-title,
+.pk-attachment[data-state="processing"] .pk-attachment-title {
+  --pk-shimmer-color: oklch(from currentColor calc(l + .25) c h);
+  background-image:
+    linear-gradient(110deg,
+      transparent calc(50% - (3ch + 40px) / 2),
+      var(--pk-shimmer-color) 50%,
+      transparent calc(50% + (3ch + 40px) / 2)),
+    linear-gradient(currentColor, currentColor);
+  background-size: 250% 100%, auto;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: pk-shimmer 2s linear infinite;
+}
+.pk-attachment[data-state="error"] { border-color: color-mix(in oklab, var(--pk-red) 40%, transparent); }
+.pk-attachment[data-state="error"] .pk-attachment-media { color: var(--pk-red); background: color-mix(in oklab, var(--pk-red) 12%, transparent); }
+.pk-attachment[data-state="error"] .pk-attachment-description { color: var(--pk-red); }
+
+/* Full-card trigger — behind the actions, focus ring on the card. */
+.pk-attachment-trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.pk-attachment-trigger:focus-visible { outline: none; }
+.pk-attachment:has(.pk-attachment-trigger:hover) { background: color-mix(in oklab, var(--pk-surface-2) 40%, var(--pk-surface)); }
+.pk-attachment:has(.pk-attachment-trigger:focus-visible) {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+
+/* Scrollable, snapping row with an edge fade (horizontal scroll-fade). */
+.pk-attachment-group {
+  --pk-scroll-fade-size: 2rem;
+  display: flex;
+  gap: .5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  padding: 2px; /* room for card rings */
+  mask-image: linear-gradient(to right,
+    transparent 0, black var(--pk-scroll-fade-size),
+    black calc(100% - var(--pk-scroll-fade-size)), transparent 100%);
+}
+.pk-attachment-group[data-at-start] {
+  mask-image: linear-gradient(to right,
+    black calc(100% - var(--pk-scroll-fade-size)), transparent 100%);
+}
+.pk-attachment-group[data-at-end] {
+  mask-image: linear-gradient(to right, transparent 0, black var(--pk-scroll-fade-size));
+}
+.pk-attachment-group[data-at-start][data-at-end] { mask-image: none; }
+.pk-attachment-group > .pk-attachment { flex: none; scroll-snap-align: start; }

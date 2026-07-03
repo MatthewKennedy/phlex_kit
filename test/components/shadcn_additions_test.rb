@@ -149,6 +149,18 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes render(PhlexKit::AlertDialogAction.new(variant: :destructive) { "Delete" }), "pk-button destructive"
   end
 
+  def test_attachment_states_sizes_orientation
+    assert_includes render(PhlexKit::Attachment.new(state: :uploading) { "x" }), %(data-state="uploading")
+    assert_includes render(PhlexKit::Attachment.new(size: :xs, orientation: :vertical) { "x" }), "pk-attachment xs vertical"
+    assert_raises(KeyError) { render(PhlexKit::Attachment.new(state: :bad) { "x" }) }
+    assert_includes render(PhlexKit::AttachmentMedia.new(variant: :image) { "x" }), "pk-attachment-media image"
+    trigger = render(PhlexKit::AttachmentTrigger.new(as: :a, href: "/f.pdf", aria: { label: "Open f.pdf" }))
+    assert_includes trigger, %(href="/f.pdf")
+    group = render(PhlexKit::AttachmentGroup.new { "x" })
+    assert_includes group, "phlex-kit--scroll-fade"
+    assert_includes group, %(data-phlex-kit--scroll-fade-axis-value="x")
+  end
+
   def test_stars_is_gone
     refute PhlexKit.const_defined?(:Stars), "stars was dropped in favour of shadcn parity"
   end

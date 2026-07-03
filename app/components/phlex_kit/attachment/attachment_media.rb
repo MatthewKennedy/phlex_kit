@@ -1,8 +1,17 @@
 module PhlexKit
-  # Square preview tile of an Attachment — a file-type icon or an <img>.
-  # See attachment.rb.
+  # Media slot of an Attachment: `variant: :icon` (default, a muted tile) or
+  # `:image` (render an <img> inside; fills the slot, full-width when the
+  # attachment is vertical). See attachment.rb.
   class AttachmentMedia < BaseComponent
-    def initialize(**attrs) = (@attrs = attrs)
-    def view_template(&) = div(**mix({ class: "pk-attachment-media" }, @attrs), &)
+    VARIANTS = { icon: nil, image: "image" }.freeze
+
+    def initialize(variant: :icon, **attrs)
+      @variant = variant.to_sym
+      @attrs = attrs
+    end
+
+    def view_template(&)
+      div(**mix({ class: [ "pk-attachment-media", VARIANTS.fetch(@variant) ].compact.join(" ") }, @attrs), &)
+    end
   end
 end
