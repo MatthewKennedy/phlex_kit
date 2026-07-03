@@ -32,6 +32,21 @@ class SidebarTest < Minitest::Test
     end
   end
 
+  def test_menu_variant_defaults_to_bare_class
+    html = render(PhlexKit::Sidebar.new { "x" })
+    assert_includes html, %(class="pk-sidebar")
+    refute_includes html, "menu-solid"
+  end
+
+  def test_menu_solid_adds_modifier
+    html = render(PhlexKit::Sidebar.new(menu: :solid) { "x" })
+    assert_includes html, "pk-sidebar menu-solid"
+  end
+
+  def test_menu_variant_fails_loud
+    assert_raises(KeyError) { render(PhlexKit::Sidebar.new(menu: :bogus) { "x" }) }
+  end
+
   def test_parts_pass_attrs_through_mix
     html = render(PhlexKit::Sidebar.new(class: "extra", id: "nav") { "x" })
     assert_includes html, "pk-sidebar extra"

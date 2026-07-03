@@ -10,12 +10,23 @@ module PhlexKit
   # SidebarInput / SidebarFooter, alongside a SidebarInset for the main content.
   # Tailwind → vanilla `.pk-sidebar*` (sidebar.css).
   class Sidebar < BaseComponent
-    def initialize(**attrs)
+    # Active-item treatment (ui.shadcn.com/create's "Menu" option): :default is
+    # shadcn's stock accent tint; :solid fills with the primary/brand role.
+    MENUS = { default: nil, solid: "menu-solid" }.freeze
+
+    def initialize(menu: :default, **attrs)
+      @menu = menu.to_sym
       @attrs = attrs
     end
 
     def view_template(&block)
-      div(**mix({ class: "pk-sidebar" }, @attrs), &block)
+      div(**mix({ class: classes }, @attrs), &block)
+    end
+
+    private
+
+    def classes
+      [ "pk-sidebar", MENUS.fetch(@menu) ].compact.join(" ")
     end
   end
 end

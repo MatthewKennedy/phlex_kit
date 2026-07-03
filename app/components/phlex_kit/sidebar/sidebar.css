@@ -74,7 +74,10 @@
   cursor: pointer;
 }
 .pk-sidebar-menu-button:hover { background: var(--pk-sidebar-accent, var(--pk-accent)); text-decoration: none; }
-.pk-sidebar-menu-button[data-active="true"] { background: var(--pk-sidebar-primary, var(--pk-brand)); color: var(--pk-sidebar-primary-ink, var(--pk-brand-ink)); font-weight: 600; }
+/* Active item: shadcn's stock "Default" menu look (accent tint). The create
+   page's "Solid" mode is the .menu-solid modifier on the sidebar root. */
+.pk-sidebar-menu-button[data-active="true"] { background: var(--pk-sidebar-accent, var(--pk-accent)); color: var(--pk-sidebar-text, var(--pk-text)); font-weight: 500; }
+.pk-sidebar.menu-solid .pk-sidebar-menu-button[data-active="true"] { background: var(--pk-sidebar-primary, var(--pk-brand)); color: var(--pk-sidebar-primary-ink, var(--pk-brand-ink)); font-weight: 600; }
 
 /* Anchored to the top of the item (the button row) — the item may also
    contain a submenu, so 50%-of-item would drift. */
