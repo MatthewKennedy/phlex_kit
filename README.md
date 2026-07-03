@@ -9,6 +9,12 @@ instead of Tailwind**. The full [ruby_ui](https://ruby-ui.com) catalog plus
 shadcn's own additions — 70 component families, 38 Stimulus controllers —
 with the default theme lifted verbatim from shadcn/ui's current token system.
 
+![The docs site's /create page — shadcn/ui's theme-builder demo rebuilt entirely from PhlexKit components](docs/images/create-page.png)
+
+*Every pixel above is PhlexKit: [shadcn's /create demo](https://ui.shadcn.com/create)
+rebuilt in the dummy app from kit components — cards, charts, sliders,
+switches, nav menu, command palette — at `/create` in [the docs site](#the-docs-site).*
+
 - **No build step.** Components are plain Ruby classes with co-located vanilla
   CSS, served precompiled-static through Propshaft. No Tailwind, no Node, no
   PostCSS.
