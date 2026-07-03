@@ -1,17 +1,49 @@
 /* Kit utilities used by the interactive controllers (Stimulus toggles these). */
 .pk-hidden { display: none !important; }
 
-/* Shimmer — shadcn's shimmer util: a gradient sweep across text, for loading /
-   "thinking…" states. Pure CSS. */
+/* Shimmer — shadcn's shimmer util: a highlight band sweeping across text, for
+   loading / "thinking…" states. Pure CSS, built on currentColor: the text keeps
+   its own color (any color) and the highlight derives from it via relative
+   color syntax, so it brightens automatically in dark mode. Tune per element
+   with inline custom properties:
+     --pk-shimmer-color     highlight (default: brightened currentColor)
+     --pk-shimmer-duration  one sweep (default 2s)
+     --pk-shimmer-spread    band width (default 3ch + 40px)
+     --pk-shimmer-angle     band tilt (default 20deg)
+   Modifiers: .once (single sweep), .reverse. Honors prefers-reduced-motion and
+   falls back to plain text in browsers without relative color support. */
 .pk-shimmer {
-  background: linear-gradient(90deg, var(--pk-muted) 40%, var(--pk-text) 50%, var(--pk-muted) 60%);
-  background-size: 200% 100%;
+  --pk-shimmer-color: oklch(from currentColor calc(l + .25) c h);
+  --pk-shimmer-duration: 2s;
+  --pk-shimmer-spread: calc(3ch + 40px);
+  --pk-shimmer-angle: 20deg;
+  background-image:
+    linear-gradient(calc(90deg + var(--pk-shimmer-angle)),
+      transparent calc(50% - var(--pk-shimmer-spread) / 2),
+      var(--pk-shimmer-color) 50%,
+      transparent calc(50% + var(--pk-shimmer-spread) / 2)),
+    linear-gradient(currentColor, currentColor);
+  background-size: 250% 100%, auto;
+  background-repeat: no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
-  color: transparent;
-  animation: pk-shimmer 2s linear infinite;
+  -webkit-text-fill-color: transparent;
+  animation: pk-shimmer var(--pk-shimmer-duration) linear infinite;
 }
-@keyframes pk-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+.pk-shimmer.once { animation-iteration-count: 1; animation-fill-mode: forwards; }
+.pk-shimmer.reverse { animation-direction: reverse; }
+[dir="rtl"] .pk-shimmer { animation-direction: reverse; }
+[dir="rtl"] .pk-shimmer.reverse { animation-direction: normal; }
+@keyframes pk-shimmer {
+  from { background-position: 250% 0, 0 0; }
+  to { background-position: -150% 0, 0 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pk-shimmer { animation: none; background-image: none; -webkit-text-fill-color: currentColor; }
+}
+@supports not (color: oklch(from white l c h)) {
+  .pk-shimmer { animation: none; background-image: none; -webkit-text-fill-color: currentColor; }
+}
 
 /* Scroll fade — shadcn's scroll-fade util: masks the edges of a scrollable
    container while there is more content in that direction. Pair with the
