@@ -21,7 +21,7 @@ test suite green.
 3. The prototype as canonical examples of every pattern:
    - Variant component: `app/components/phlex_kit/button/button.rb` + `button.css`
    - Multi-part + Stimulus: `app/components/phlex_kit/dropdown_menu/*`, `dialog/*`, `tabs/*`
-   - Controllers: `app/javascript/phlex_kit/controllers/*` + `index.js`
+   - Controllers: co-located `app/components/phlex_kit/<name>/<name>_controller.js` + central `app/javascript/phlex_kit/controllers/index.js`
    - Tokens/manifest: `app/assets/stylesheets/phlex_kit/{_tokens,phlex_kit}.css`
 4. ruby_ui source to port from: clone `github.com/ruby-ui/ruby_ui`; components live in
    `gem/lib/ruby_ui/<name>/` (`*_docs.rb` files are demo views — ignore them).

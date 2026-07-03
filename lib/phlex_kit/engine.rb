@@ -14,8 +14,10 @@ module PhlexKit
       if app.config.respond_to?(:assets)
         app.config.assets.paths << root.join("app/components")
         app.config.assets.paths << root.join("app/assets/stylesheets")
-        # The Stimulus controllers must be servable too, or every importmap pin
-        # from (4) resolves to a missing asset and gets silently skipped.
+        # The Stimulus controllers are co-located under app/components (served via
+        # the path above); this keeps the central registry (controllers/index.js)
+        # servable too, or the "phlex_kit/controllers" pin from (4) resolves to a
+        # missing asset and gets silently skipped.
         app.config.assets.paths << root.join("app/javascript")
       end
     end
@@ -38,6 +40,9 @@ module PhlexKit
     initializer "phlex_kit.importmap", before: "importmap" do |app|
       if app.respond_to?(:config) && app.config.respond_to?(:importmap)
         app.config.importmap.paths << root.join("config/importmap.rb")
+        # Colocated controllers change under app/components; the central registry
+        # lives under app/javascript. Sweep both so edits bust the importmap cache.
+        app.config.importmap.cache_sweepers << root.join("app/components")
         app.config.importmap.cache_sweepers << root.join("app/javascript")
       end
     end

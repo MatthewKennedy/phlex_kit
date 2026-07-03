@@ -9,7 +9,7 @@ architecture; `ROADMAP.md` for the inventory; this file for how to work here.
 
 ```bash
 bundle exec rake test                 # full suite (fast, no Rails boot)
-node --check app/javascript/phlex_kit/controllers/<name>_controller.js
+node --check app/components/phlex_kit/<name>/<name>_controller.js
 bundle exec puma -p 3999 test/dummy/config.ru   # the gallery — visual validation
 gem build phlex_kit.gemspec
 ```
@@ -26,9 +26,11 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
 ## Non-negotiable conventions
 
 - One folder per component under `app/components/phlex_kit/<name>/`, one file
-  per constant, co-located `<name>.css`. Zeitwerk collapse makes
-  `button/button.rb` → `PhlexKit::Button` (flat constants — parts like
-  `card/card_header.rb` are `PhlexKit::CardHeader`).
+  per constant, co-located `<name>.css` AND co-located `<name>_controller.js`
+  (the component's Stimulus controller lives beside its `.rb`/`.css`). Zeitwerk
+  collapse makes `button/button.rb` → `PhlexKit::Button` (flat constants — parts
+  like `card/card_header.rb` are `PhlexKit::CardHeader`); Zeitwerk ignores the
+  `.js`.
 - Root element: `**mix({ class: ..., data: ... }, @attrs)` so caller attrs
   (including a phlex-reactive `**on(:event)` bundle) pass through. Variant
   maps use `VARIANTS.fetch` — fail loud, never `[]`.
@@ -38,8 +40,14 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   `box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent)`).
   All radii derive from `--pk-radius` (`calc(var(--pk-radius) - 2px)` etc).
 - JS: Stimulus only, identifiers `phlex-kit--<name>`, data keys
-  `phlex_kit__<name>_target`. Register every controller in
-  `controllers/index.js` (imports AND `application.register`, both sorted).
+  `phlex_kit__<name>_target`. The controller file lives in the component folder
+  (`app/components/phlex_kit/<name>/<name>_controller.js`) but keeps the flat
+  `phlex_kit/controllers/<name>_controller` module id — `config/importmap.rb`
+  globs the component folders and re-pins each under that stable namespace, so
+  the central registry and host API never change. Register every controller in
+  the central `app/javascript/phlex_kit/controllers/index.js` (imports AND
+  `application.register`, both sorted); `javascript_registration_test.rb` guards
+  that every co-located controller is imported + registered.
   Show/hide toggles the `.pk-hidden` utility. No npm deps — floating-ui →
   CSS positioning, embla → translate engine, fuse → substring/fuzzy scorer,
   vaul → sheet clone machinery, chart.js → host-supplied `window.Chart`.
@@ -70,8 +78,13 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   `securerandom`, `cgi`) — components must load without a booted Rails app;
   the test suite depends on it.
 - The engine must keep `app/components`, `app/assets/stylesheets`, AND
-  `app/javascript` on the asset path — dropping the last silently kills every
-  importmap controller pin.
+  `app/javascript` on the asset path. Co-located `*_controller.js` files are
+  served via `app/components`; `app/javascript` still serves the central
+  `controllers/index.js` — dropping it silently kills the `phlex_kit/controllers`
+  registry pin.
+- **Stale importmap cache**: after moving/adding a controller, `test/dummy` can
+  serve a cached importmap (only 3 pins instead of all of them). Delete
+  `test/dummy/tmp/cache` and restart puma to force a fresh draw.
 - Gallery JS errors surface in an on-page red banner (screenshot-reviewable);
   the dummy app vendors Stimulus and Chart.js under
   `test/dummy/vendor/javascript/`.
