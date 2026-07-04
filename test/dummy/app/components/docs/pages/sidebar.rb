@@ -7,6 +7,7 @@ module Docs
       def demos
         demo Docs::Examples::Sidebar::Default, title: "Default"
         demo Docs::Examples::Sidebar::SolidMenu, title: "Solid menu"
+        demo Docs::Examples::Sidebar::Offcanvas, title: "Offcanvas (collapsible)"
       end
     end
   end

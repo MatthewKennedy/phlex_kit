@@ -104,4 +104,40 @@ class SidebarTest < Minitest::Test
     assert_includes html, "pk-input pk-sidebar-input"
     assert_includes html, %(placeholder="Search")
   end
+
+  def test_wrapper_defaults_to_static_without_controller
+    html = render(PhlexKit::SidebarWrapper.new { "x" })
+    assert_includes html, %(class="pk-sidebar-wrapper")
+    refute_includes html, "collapsible-offcanvas"
+    refute_includes html, "data-controller"
+    refute_includes html, "pk-sidebar-scrim"
+  end
+
+  def test_wrapper_offcanvas_wires_controller_scrim_and_close_actions
+    html = render(PhlexKit::SidebarWrapper.new(collapsible: :offcanvas) { "x" })
+    assert_includes html, "pk-sidebar-wrapper collapsible-offcanvas"
+    assert_includes html, %(data-controller="phlex-kit--sidebar")
+    assert_includes html, "keydown.esc@window->phlex-kit--sidebar#closeMobile"
+    assert_includes html, "turbo:before-cache@window->phlex-kit--sidebar#closeMobile"
+    assert_includes html, "pk-sidebar-scrim"
+    assert_includes html, "click->phlex-kit--sidebar#closeMobile"
+  end
+
+  def test_wrapper_collapsible_fails_loud
+    assert_raises(KeyError) { render(PhlexKit::SidebarWrapper.new(collapsible: :bogus) { "x" }) }
+  end
+
+  def test_trigger_renders_menu_icon_and_toggle_action
+    html = render(PhlexKit::SidebarTrigger.new)
+    assert_includes html, "pk-sidebar-trigger"
+    assert_includes html, %(aria-label="Toggle sidebar")
+    assert_includes html, "click->phlex-kit--sidebar#toggle"
+    assert_includes html, "<svg"
+  end
+
+  def test_trigger_block_replaces_default_icon
+    html = render(PhlexKit::SidebarTrigger.new { "≡" })
+    assert_includes html, "≡"
+    refute_includes html, "<svg"
+  end
 end

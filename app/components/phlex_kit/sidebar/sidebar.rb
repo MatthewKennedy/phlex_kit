@@ -1,9 +1,9 @@
 module PhlexKit
-  # Sidebar shell, ported from ruby_ui's RubyUI::Sidebar at `collapsible: :none`
-  # (the NonCollapsibleSidebar path): a static flex-column rail. Deliberately
-  # WITHOUT ruby_ui's collapsible/offcanvas Stimulus controller + cookie state +
-  # mobile Sheet (the admin sidebar is static) — those can be added later if a
-  # collapsible chrome is wanted. The static part set matches shadcn/ui's Sidebar:
+  # Sidebar shell, ported from ruby_ui's RubyUI::Sidebar: a flex-column rail.
+  # Static by default; SidebarWrapper(collapsible: :offcanvas) + SidebarTrigger
+  # give it shadcn's offcanvas behavior (desktop slide-away, mobile overlay
+  # drawer with scrim — see sidebar_wrapper.rb / sidebar_controller.js).
+  # The part set matches shadcn/ui's Sidebar:
   # compose with SidebarWrapper (the page root) + SidebarHeader / SidebarContent /
   # SidebarGroup (+ Label / Content / Action) / SidebarMenu (+ Item / Button /
   # Action / Badge / Skeleton / Sub / SubItem / SubButton) / SidebarSeparator /

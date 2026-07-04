@@ -39,6 +39,7 @@ import SelectController from "phlex_kit/controllers/select_controller"
 import SelectItemController from "phlex_kit/controllers/select_item_controller"
 import SheetController from "phlex_kit/controllers/sheet_controller"
 import SheetContentController from "phlex_kit/controllers/sheet_content_controller"
+import SidebarController from "phlex_kit/controllers/sidebar_controller"
 import SliderController from "phlex_kit/controllers/slider_controller"
 import TabsController from "phlex_kit/controllers/tabs_controller"
 import ThemeToggleController from "phlex_kit/controllers/theme_toggle_controller"
@@ -79,6 +80,7 @@ export function registerPhlexKitControllers(application) {
   application.register("phlex-kit--select-item", SelectItemController)
   application.register("phlex-kit--sheet", SheetController)
   application.register("phlex-kit--sheet-content", SheetContentController)
+  application.register("phlex-kit--sidebar", SidebarController)
   application.register("phlex-kit--slider", SliderController)
   application.register("phlex-kit--tabs", TabsController)
   application.register("phlex-kit--theme-toggle", ThemeToggleController)
