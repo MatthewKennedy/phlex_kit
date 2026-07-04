@@ -151,7 +151,11 @@ stylesheet_link_tag "phlex_kit/themes/neutral"
 
 The three knobs from ui.shadcn.com/create map directly: **Radius** →
 `--pk-radius`; **Icon Library** → `PhlexKit.config.icon_library` (see Icons
-below); **Menu** → `PhlexKit::Sidebar.new(menu: :default | :solid)`.
+below); **Menu** → `PhlexKit::Sidebar.new(menu: :default | :solid)`. For an
+off-canvas sidebar, `PhlexKit::SidebarWrapper.new(collapsible: :offcanvas)` +
+a `PhlexKit::SidebarTrigger` anywhere inside it: desktop slides the rail out
+of the layout, below 768px it overlays as a drawer behind a scrim (Escape /
+scrim-click closes; state is DOM-only so Turbo caches restore closed).
 
 ## Icons
 

@@ -14,8 +14,6 @@ navigation_menu (shared controller), resizable, attachment, avatar_group.
 
 ## Next
 
-- **Sidebar collapsible/offcanvas mode** — ours is the static rail only; upstream's
-  cookie-persisted collapse + mobile sheet behaviour was deliberately deferred.
 - **Checkbox group** — ruby_ui's cross-checkbox "at least one required" controller,
   noted as skipped in checkbox.rb.
 - **Menubar/NavigationMenu keyboard nav** — arrow-key movement between triggers and
@@ -64,7 +62,7 @@ Adapted from revue's production-proven vanilla-CSS kit. All render-tested.
 | Progress | — | — | |
 | Select | 8 parts | `phlex-kit--select` + `--select-item` | custom, CSS-positioned |
 | Separator | — | — | |
-| Sidebar | 10 parts | — | |
+| Sidebar | 22 parts | sidebar | offcanvas collapse (wrapper `collapsible:` + Trigger + scrim) |
 | ~~Stars~~ | — | — | dropped post-v0.2.1 (not in ruby_ui or shadcn) |
 | Table | header/body/row/cell/head/footer/caption | — | |
 | Textarea | — | — | |

@@ -921,6 +921,34 @@ module Gallery
           end
         end
       end
+
+      demo("Sidebar — offcanvas",
+        note: "SidebarWrapper(collapsible: :offcanvas) + SidebarTrigger: the trigger slides the rail out of the layout; below 768px it becomes an overlay drawer behind a scrim (Escape / scrim-click closes).") do
+        div(class: "sidebar-frame") do
+          render PhlexKit::SidebarWrapper.new(collapsible: :offcanvas) do
+            render PhlexKit::Sidebar.new do
+              render PhlexKit::SidebarHeader.new { "Aypex Admin" }
+              render PhlexKit::SidebarContent.new do
+                render PhlexKit::SidebarMenu.new do
+                  render PhlexKit::SidebarMenuItem.new do
+                    render PhlexKit::SidebarMenuButton.new(active: true) { "Dashboard" }
+                  end
+                  render PhlexKit::SidebarMenuItem.new do
+                    render PhlexKit::SidebarMenuButton.new { "Reviews" }
+                  end
+                end
+              end
+              render PhlexKit::SidebarFooter.new { "signed in" }
+            end
+            render PhlexKit::SidebarInset.new do
+              div(class: "boxed") do
+                render PhlexKit::SidebarTrigger.new
+                plain " Toggle the rail with the trigger."
+              end
+            end
+          end
+        end
+      end
     end
 
     def shadcn_additions_demo

@@ -158,3 +158,60 @@
 .pk-input.pk-sidebar-input { height: 2rem; width: 100%; background: var(--pk-bg); box-shadow: none; }
 
 .pk-sidebar-inset { flex: 1; min-width: 0; }
+
+/* --- Offcanvas mode (SidebarWrapper collapsible: :offcanvas) ---------------
+   Desktop: the rail slides out of the layout (data-collapsed on the wrapper).
+   Mobile (<768px): the rail is a fixed overlay drawer behind a scrim
+   (data-open). The trigger only shows inside an offcanvas wrapper. The 767px
+   cutoff matches sidebar_controller.js. */
+.pk-sidebar-wrapper.collapsible-offcanvas .pk-sidebar {
+  transition: margin-left .2s ease, transform .2s ease;
+}
+.pk-sidebar-wrapper.collapsible-offcanvas[data-collapsed] .pk-sidebar { margin-left: -16rem; }
+
+.pk-sidebar-trigger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 0;
+  border-radius: calc(var(--pk-radius) - 2px);
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+.pk-sidebar-trigger:hover { background: var(--pk-accent); }
+.pk-sidebar-trigger svg { width: 1rem; height: 1rem; }
+.collapsible-offcanvas .pk-sidebar-trigger { display: inline-flex; }
+
+.pk-sidebar-scrim { display: none; }
+
+@media (max-width: 767px) {
+  .pk-sidebar-wrapper.collapsible-offcanvas .pk-sidebar {
+    position: fixed;
+    inset-block: 0;
+    left: 0;
+    z-index: 50;
+    height: 100dvh;
+    margin-left: 0;
+    transform: translateX(-100%);
+    box-shadow: 0 8px 30px rgb(0 0 0 / .35);
+  }
+  .pk-sidebar-wrapper.collapsible-offcanvas[data-open] .pk-sidebar { transform: none; }
+  .pk-sidebar-wrapper.collapsible-offcanvas[data-open] .pk-sidebar-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 49;
+    background: rgb(0 0 0 / .5);
+    border: 0;
+    padding: 0;
+    cursor: default;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pk-sidebar-wrapper.collapsible-offcanvas .pk-sidebar { transition: none; }
+}

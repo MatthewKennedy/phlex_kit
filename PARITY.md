@@ -56,7 +56,7 @@ matches (parts/props), and its metrics have been compared.
 - [ ] select
 - [ ] separator
 - [ ] sheet
-- [ ] sidebar — static part set at parity (GroupLabel/GroupContent/GroupAction/MenuAction/MenuBadge/MenuSkeleton/MenuSub*/Separator/Input added, 16rem width, optional --pk-sidebar-* tokens, menu: :default/:solid matching the create page's Menu option with shadcn's stock accent look as default); collapsible/offcanvas/icon + Provider/Trigger/Rail behavior deliberately omitted — page not fully audited
+- [ ] sidebar — static part set at parity (GroupLabel/GroupContent/GroupAction/MenuAction/MenuBadge/MenuSkeleton/MenuSub*/Separator/Input added, 16rem width, optional --pk-sidebar-* tokens, menu: :default/:solid matching the create page's Menu option with shadcn's stock accent look as default); offcanvas collapse shipped (SidebarWrapper collapsible: :offcanvas + SidebarTrigger + scrim, desktop slide-away / mobile overlay drawer); icon-collapse mode + cookie persistence still omitted — page not fully audited
 - [ ] skeleton
 - [ ] slider
 - [ ] sonner (maps to our toast — audit together with toast)
