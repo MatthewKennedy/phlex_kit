@@ -1,13 +1,13 @@
-/* Co-located with progress.rb — UI::Progress. ruby_ui's Tailwind (h-2 rounded-full
-   bg-primary/20, indicator bg-primary translated by value) as vanilla CSS on the
-   palette tokens. Theme tokens come from the global stylesheet. */
+/* Co-located with progress.rb — PhlexKit::Progress. Matched to nova: an h-1
+   muted track with the brand indicator translated by value. Theme tokens
+   from the global stylesheet. */
 .pk-progress {
   position: relative;
-  height: .5rem;
+  height: .25rem;
   width: 100%;
   overflow: hidden;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--pk-brand) 20%, transparent);
+  background: var(--pk-surface-2);
 }
 .pk-progress-indicator {
   height: 100%;
