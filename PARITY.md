@@ -41,7 +41,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] item — added size: sm/xs, ItemMedia variants (:icon/:image square thumbs sized by item size), ItemSeparator/ItemHeader/ItemFooter parts (header/footer stack the item into a column), href: link items with hover fill, media self-start nudge beside descriptions, nova metrics (content gap-1, muted at 50%, group gap-4 w/ :has() size steps); nine examples
 - [x] kbd — already at parity bar two nova rules: svg-3 glyphs + background-tint restyle inside (inverted) tooltip content (10/20 dark/light); their five examples (Default, Group, Button, Tooltip, Input Group)
 - [x] label — already at parity (their page has no Examples section; "Label in Field" belongs to the field audit); demo updated to their checkbox-pair copy
-- [ ] marker
+- [x] marker — border variant fixed full-box→bottom-border-only (their border-b pb-2), separator content flex-none/centered, interactive markers (href:/as: :button) with underline+hover brighten, min-h to 1rem; their seven examples (Status w/ Spinner, Shimmer on .pk-shimmer)
 - [ ] menubar
 - [ ] message
 - [ ] message-scroller
