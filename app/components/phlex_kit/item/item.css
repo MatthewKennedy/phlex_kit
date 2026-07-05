@@ -1,4 +1,8 @@
-/* Co-located with item.rb — UI::Item family, shadcn parity. */
+/* Co-located with item.rb — PhlexKit::Item family, matched to shadcn/ui's
+   current item (nova): rounded-lg rows, sizes (sm keeps default paddings per
+   nova; xs tightens), media variants (icon glyph / square image thumb sized
+   by the item size), media nudges down beside a description, link items
+   (href:) hover-fill, Header stacks the item into a column. */
 .pk-item {
   display: flex;
   align-items: center;
@@ -6,27 +10,71 @@
   width: 100%;
   border: 1px solid transparent;
   border-radius: var(--pk-radius);
-  padding: .625rem .875rem;
+  padding: .625rem .75rem;
   font-size: .875rem;
+  color: inherit;
+  text-decoration: none;
 }
+a.pk-item:hover { background: var(--pk-surface-2); }
 .pk-item.outline { border-color: var(--pk-border); }
-.pk-item.muted { background: var(--pk-surface-2); }
+.pk-item.muted { background: color-mix(in oklab, var(--pk-surface-2) 50%, transparent); }
+.pk-item.xs { gap: .5rem; padding: .5rem .625rem; }
+.pk-item:has(> .pk-item-header),
+.pk-item:has(> .pk-item-footer) { flex-direction: column; align-items: stretch; }
+
 .pk-item-media {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: .5rem;
   flex: none;
   color: var(--pk-muted);
 }
-.pk-item-media svg { width: 1rem; height: 1rem; }
-.pk-item-content { display: flex; flex: 1; flex-direction: column; gap: .125rem; min-width: 0; }
-.pk-item-title { font-weight: 500; line-height: 1.25; }
+.pk-item:has(.pk-item-description) > .pk-item-media {
+  transform: translateY(.125rem);
+  align-self: flex-start;
+}
+.pk-item-media.icon svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+.pk-item-media.image {
+  width: 2.5rem;
+  height: 2.5rem;
+  overflow: hidden;
+  border-radius: calc(var(--pk-radius) - 4px);
+}
+.pk-item.sm .pk-item-media.image { width: 2rem; height: 2rem; }
+.pk-item.xs .pk-item-media.image { width: 1.5rem; height: 1.5rem; }
+.pk-item-media.image img { width: 100%; height: 100%; object-fit: cover; }
+
+.pk-item-content { display: flex; flex: 1; flex-direction: column; gap: .25rem; min-width: 0; }
+.pk-item.xs .pk-item-content { gap: 0; }
+.pk-item-title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-weight: 500;
+  font-size: .875rem;
+  line-height: 1.375;
+  text-underline-offset: 4px;
+}
 .pk-item-description {
   color: var(--pk-muted);
   font-size: .875rem;
-  line-height: 1.375;
+  line-height: 1.5;
+  text-align: left;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.pk-item.xs .pk-item-description { font-size: .75rem; }
 .pk-item-actions { display: flex; align-items: center; gap: .5rem; flex: none; }
-.pk-item-group { display: flex; flex-direction: column; width: 100%; gap: .5rem; }
+.pk-item-header,
+.pk-item-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .5rem;
+  width: 100%;
+}
+.pk-item-separator { height: 1px; margin-block: .5rem; background: var(--pk-border); }
+.pk-item-group { display: flex; flex-direction: column; width: 100%; gap: 1rem; }
+.pk-item-group:has(.pk-item.sm) { gap: .625rem; }
+.pk-item-group:has(.pk-item.xs) { gap: .5rem; }

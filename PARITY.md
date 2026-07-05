@@ -38,7 +38,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] input — nova respec: focus ring on --pk-ring (was brand), theme-forked fill (input/30 dark, transparent light), tinted disabled fill, invalid ring 20/40 split, styled file-selector button, text-base→md:text-sm (iOS zoom guard); eight examples (Field compositions stubbed with FormField pending the field audit)
 - [x] input-group — added block_start/block_end addon aligns (group stacks to a column, full-width header/footer rows w/ .bordered rule) + InputGroupButton part (ghost-xs Button tuned flush), shell respec'd: fixed h-8 (auto w/ textarea or block addon), ring-colored focus (was brand), :has() invalid/disabled lift, theme-forked fill, textarea collapse, control padding tightened beside inline addons, addon button/kbd negative margins; eleven examples. "Custom Input" section is a Tailwind-restyle recipe — skipped
 - [x] input-otp — nova metrics: size-8 slots (was 2.25rem), ring-colored focus (was brand), aria-invalid slot/group states w/ 20/40 split, theme-forked fill, disabled opacity; six examples (Controlled/Form are React-state/RHF — skipped)
-- [ ] item
+- [x] item — added size: sm/xs, ItemMedia variants (:icon/:image square thumbs sized by item size), ItemSeparator/ItemHeader/ItemFooter parts (header/footer stack the item into a column), href: link items with hover fill, media self-start nudge beside descriptions, nova metrics (content gap-1, muted at 50%, group gap-4 w/ :has() size steps); nine examples
 - [ ] kbd
 - [ ] label
 - [ ] marker
