@@ -1,8 +1,59 @@
-/* Co-located with button_group.rb — UI::ButtonGroup, shadcn parity: children
-   join into one segmented control (shared borders, inner corners squared). */
-.pk-button-group { display: inline-flex; align-items: stretch; }
-.pk-button-group > * { border-radius: 0; }
-.pk-button-group > *:not(:first-child) { margin-left: -1px; }
-.pk-button-group > *:first-child { border-top-left-radius: var(--pk-radius); border-bottom-left-radius: var(--pk-radius); }
-.pk-button-group > *:last-child { border-top-right-radius: var(--pk-radius); border-bottom-right-radius: var(--pk-radius); }
-.pk-button-group > *:focus-visible { position: relative; z-index: 1; }
+/* Co-located with button_group.rb — PhlexKit::ButtonGroup (+ Text /
+   Separator). Matched to shadcn/ui's current button-group: children keep
+   their OWN outer corners and only lose the inner ones (so sm buttons keep
+   their smaller radius), shared edges drop the trailing border. Nested
+   groups separate with a gap and stay independently rounded. The separator
+   is a hairline for same-fill segments (secondary/primary) where no border
+   exists to divide them. */
+.pk-button-group { display: flex; width: fit-content; align-items: stretch; }
+.pk-button-group:has(> .pk-button-group) { gap: .5rem; }
+.pk-button-group > :focus-visible { position: relative; z-index: 10; }
+.pk-button-group > input { flex: 1; }
+
+/* horizontal (default) */
+.pk-button-group:not(.vertical) > :not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0;
+}
+.pk-button-group:not(.vertical) > :not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* vertical */
+.pk-button-group.vertical { flex-direction: column; }
+.pk-button-group.vertical > :not(:first-child) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: 0;
+}
+.pk-button-group.vertical > :not(:last-child) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* Nested groups keep their own corners — undo the squaring the parent applied. */
+.pk-button-group > .pk-button-group { border-radius: 0; border: 0; }
+
+.pk-button-group-text {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--pk-surface-2);
+  border: 1px solid var(--pk-border);
+  border-radius: var(--pk-radius);
+  padding: 0 .625rem;
+  font-size: .875rem;
+  font-weight: 500;
+}
+.pk-button-group-text svg { pointer-events: none; }
+.pk-button-group-text svg:not([width]) { width: 1rem; height: 1rem; }
+
+.pk-button-group-separator {
+  position: relative;
+  align-self: stretch;
+  background: var(--pk-input);
+}
+.pk-button-group:not(.vertical) > .pk-button-group-separator { width: 1px; margin: 0 1px; }
+.pk-button-group.vertical > .pk-button-group-separator { height: 1px; margin: 1px 0; }
