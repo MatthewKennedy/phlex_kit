@@ -15,3 +15,13 @@
   font-weight: 500;
 }
 .pk-kbd-group { display: inline-flex; align-items: center; gap: .25rem; font-family: inherit; }
+.pk-kbd svg:not([class*="size-"]) { width: .75rem; height: .75rem; }
+/* Inside an (inverted) tooltip the chip tints from the page background. */
+.pk-tooltip-content .pk-kbd {
+  background: color-mix(in oklab, var(--pk-bg) 10%, transparent);
+  color: var(--pk-bg);
+}
+:root[data-theme="light"] .pk-tooltip-content .pk-kbd { background: color-mix(in oklab, var(--pk-bg) 20%, transparent); }
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-tooltip-content .pk-kbd { background: color-mix(in oklab, var(--pk-bg) 20%, transparent); }
+}
