@@ -13,11 +13,13 @@ module Docs
                   render PhlexKit::Icon.new(:chevron_down, size: nil)
                 end
               end
-              render PhlexKit::PopoverContent.new do
-                strong(style: "display: block; font-size: .875rem; margin-bottom: .25rem;") { "Start a new task with Copilot" }
-                p(style: "font-size: .875rem; color: var(--pk-muted); margin: 0 0 .5rem;") { "Describe your task in natural language." }
+              render PhlexKit::PopoverContent.new(align: :end) do
+                render PhlexKit::PopoverHeader.new do
+                  render PhlexKit::PopoverTitle.new { "Start a new task with Copilot" }
+                  render PhlexKit::PopoverDescription.new { "Describe your task in natural language." }
+                end
                 render PhlexKit::Textarea.new(placeholder: "I need to...", rows: 3)
-                p(style: "font-size: .75rem; color: var(--pk-muted); margin: .5rem 0 0;") { "Copilot will open a pull request for review." }
+                p(style: "font-size: .75rem; color: var(--pk-muted); margin: 0;") { "Copilot will open a pull request for review." }
               end
             end
           end

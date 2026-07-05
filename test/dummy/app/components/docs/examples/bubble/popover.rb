@@ -19,8 +19,10 @@ module Docs
                     end
                   end
                   render PhlexKit::PopoverContent.new do
-                    strong(style: "font-size: .875rem; display: block; margin-bottom: .25rem;") { "Command failed with exit code 1" }
-                    p(style: "font-size: .875rem; margin: 0; color: var(--pk-muted);") { "ENOENT: no such file or directory, open pnpm-lock.yaml" }
+                    render PhlexKit::PopoverHeader.new do
+                      render PhlexKit::PopoverTitle.new { "Command failed with exit code 1" }
+                      render PhlexKit::PopoverDescription.new { "ENOENT: no such file or directory, open pnpm-lock.yaml" }
+                    end
                   end
                 end
               end

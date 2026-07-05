@@ -1,9 +1,20 @@
-/* Co-located with popover.rb. CSS-positioned panel. Tokens from the global stylesheet. */
+/* Co-located with popover.rb. CSS-positioned panel matched to nova: w-72,
+   rounded-lg, p-2.5 with a gap-2.5 column, foreground-tint ring, text-sm;
+   Header (title + muted description) stacks at gap-0.5. `align: :end`
+   flips the panel to the trigger's end edge. Tokens global. */
 .pk-popover { position: relative; display: inline-block; }
 .pk-popover-trigger { display: inline-block; }
 .pk-popover-content {
-  position: absolute; z-index: 50; top: calc(100% + .5rem); left: 0;
-  min-width: 12rem; border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px);
-  background: var(--pk-surface); color: var(--pk-text); padding: .75rem;
+  position: absolute; z-index: 50; top: calc(100% + .25rem); left: 0;
+  display: flex; flex-direction: column; gap: .625rem;
+  width: 18rem;
+  border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
+  border-radius: var(--pk-radius);
+  background: var(--pk-surface); color: var(--pk-text); padding: .625rem;
+  font-size: .875rem;
   box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
 }
+.pk-popover-content.end { left: auto; right: 0; }
+.pk-popover-header { display: flex; flex-direction: column; gap: .125rem; font-size: .875rem; }
+.pk-popover-title { margin: 0; font-size: .875rem; font-weight: 500; }
+.pk-popover-description { margin: 0; color: var(--pk-muted); }

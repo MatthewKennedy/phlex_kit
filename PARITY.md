@@ -48,7 +48,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] native-select — nova respec mirroring input: rounded-lg (was r-2px), translucent dark fill w/ hover step (transparent light), ring focus (was brand), aria-invalid states w/ 20/40 split, sm radius cap; four examples
 - [x] navigation-menu — metric fixes only (structure at parity): triggers/links to rounded-lg px-2.5 py-1.5 on MUTED hovers (was accent) w/ half-fill open state, panel ring-bordered p-1, in-panel links rounded-md, svg-4. Page has no Examples section; Link Component is router-specific
 - [x] pagination — added PaginationLink (square ghost/outline-active) + PaginationPrevious/Next (chevron + sm-hidden label, near-side trim) matching their part API (PaginationItem kept as the combined back-compat part), content gap-0.5, ellipsis size-8; three examples (Default, Simple, Icons Only w/ rows-per-page Select)
-- [ ] popover
+- [x] popover — added PopoverHeader/Title/Description parts + align: :end on content (their align prop), panel respec'd to nova (w-72, p-2.5 gap-2.5 column, rounded-lg, foreground-tint ring, text-sm); three examples; bubble + button-group examples retrofitted onto the real parts
 - [ ] progress
 - [ ] radio-group
 - [ ] resizable
