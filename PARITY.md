@@ -66,8 +66,8 @@ matches (parts/props), and its metrics have been compared.
 - [ ] tabs
 - [x] textarea — same nova respec as input (rounded-lg, translucent dark fill, ring focus, invalid/disabled fills, iOS-zoom text-base→md:text-sm); four examples
 - [ ] toast
-- [ ] toggle
-- [ ] toggle-group
+- [x] toggle — nova metrics: h-8/7/9 (was 9/8/10), rounded-lg w/ sm cap, gap-1 px-2.5, muted hover + on fills (was accent-hover w/ muted text), focus ring, outline uses input border, data-icon insets, svg 4/3.5; five examples
+- [x] toggle-group — group radius to rounded-lg (items inherit via first/last overrides), joined items tighten to px-2; six examples on the real yield-API (Outline, Size, Spacing, Vertical, Disabled)
 - [ ] tooltip
 - [x] typography — fixed never-applied heading sizes; full prose specimen (h1–h4, list, table, lead/large/small/muted)
 
