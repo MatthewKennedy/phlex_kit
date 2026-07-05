@@ -27,9 +27,9 @@ matches (parts/props), and its metrics have been compared.
 - [ ] combobox — AUDITED 2026-07-05 (scope only): their page now has 10 example sections incl. chips/multiple/clear/auto-highlight/popup/input-group on the rebuilt parts API; kit controller is 300 lines with badge/input triggers already. Full diff needs its own session
 - [x] command — search field restyled to their bordered pill inside a padded rounded-xl palette (was full-width divider row), added CommandShortcut + CommandSeparator (separator hides while filtering, like cmdk; replaces the old divide-y group borders), selected rows fill muted, list max-h-72 with hidden scrollbar; five examples incl. Scrollable + the ⌘K dialog
 - [x] context-menu — mirrored the dropdown-menu part family (Group/Shortcut/CheckboxItem/RadioGroup+Item/Sub trio, destructive variant), items restyled from forced-2rem-inset to the gap grammar (.inset modifier kept), content overflow:visible so submenus can escape; their eight examples
-- [ ] data-table
-- [ ] date-picker
-- [ ] dialog
+- [ ] data-table — their page is a tanstack-table build tutorial; kit has its own data_table. Own session
+- [ ] date-picker — blocked on the calendar rebuild (range/presets compositions)
+- [x] dialog — fixed the footer band's undefined --pk-dialog-spacing (only alert-dialog defined it — margins silently no-op'd), respec'd to nova: 24rem default width (their max-w-sm) with viewport clamp + retuned size ladder, foreground-tint ring border, rounded-xl, p-4/gap-4/text-sm, title text-base/medium, close at top-2/right-2, description link styling; added show_close_button: + DialogClose part. Overlay kept at the kit-unified 0.5/8px — nova moved to black/10+blur-xs, change all overlays (dialog/alert-dialog/sheet/command) together as a follow-up. Five examples
 - [ ] drawer
 - [x] dropdown-menu — Group/Shortcut/CheckboxItem/RadioGroup+Item/Sub family, destructive items; seven examples
 - [ ] empty

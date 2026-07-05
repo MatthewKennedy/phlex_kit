@@ -27,8 +27,10 @@ module Docs
                 end
               end
               render PhlexKit::DialogFooter.new do
-                render PhlexKit::Button.new(variant: :outline, data: { action: "click->phlex-kit--dialog#dismiss" }) { "Cancel" }
-                render PhlexKit::Button.new(data: { action: "click->phlex-kit--dialog#dismiss" }) { "Save changes" }
+                render PhlexKit::DialogClose.new do
+                  render PhlexKit::Button.new(variant: :outline) { "Cancel" }
+                end
+                render PhlexKit::Button.new { "Save changes" }
               end
             end
           end
