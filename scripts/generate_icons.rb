@@ -67,6 +67,8 @@ CURATED = {
   calendar: { lucide: %w[calendar], tabler: %w[calendar], phosphor: %w[calendar], remix: %w[calendar-line] },
   user: { lucide: %w[user], tabler: %w[user], phosphor: %w[user], remix: %w[user-line] },
   users: { lucide: %w[users], tabler: %w[users], phosphor: %w[users], remix: %w[group-line] },
+  user_x: { lucide: %w[user-x], tabler: %w[user-x], phosphor: %w[user-circle-minus user-minus], remix: %w[user-unfollow-line user-forbid-line] },
+  volume_off: { lucide: %w[volume-off volume-x], tabler: %w[volume-off volume-3], phosphor: %w[speaker-slash speaker-simple-slash], remix: %w[volume-mute-line] },
   settings: { lucide: %w[settings], tabler: %w[settings], phosphor: %w[gear], remix: %w[settings-3-line] },
   trash: { lucide: %w[trash-2 trash], tabler: %w[trash], phosphor: %w[trash], remix: %w[delete-bin-line] },
   plus: { lucide: %w[plus], tabler: %w[plus], phosphor: %w[plus], remix: %w[add-line] },

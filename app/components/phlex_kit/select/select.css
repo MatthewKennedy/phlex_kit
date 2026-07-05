@@ -50,7 +50,11 @@
   top: 100%;
   left: 0;
   z-index: 50;
-  width: 100%;
+  /* Content-hugging with the trigger width as the floor — items never wrap,
+     so a narrow trigger (e.g. the currency select in a button group) still
+     gets a readable panel; for form selects min-width keeps panel = trigger. */
+  width: max-content;
+  min-width: 100%;
   margin-top: .25rem;
 }
 .pk-select-content.hidden { display: none; }

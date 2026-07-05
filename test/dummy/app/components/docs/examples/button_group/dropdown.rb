@@ -13,18 +13,39 @@ module Docs
                   render PhlexKit::Icon.new(:chevron_down, size: nil)
                 end
               end
-              render PhlexKit::DropdownMenuContent.new(style: "min-width: 11rem") do
+              render PhlexKit::DropdownMenuContent.new(style: "min-width: 14rem") do
                 render PhlexKit::DropdownMenuGroup.new do
-                  render PhlexKit::DropdownMenuItem.new(href: "#") { "Mute Conversation" }
-                  render PhlexKit::DropdownMenuItem.new(href: "#") { "Mark as Read" }
-                  render PhlexKit::DropdownMenuItem.new(href: "#") { "Report Conversation" }
-                  render PhlexKit::DropdownMenuItem.new(href: "#") { "Block User" }
-                  render PhlexKit::DropdownMenuItem.new(href: "#") { "Share Conversation" }
-                  render PhlexKit::DropdownMenuItem.new(href: "#") { "Copy Conversation" }
+                  render PhlexKit::DropdownMenuItem.new(href: "#") do
+                    render PhlexKit::Icon.new(:volume_off, size: nil)
+                    plain "Mute Conversation"
+                  end
+                  render PhlexKit::DropdownMenuItem.new(href: "#") do
+                    render PhlexKit::Icon.new(:check, size: nil)
+                    plain "Mark as Read"
+                  end
+                  render PhlexKit::DropdownMenuItem.new(href: "#") do
+                    render PhlexKit::Icon.new(:triangle_alert, size: nil)
+                    plain "Report Conversation"
+                  end
+                  render PhlexKit::DropdownMenuItem.new(href: "#") do
+                    render PhlexKit::Icon.new(:user_x, size: nil)
+                    plain "Block User"
+                  end
+                  render PhlexKit::DropdownMenuItem.new(href: "#") do
+                    render PhlexKit::Icon.new(:share, size: nil)
+                    plain "Share Conversation"
+                  end
+                  render PhlexKit::DropdownMenuItem.new(href: "#") do
+                    render PhlexKit::Icon.new(:copy, size: nil)
+                    plain "Copy Conversation"
+                  end
                 end
                 render PhlexKit::DropdownMenuSeparator.new
                 render PhlexKit::DropdownMenuGroup.new do
-                  render PhlexKit::DropdownMenuItem.new(href: "#", variant: :destructive) { "Delete Conversation" }
+                  render PhlexKit::DropdownMenuItem.new(href: "#", variant: :destructive) do
+                    render PhlexKit::Icon.new(:trash, size: nil)
+                    plain "Delete Conversation"
+                  end
                 end
               end
             end

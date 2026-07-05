@@ -36,6 +36,44 @@
 /* Nested groups keep their own corners — undo the squaring the parent applied. */
 .pk-button-group > .pk-button-group { border-radius: 0; border: 0; }
 
+/* Composite children (dropdown menu, popover, hover card, tooltip, select,
+   combobox) wrap their trigger control in inert divs — shadcn's asChild
+   merges the trigger onto the button, so its direct-child rules just work;
+   ours land on the wrapper. Re-apply the corner/border rules to the control
+   inside: wrapper→trigger-div→.pk-button for the div-trigger components,
+   wrapper→trigger for select/combobox (their trigger IS the control). The
+   absolutely-positioned panels are untouched. */
+.pk-button-group:not(.vertical) > :not(:first-child) > :is(.pk-dropdown-menu-trigger, .pk-popover-trigger, .pk-hover-card-trigger, .pk-tooltip-trigger) > .pk-button,
+.pk-button-group:not(.vertical) > :not(:first-child) > :is(.pk-select-trigger, .pk-combobox-trigger) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: 0;
+}
+.pk-button-group:not(.vertical) > :not(:last-child) > :is(.pk-dropdown-menu-trigger, .pk-popover-trigger, .pk-hover-card-trigger, .pk-tooltip-trigger) > .pk-button,
+.pk-button-group:not(.vertical) > :not(:last-child) > :is(.pk-select-trigger, .pk-combobox-trigger) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+.pk-button-group.vertical > :not(:first-child) > :is(.pk-dropdown-menu-trigger, .pk-popover-trigger, .pk-hover-card-trigger, .pk-tooltip-trigger) > .pk-button,
+.pk-button-group.vertical > :not(:first-child) > :is(.pk-select-trigger, .pk-combobox-trigger) {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-top: 0;
+}
+.pk-button-group.vertical > :not(:last-child) > :is(.pk-dropdown-menu-trigger, .pk-popover-trigger, .pk-hover-card-trigger, .pk-tooltip-trigger) > .pk-button,
+.pk-button-group.vertical > :not(:last-child) > :is(.pk-select-trigger, .pk-combobox-trigger) {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+/* .pk-select defaults to width:100%; as a group segment it hugs its trigger
+   and lets siblings (the input) take the leftover flex space — shadcn's
+   [&>[data-slot=select-trigger]]:w-fit. */
+.pk-button-group > .pk-select { width: fit-content; }
+
+/* A focused nested trigger lifts above its neighbor like a direct child. */
+.pk-button-group :is(.pk-dropdown-menu-trigger, .pk-popover-trigger, .pk-hover-card-trigger, .pk-tooltip-trigger) > .pk-button:focus-visible,
+.pk-button-group :is(.pk-select-trigger, .pk-combobox-trigger):focus-visible { position: relative; z-index: 10; }
+
 .pk-button-group-text {
   display: flex;
   align-items: center;

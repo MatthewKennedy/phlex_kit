@@ -35,8 +35,9 @@
 .pk-field { display: flex; width: 100%; gap: .5rem; }
 .pk-field[data-invalid="true"] { color: var(--pk-red); }
 .pk-field[data-orientation="vertical"] { flex-direction: column; }
-.pk-field[data-orientation="vertical"] > * { width: 100%; }
-.pk-field[data-orientation="vertical"] > .pk-sr-only { width: auto; }
+/* Width coercion skips fixed-size controls (switch/checkbox/radio keep their
+   intrinsic track/box size — `> *` out-specifies their own width rules). */
+.pk-field[data-orientation="vertical"] > :not(.pk-sr-only, .pk-switch, .pk-checkbox, .pk-radio) { width: 100%; }
 .pk-field[data-orientation="horizontal"] { flex-direction: row; align-items: center; }
 .pk-field[data-orientation="horizontal"] > .pk-field-label,
 .pk-field[data-orientation="horizontal"] > .pk-field-content { flex: 1 1 auto; }
@@ -44,11 +45,10 @@
 .pk-field[data-orientation="horizontal"]:has(> .pk-field-content) > .pk-checkbox,
 .pk-field[data-orientation="horizontal"]:has(> .pk-field-content) > .pk-radio { margin-top: 1px; }
 .pk-field[data-orientation="responsive"] { flex-direction: column; }
-.pk-field[data-orientation="responsive"] > * { width: 100%; }
-.pk-field[data-orientation="responsive"] > .pk-sr-only { width: auto; }
+.pk-field[data-orientation="responsive"] > :not(.pk-sr-only, .pk-switch, .pk-checkbox, .pk-radio) { width: 100%; }
 @container (min-width: 28rem) {
   .pk-field[data-orientation="responsive"] { flex-direction: row; align-items: center; }
-  .pk-field[data-orientation="responsive"] > * { width: auto; }
+  .pk-field[data-orientation="responsive"] > :not(.pk-sr-only, .pk-switch, .pk-checkbox, .pk-radio) { width: auto; }
   .pk-field[data-orientation="responsive"] > .pk-field-label,
   .pk-field[data-orientation="responsive"] > .pk-field-content { flex: 1 1 auto; }
   .pk-field[data-orientation="responsive"]:has(> .pk-field-content) { align-items: flex-start; }

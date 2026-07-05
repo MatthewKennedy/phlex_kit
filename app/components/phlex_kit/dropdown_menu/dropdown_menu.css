@@ -29,6 +29,7 @@
   padding: .375rem .5rem;
   font-size: .875rem;
   color: var(--pk-text);
+  text-decoration: none; /* href items render as <a> — no UA underline at rest */
   outline: none;
 }
 .pk-dropdown-menu-item:hover,
