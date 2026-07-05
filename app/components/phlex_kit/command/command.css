@@ -1,9 +1,16 @@
-/* Co-located with command.rb — UI::Command (+ CommandDialog overlay). ruby_ui's
-   structure kept (template cloned into <body>, custom backdrop + centered panel,
-   like the shipped sheet); fuse.js replaced with a substring filter in the
-   controller, Tailwind with vanilla CSS on the palette tokens. Geometry from
-   ruby_ui (h-10 input, p-1 groups, px-2 py-1.5 rows, divide-y list). Theme
-   tokens come from the global stylesheet. */
+/* Co-located with command.rb — PhlexKit::Command (+ CommandDialog overlay).
+   Matched to shadcn/ui's current command (nova): the palette is a padded
+   rounded-xl popover surface; the search field is a bordered PILL inside it
+   (input-wrapper > input-group) rather than a full-width divider row; groups
+   are no longer divide-y — an explicit CommandSeparator (hidden while
+   filtering) draws the line; selected rows fill with the muted surface.
+   fuse.js stays replaced by the controller's substring scorer. */
+.pk-command {
+  background: var(--pk-surface);
+  color: var(--pk-text);
+  border-radius: .75rem;
+  padding: .25rem;
+}
 .pk-command-dialog-trigger { display: inline-block; }
 
 /* Backdrop of the cloned overlay. */
@@ -24,12 +31,10 @@
   transform: translate(-50%, -50%);
   z-index: 50;
   pointer-events: auto;
-  display: grid;
-  gap: 1rem;
   width: 100%;
   max-width: 32rem;
   border: 1px solid var(--pk-border);
-  border-radius: var(--pk-radius);
+  border-radius: .75rem;
   background: var(--pk-surface);
   color: var(--pk-text);
   box-shadow: 0 10px 30px rgb(0 0 0 / .35);
@@ -40,18 +45,22 @@
 .pk-command-dialog.xl { max-width: 56rem; }
 .pk-command-dialog.full { max-width: 100%; }
 
-/* Search row. */
-.pk-command-input-row {
+/* Search pill (their input-wrapper > input-group). */
+.pk-command-input-wrapper { padding: .25rem .25rem 0; }
+.pk-command-input-pill {
   display: flex;
   align-items: center;
-  padding: 0 .75rem;
-  border-bottom: 1px solid var(--pk-border);
+  gap: .5rem;
+  height: 2rem;
+  padding: 0 .5rem;
+  border: 1px solid color-mix(in oklab, var(--pk-input) 30%, transparent);
+  border-radius: var(--pk-radius);
+  background: color-mix(in oklab, var(--pk-input) 30%, transparent);
 }
-.pk-command-input-icon { flex: none; width: 1rem; height: 1rem; margin-right: .375rem; }
+.pk-command-input-icon { flex: none; width: 1rem; height: 1rem; opacity: .5; }
 .pk-command-input {
   width: 100%;
-  height: 2.5rem;
-  padding: .75rem 0;
+  height: 100%;
   border: none;
   outline: none;
   background: transparent;
@@ -62,8 +71,16 @@
 .pk-command-input::placeholder { color: var(--pk-muted); }
 .pk-command-input:disabled { cursor: not-allowed; opacity: .5; }
 
-/* Groups, divided. */
-.pk-command-list > * + * { border-top: 1px solid var(--pk-border); }
+/* Scrollable results (their max-h-72, hidden scrollbar). */
+.pk-command-list {
+  max-height: 18rem;
+  overflow-y: auto;
+  scroll-padding-block: .25rem;
+  outline: none;
+  scrollbar-width: none;
+}
+.pk-command-list::-webkit-scrollbar { display: none; }
+
 .pk-command-group {
   overflow: hidden;
   padding: .25rem;
@@ -74,6 +91,12 @@
   font-size: .75rem;
   font-weight: 500;
   color: var(--pk-muted);
+}
+
+.pk-command-separator {
+  height: 1px;
+  margin: 0 -.25rem;
+  background: var(--pk-border);
 }
 
 /* One result row. */
@@ -87,14 +110,24 @@
   font-size: .875rem;
   color: var(--pk-text);
   text-decoration: none;
-  cursor: pointer;
+  cursor: default;
   user-select: none;
   outline: none;
   transition: background-color .12s ease;
 }
+.pk-command-item svg:not([width]) { width: 1rem; height: 1rem; }
 .pk-command-item:hover,
-.pk-command-item[aria-selected="true"] { background: var(--pk-accent); }
+.pk-command-item[aria-selected="true"] { background: var(--pk-surface-2); color: var(--pk-text); }
 .pk-command-item[data-disabled] { pointer-events: none; opacity: .5; }
+
+.pk-command-shortcut {
+  margin-left: auto;
+  font-size: .75rem;
+  letter-spacing: .1em;
+  color: var(--pk-muted);
+}
+.pk-command-item:hover .pk-command-shortcut,
+.pk-command-item[aria-selected="true"] .pk-command-shortcut { color: var(--pk-text); }
 
 /* Filter empty state (hidden/shown by the controller). */
 .pk-command-empty {

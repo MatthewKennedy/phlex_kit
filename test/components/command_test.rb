@@ -57,4 +57,24 @@ class CommandTest < Minitest::Test
   def test_empty_state_target
     assert_includes render(PhlexKit::CommandEmpty.new { "No results" }), %(data-phlex-kit--command-target="empty")
   end
+
+  def test_shortcut
+    html = render(PhlexKit::CommandShortcut.new { "⌘P" })
+    assert_includes html, "pk-command-shortcut"
+    assert_includes html, "⌘P"
+  end
+
+  def test_separator_is_a_hidden_filter_target
+    html = render(PhlexKit::CommandSeparator.new)
+    assert_includes html, "pk-command-separator"
+    assert_includes html, %(data-phlex-kit--command-target="separator")
+    assert_includes html, %(role="separator")
+  end
+
+  def test_input_renders_the_pill_structure
+    html = render(PhlexKit::CommandInput.new)
+    assert_includes html, "pk-command-input-wrapper"
+    assert_includes html, "pk-command-input-pill"
+    assert_includes html, "pk-command-input-icon"
+  end
 end

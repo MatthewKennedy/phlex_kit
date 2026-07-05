@@ -25,7 +25,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] checkbox — replaced native accent-color box ("redesign later" debt) with their custom-drawn control: appearance:none, input-border + translucent dark fill, brand fill + masked check when checked, :indeterminate minus, extended touch target (::before bleed), focus + aria-invalid rings; six examples incl. Table
 - [x] collapsible — controller now stamps data-state=open/closed on the root (their styling hook) + .pk-collapsible-chevron rotation helper (--pk-collapsible-rotate override, scoped to nearest root for nesting); their three examples (Basic, Settings Panel, recursive File Tree)
 - [ ] combobox — AUDITED 2026-07-05 (scope only): their page now has 10 example sections incl. chips/multiple/clear/auto-highlight/popup/input-group on the rebuilt parts API; kit controller is 300 lines with badge/input triggers already. Full diff needs its own session
-- [ ] command
+- [x] command — search field restyled to their bordered pill inside a padded rounded-xl palette (was full-width divider row), added CommandShortcut + CommandSeparator (separator hides while filtering, like cmdk; replaces the old divide-y group borders), selected rows fill muted, list max-h-72 with hidden scrollbar; five examples incl. Scrollable + the ⌘K dialog
 - [ ] context-menu
 - [ ] data-table
 - [ ] date-picker

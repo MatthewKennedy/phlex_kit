@@ -33,7 +33,7 @@ function fuzzyScore(query, value) {
 // nav, dismiss) is unchanged.
 // Connects to data-controller="phlex-kit--command"
 export default class extends Controller {
-  static targets = ["input", "group", "item", "empty"];
+  static targets = ["input", "group", "item", "empty", "separator"];
 
   connect() {
     this.selectedIndex = -1;
@@ -76,6 +76,7 @@ export default class extends Controller {
     );
 
     this.toggleVisibility(this.emptyTargets, results.length === 0);
+    this.toggleVisibility(this.separatorTargets, false);
     this.updateGroupVisibility();
   }
 
@@ -96,6 +97,7 @@ export default class extends Controller {
   resetVisibility() {
     this.toggleVisibility(this.itemTargets, true);
     this.toggleVisibility(this.groupTargets, true);
+    this.toggleVisibility(this.separatorTargets, true);
     this.toggleVisibility(this.emptyTargets, false);
   }
 
