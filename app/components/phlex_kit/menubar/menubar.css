@@ -1,13 +1,17 @@
-/* Co-located with menubar.rb — UI::Menubar, shadcn parity (Radix replaced by
-   the phlex-kit--menubar controller). NavigationMenu shares the item look. */
+/* Co-located with menubar.rb — PhlexKit::Menubar, shadcn parity (Radix
+   replaced by the phlex-kit--menubar controller). Matched to nova: h-8 bar
+   with 3px padding, tight triggers, ring-bordered popover panels, the full
+   menu-item family (destructive, inset, checkbox/radio with hidden inputs,
+   pure-CSS hover submenus). NavigationMenu shares the item look. */
 .pk-menubar {
   display: inline-flex;
   align-items: center;
-  gap: .25rem;
+  height: 2rem;
+  gap: .125rem;
   border: 1px solid var(--pk-border);
   border-radius: var(--pk-radius);
   background: var(--pk-surface);
-  padding: .25rem;
+  padding: 3px;
 }
 .pk-menubar-menu { position: relative; }
 .pk-menubar-trigger {
@@ -17,7 +21,7 @@
   border-radius: calc(var(--pk-radius) - 4px);
   background: transparent;
   color: var(--pk-text);
-  padding: .25rem .5rem;
+  padding: 2px .375rem;
   font: inherit;
   font-size: .875rem;
   font-weight: 500;
@@ -25,37 +29,22 @@
   outline: none;
 }
 .pk-menubar-trigger:hover,
-.pk-menubar-trigger[aria-expanded="true"] { background: var(--pk-accent); }
+.pk-menubar-trigger[aria-expanded="true"] { background: var(--pk-surface-2); }
 .pk-menubar-content {
   position: absolute;
   top: 100%;
   left: 0;
   z-index: 50;
-  min-width: 12rem;
+  min-width: 9rem;
   margin-top: .5rem;
-  border: 1px solid var(--pk-border);
+  border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
   border-radius: var(--pk-radius);
   background: var(--pk-surface);
   color: var(--pk-text);
   padding: .25rem;
   box-shadow: 0 8px 24px rgb(0 0 0 / .3);
 }
-.pk-menubar-item {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  border-radius: calc(var(--pk-radius) - 4px);
-  padding: .375rem .5rem;
-  font-size: .875rem;
-  color: var(--pk-text);
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  outline: none;
-}
-.pk-menubar-item:hover, .pk-menubar-item:focus { background: var(--pk-accent); }
-.pk-menubar-shortcut { margin-left: auto; font-size: .75rem; color: var(--pk-muted); letter-spacing: .1em; }
-.pk-menubar-separator { height: 1px; margin: .25rem -0.25rem; background: var(--pk-border); }
+/* Hover bridge over the trigger→panel gap. */
 .pk-menubar-content::before {
   content: "";
   position: absolute;
@@ -64,3 +53,85 @@
   right: 0;
   height: calc(.5rem + 1px);
 }
+.pk-menubar-item {
+  display: flex;
+  align-items: center;
+  gap: .375rem;
+  border-radius: calc(var(--pk-radius) - 2px);
+  padding: .25rem .375rem;
+  font-size: .875rem;
+  color: var(--pk-text);
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+.pk-menubar-item svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+.pk-menubar-item:hover, .pk-menubar-item:focus { background: var(--pk-accent); }
+.pk-menubar-item[data-disabled="true"] { pointer-events: none; opacity: .5; }
+.pk-menubar-item.inset { padding-left: 1.75rem; }
+.pk-menubar-item.destructive { color: var(--pk-red); }
+.pk-menubar-item.destructive > svg { color: var(--pk-red); }
+.pk-menubar-item.destructive:hover,
+.pk-menubar-item.destructive:focus {
+  background: color-mix(in oklab, var(--pk-red) 12%, transparent);
+  color: var(--pk-red);
+}
+.pk-menubar-shortcut { margin-left: auto; font-size: .75rem; color: var(--pk-muted); letter-spacing: .1em; }
+.pk-menubar-label { padding: .25rem .375rem; font-size: .875rem; font-weight: 500; }
+.pk-menubar-label.inset { padding-left: 1.75rem; }
+.pk-menubar-separator { height: 1px; margin: .25rem -0.25rem; background: var(--pk-border); }
+.pk-menubar-group { display: contents; }
+
+/* Checkbox / radio rows: real (hidden) inputs; indicator shows via :has. */
+.pk-menubar-item-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.pk-menubar-checkbox-item,
+.pk-menubar-radio-item { position: relative; padding-left: 1.75rem; }
+.pk-menubar-item-indicator {
+  position: absolute;
+  left: .375rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  visibility: hidden;
+}
+.pk-menubar-item-indicator svg { width: .875rem; height: .875rem; }
+.pk-menubar-radio-item .pk-menubar-item-indicator svg { width: .5rem; height: .5rem; }
+.pk-menubar-item:has(.pk-menubar-item-input:checked) .pk-menubar-item-indicator { visibility: visible; }
+.pk-menubar-item:has(.pk-menubar-item-input:focus-visible) {
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+
+/* Submenu: trigger row + side panel, revealed on hover/focus — pure CSS. */
+.pk-menubar-sub { position: relative; }
+.pk-menubar-sub-chevron { margin-left: auto; width: 1rem; height: 1rem; }
+.pk-menubar-sub-content {
+  position: absolute;
+  top: -0.25rem;
+  left: 100%;
+  z-index: 60;
+  min-width: 9rem;
+  padding-left: .25rem; /* hover bridge over the gap */
+  display: none;
+}
+.pk-menubar-sub-viewport {
+  min-width: 9rem;
+  border-radius: var(--pk-radius);
+  border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
+  background: var(--pk-surface);
+  color: var(--pk-text);
+  padding: .25rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / .3);
+}
+.pk-menubar-sub:hover > .pk-menubar-sub-content,
+.pk-menubar-sub:focus-within > .pk-menubar-sub-content { display: block; }
+.pk-menubar-sub:hover > .pk-menubar-sub-trigger,
+.pk-menubar-sub:focus-within > .pk-menubar-sub-trigger { background: var(--pk-accent); }

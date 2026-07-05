@@ -1,11 +1,16 @@
 module PhlexKit
-  # Menu row (an <a> — pass href:, or as: :div for buttons). Closes the bar.
-  # See menubar.rb.
+  # Menu row (an <a> — pass href:, or as: :div for buttons). `variant:
+  # :destructive` tints red; `inset: true` aligns with checkbox/radio rows.
+  # Closes the bar. See menubar.rb.
   class MenubarItem < BaseComponent
-    def initialize(as: :a, href: "#", shortcut: nil, **attrs)
+    VARIANTS = { default: nil, destructive: "destructive" }.freeze
+
+    def initialize(as: :a, href: "#", shortcut: nil, variant: :default, inset: false, **attrs)
       @as = as.to_sym
       @href = href
       @shortcut = shortcut
+      @variant = variant.to_sym
+      @inset = inset
       @attrs = attrs
     end
 
@@ -13,7 +18,7 @@ module PhlexKit
       base = {
         role: "menuitem",
         tabindex: "-1",
-        class: "pk-menubar-item",
+        class: [ "pk-menubar-item", VARIANTS.fetch(@variant), ("inset" if @inset) ].compact.join(" "),
         data: { action: "click->phlex-kit--menubar#close" }
       }
       base[:href] = @href unless @as == :div

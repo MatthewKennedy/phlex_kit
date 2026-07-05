@@ -42,7 +42,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] kbd — already at parity bar two nova rules: svg-3 glyphs + background-tint restyle inside (inverted) tooltip content (10/20 dark/light); their five examples (Default, Group, Button, Tooltip, Input Group)
 - [x] label — already at parity (their page has no Examples section; "Label in Field" belongs to the field audit); demo updated to their checkbox-pair copy
 - [x] marker — border variant fixed full-box→bottom-border-only (their border-b pb-2), separator content flex-none/centered, interactive markers (href:/as: :button) with underline+hover brighten, min-h to 1rem; their seven examples (Status w/ Spinner, Shimmer on .pk-shimmer)
-- [ ] menubar
+- [x] menubar — mirrored the full menu family (Group/Label/Shortcut/CheckboxItem/RadioGroup+Item/Sub trio, destructive + inset items), nova metrics (h-8 bar w/ 3px padding, tight px-1.5 triggers on muted hover, min-w-36 ring-bordered panels, rounded-md rows); five examples incl. the big four-menu demo
 - [ ] message
 - [ ] message-scroller
 - [ ] native-select
