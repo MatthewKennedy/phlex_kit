@@ -44,8 +44,8 @@ matches (parts/props), and its metrics have been compared.
 - [x] marker — border variant fixed full-box→bottom-border-only (their border-b pb-2), separator content flex-none/centered, interactive markers (href:/as: :button) with underline+hover brighten, min-h to 1rem; their seven examples (Status w/ Spinner, Shimmer on .pk-shimmer)
 - [x] menubar — mirrored the full menu family (Group/Label/Shortcut/CheckboxItem/RadioGroup+Item/Sub trio, destructive + inset items), nova metrics (h-8 bar w/ 3px padding, tight px-1.5 triggers on muted hover, min-w-36 ring-bordered panels, rounded-md rows); five examples incl. the big four-menu demo
 - [x] message — two nova rules added (avatar rises 2rem above a footer row; header/footer lose their inset beside ghost bubbles), structure already at parity; their five examples (Avatar, Group, Header and Footer, Actions, Attachment) + kept Conversation demo
-- [ ] message-scroller
-- [ ] native-select
+- [ ] message-scroller — AUDITED 2026-07-05 (scope only): their page is a streaming-chat behavior doc with 11 large stateful React demos (anchoring modes, streaming, load-history, visibility). Kit controller exists (11.8KB); parity = behavior verification + simulated-stream demos. Own session
+- [x] native-select — nova respec mirroring input: rounded-lg (was r-2px), translucent dark fill w/ hover step (transparent light), ring focus (was brand), aria-invalid states w/ 20/40 split, sm radius cap; four examples
 - [ ] navigation-menu
 - [ ] pagination
 - [ ] popover
