@@ -151,6 +151,9 @@ module Create
               render PhlexKit::NavigationMenuLink.new(href: "/gallery") { "Gallery" }
             end
             render PhlexKit::NavigationMenuItem.new do
+              render PhlexKit::NavigationMenuLink.new(href: "/examples") { "Examples" }
+            end
+            render PhlexKit::NavigationMenuItem.new do
               render PhlexKit::NavigationMenuLink.new(href: "/create", class: "active") { "Create" }
             end
           end
@@ -186,6 +189,7 @@ module Create
                 render PhlexKit::CommandItem.new(value: "docs home", href: "/") { "Docs" }
                 render PhlexKit::CommandItem.new(value: "gallery kitchen sink", href: "/gallery") { "Gallery" }
                 render PhlexKit::CommandItem.new(value: "create theme builder", href: "/create") { "Create" }
+                render PhlexKit::CommandItem.new(value: "examples admin ui harbor", href: "/examples") { "Admin UI examples" }
               end
               render PhlexKit::CommandGroup.new(title: "Components") do
                 Docs::Registry.all.each do |slug, entry|

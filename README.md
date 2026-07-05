@@ -248,7 +248,9 @@ for another component reuses the same wiring — it's injected only once.
 The dummy Rails app is a full shadcn-style docs site: a sidebar menu with one
 page per component, every use case demoed with a Preview/Code toggle (the code
 shown is extracted from the running example source, so it can never drift).
-A one-page kitchen-sink gallery lives at /gallery:
+A one-page kitchen-sink gallery lives at /gallery, and /examples holds six
+full-page admin screens (dashboard, orders, inbox, profile, reports, settings)
+for a fictional commerce app — every visible element a kit component:
 
 ```bash
 git clone https://github.com/MatthewKennedy/phlex_kit && cd phlex_kit

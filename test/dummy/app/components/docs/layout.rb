@@ -52,6 +52,7 @@ module Docs
               render PhlexKit::SidebarFooter.new do
                 a(href: "/gallery", class: "docs-footer-link") { "Kitchen-sink gallery →" }
                 a(href: "/create", class: "docs-footer-link") { "Create (theme builder) →" }
+                a(href: "/examples", class: "docs-footer-link") { "Admin UI examples →" }
               end
             end
             render PhlexKit::SidebarInset.new(class: "docs-main") do
