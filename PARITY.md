@@ -68,7 +68,7 @@ matches (parts/props), and its metrics have been compared.
 - [ ] toast
 - [x] toggle — nova metrics: h-8/7/9 (was 9/8/10), rounded-lg w/ sm cap, gap-1 px-2.5, muted hover + on fills (was accent-hover w/ muted text), focus ring, outline uses input border, data-icon insets, svg 4/3.5; five examples
 - [x] toggle-group — group radius to rounded-lg (items inherit via first/last overrides), joined items tighten to px-2; six examples on the real yield-API (Outline, Size, Spacing, Vertical, Disabled)
-- [ ] tooltip
+- [x] tooltip — INVERTED to their foreground-bg/background-text surface (was surface-2 bordered) with the rotated-square arrow, side: :bottom/:left/:right, nova metrics (rounded-md, px-3 py-1.5, text-xs, kbd gap + pr trim — kbd.css tint now lines up); four examples
 - [x] typography — fixed never-applied heading sizes; full prose specimen (h1–h4, list, table, lead/large/small/muted)
 
 ## Utilities (ui.shadcn.com/docs/utils/…)

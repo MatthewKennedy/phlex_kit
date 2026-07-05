@@ -1,7 +1,8 @@
 /* Co-located with tooltip.rb — UI::Tooltip (+ Trigger / Content). CSS-only:
-   the bubble is absolutely positioned above the trigger and revealed on the
-   wrapper's :hover / :focus-within (no JS, no @floating-ui). Theme tokens come
-   from the global stylesheet. */
+   the bubble is absolutely positioned and revealed on the wrapper's :hover /
+   :focus-within (no JS, no @floating-ui). Matched to nova: INVERTED surface
+   (foreground bg, background text) with a rotated-square arrow, rounded-md,
+   px-3 py-1.5 text-xs, gap for inline kbd chips (kbd.css tints them). */
 .pk-tooltip { position: relative; display: inline-flex; }
 .pk-tooltip-trigger { display: inline-flex; }
 .pk-tooltip-content {
@@ -10,19 +11,45 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: .375rem;
   width: max-content;
-  max-width: min(16rem, calc(100vw - 2rem));
-  padding: .35rem .6rem;
+  max-width: min(20rem, calc(100vw - 2rem));
+  padding: .375rem .75rem;
   border-radius: calc(var(--pk-radius) - 2px);
-  border: 1px solid var(--pk-border);
-  background: var(--pk-surface-2);
-  color: var(--pk-text);
-  font-size: .8rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+  background: var(--pk-text);
+  color: var(--pk-bg);
+  font-size: .75rem;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition: opacity .12s ease;
 }
+.pk-tooltip-content:has(kbd) { padding-right: .375rem; }
+.pk-tooltip-content::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  width: .625rem;
+  height: .625rem;
+  border-radius: 2px;
+  background: inherit;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% - 2px)) rotate(45deg);
+}
+.pk-tooltip-content.bottom { bottom: auto; top: calc(100% + 6px); }
+.pk-tooltip-content.bottom::after { top: 0; transform: translate(-50%, calc(-50% + 2px)) rotate(45deg); }
+.pk-tooltip-content.left {
+  bottom: auto; left: auto; right: calc(100% + 6px); top: 50%;
+  transform: translateY(-50%);
+}
+.pk-tooltip-content.left::after { top: 50%; left: 100%; transform: translate(calc(-50% - 2px), -50%) rotate(45deg); }
+.pk-tooltip-content.right {
+  bottom: auto; right: auto; left: calc(100% + 6px); top: 50%;
+  transform: translateY(-50%);
+}
+.pk-tooltip-content.right::after { top: 50%; left: 0; transform: translate(calc(-50% + 2px), -50%) rotate(45deg); }
 .pk-tooltip:hover .pk-tooltip-content,
 .pk-tooltip:focus-within .pk-tooltip-content { opacity: 1; visibility: visible; }
