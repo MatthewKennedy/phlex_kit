@@ -3,7 +3,8 @@
 Phlex + Rails component kit: the full ruby_ui catalog + shadcn/ui's additions
 (70 component families), vanilla CSS on `--pk-*` tokens, `@hotwired/stimulus`
 only. Published to rubygems.org as `phlex_kit`. Read `docs/03-SPEC.md` for the
-architecture; `ROADMAP.md` for the inventory; this file for how to work here.
+architecture; `docs/07-TOKENS.md` for the full `--pk-*` token reference;
+`ROADMAP.md` for the inventory; this file for how to work here.
 
 ## Commands
 

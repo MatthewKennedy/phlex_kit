@@ -10,7 +10,7 @@
   border-radius: calc(var(--pk-radius) - 4px);
   background: var(--pk-surface-2);
   padding-inline: .375rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--pk-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
   font-size: 10px;
   font-weight: 500;
   color: var(--pk-muted);

@@ -48,7 +48,7 @@ excluded for licensing); Menu Default/Solid is `Sidebar.new(menu:)`.
 | `destructive` | `--pk-red` |
 | `chart-1`..`chart-5` | `--pk-chart-1`..`--pk-chart-5` |
 | `radius` | `--pk-radius` |
-| `font-sans` / `font-mono` (tweakcn exports) | `--pk-font-sans` / `--pk-font-mono` (only if the family is a system font or the host loads it — never point at a font the gem doesn't ship) |
+| `font-sans` / `font-serif` / `font-mono` (tweakcn exports) | `--pk-font-sans` / `--pk-font-serif` / `--pk-font-mono` (only if the family is a system font or the host loads it — never point at a font the gem doesn't ship) |
 | `sidebar` | `--pk-sidebar` (optional — see sidebar note) |
 | `sidebar-foreground` | `--pk-sidebar-text` (optional) |
 | `sidebar-accent` | `--pk-sidebar-accent` (optional) |
