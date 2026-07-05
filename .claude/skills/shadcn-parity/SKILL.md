@@ -21,23 +21,52 @@ Never stop at #3. The docs comparison is the *detector*; the kit upgrade is
 the deliverable. (Typography found heading sizes that never applied; card
 found five missing features. Assume the page will find something.)
 
-## 1. Read the live page
+## 1. Audit from the LOCAL shadcn checkout (primary since 2026-07-05)
 
-URL shape: `https://ui.shadcn.com/docs/components/radix/<slug>` (components)
-or `/docs/utils/<slug>` (utilities). The non-`/radix/` URL redirects.
+The shadcn/ui monorepo lives at `~/Developer/ui`. It is the primary audit
+source — faster and more exact than the live page:
 
-- `get_page_text` gives the prose: the **Examples** headings, the
-  **Composition** tree, the **API Reference** tables (props/types/defaults),
-  and Accessibility notes. This is the primary source — read all of it.
-- For pixel parity, measure computed styles in the page with
-  `javascript_tool`: their parts carry `data-slot="<part>"` attributes —
-  `getComputedStyle(document.querySelector('[data-slot="card-header"]'))`.
-  Keep JS results SMALL and never dump `className` strings (the extension
-  blocks responses that look like data exfiltration — split into several
-  narrow queries instead).
+- **Markup + parts API**: `~/Developer/ui/apps/v4/registry/bases/radix/ui/<slug>.tsx`
+  (component functions, data-slots, props, asChild spots).
+- **Metrics**: `~/Developer/ui/apps/v4/registry/styles/style-nova.css` — the
+  docs-default "nova" style's semantic `.cn-<slug>*` classes. Extract with
+  `awk '/\.cn-<slug>/,/^  }$/' style-nova.css`. Tailwind classes decode
+  deterministically (h-8 = 2rem, px-2.5 = .625rem, rounded-lg = var(--pk-radius),
+  rounded-md = calc(r-2px), rounded-sm = calc(r-4px), ring-3 = the kit focus
+  box-shadow recipe). IMPORTANT: nova classes COMPOSE with the base classes in
+  the .tsx — read both (e.g. toggle's hover:bg-muted lives in the base cls).
+- **Their demo content (copy verbatim)**: `~/Developer/ui/apps/v4/examples/radix/<slug>-*.tsx`.
+- **Example section order/titles**: `grep '^### ' ~/Developer/ui/apps/v4/content/docs/components/radix/<slug>.mdx`.
+- The live page (`ui.shadcn.com/docs/components/radix/<slug>`) is now only for
+  visual spot-checks and user side-by-side screenshots.
 - Tokens were lifted verbatim from their `:root`/`.dark` on 2026-07-03 into
   `_tokens.css`. If colors look off, re-extract and diff before touching
   component CSS.
+
+## 1b. Established kit conventions (use these, don't invent new ones)
+
+- Their `asChild` → an `href:` param (renders `<a>`) and/or `as: :button`.
+  Precedent: Button, Badge, Item, Marker, Bubble.
+- Their `data-icon="inline-start"/"inline-end"` attribute is adopted VERBATIM
+  (`data: { icon: "inline-start" }`) — CSS `:has(> [data-icon=…])` tightens
+  the near-side padding. Precedent: Button, Badge, Toggle, InputGroup, Kbd.
+- Theme-forked values (their `dark:` variants) are written DARK-FIRST, with
+  light overrides in BOTH blocks:
+  `:root[data-theme="light"] …` AND
+  `@media (prefers-color-scheme: light) { :root[data-theme="system"] … }`.
+  Precedent: avatar (first), button, checkbox, input, bubble.
+- One-off example colors use `light-dark(…)` inline styles — works because
+  `_tokens.css` sets `color-scheme` per theme. Precedent: alert/badge Custom
+  Colors.
+- Form-control grammar (input/textarea/select/native-select/otp/input-group):
+  translucent `--pk-input` 30% fill in dark / transparent in light, hover
+  step to 50% where theirs has one, focus ring on `--pk-ring` (NEVER brand),
+  `aria-invalid` ring at red 40% dark / 20% light, disabled fill 80%/50%.
+- Overlays stay kit-unified at `rgb(0 0 0/.5)` + `blur(8px)` until the
+  one-pass follow-up (nova moved to black/10 + blur-xs) — see PARITY.md.
+- If a page is too big for the current session (controller build, tutorial
+  port), DON'T half-do it: leave it `[ ]` in PARITY.md with a dated
+  audit-scope note and move on. Precedent: calendar, chart, combobox, field.
 
 ## 2. Upgrade the kit (if drift found)
 

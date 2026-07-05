@@ -1,9 +1,15 @@
 # shadcn/ui page-parity checklist
 
-Worked with the `shadcn-parity` skill: audit the live page, upgrade the kit
-where shadcn moved past ruby_ui, recreate their examples in the docs site,
-verify, check off. A page is done when its examples match, its API surface
-matches (parts/props), and its metrics have been compared.
+Worked with the `shadcn-parity` skill (read it first — it carries the flow +
+established conventions): audit from the LOCAL shadcn checkout at
+`~/Developer/ui` (nova style), upgrade the kit where shadcn moved past
+ruby_ui, recreate their examples in the docs site, verify, check off. A page
+is done when its examples match, its API surface matches (parts/props), and
+its metrics have been compared. One commit per page; suite must stay green
+(`bundle exec rake test`); verify each page renders on the dummy app
+(`bundle exec puma -p 3999 test/dummy/config.ru`, slugs are dasherized).
+Everything unchecked below is a DEDICATED SESSION — ready-to-paste prompts at
+the bottom of this file.
 
 ## Components (ui.shadcn.com/docs/components/radix/…)
 
@@ -82,3 +88,133 @@ matches (parts/props), and its metrics have been compared.
 - forms (react-hook-form / tanstack / formisch) — React-specific integrations
 - PhlexKit-only pages with no upstream counterpart (audit N/A): link,
   masked-input, clipboard, codeblock, shortcut-key, theme-toggle
+
+## Dedicated-session prompts
+
+Paste one of these to start its session. Each assumes: read
+`.claude/skills/shadcn-parity/SKILL.md` first, work from the local checkout
+at `~/Developer/ui`, one commit per logical step, suite green before every
+commit, check off the PARITY.md line with an audit note when done.
+
+### field
+
+> Using the shadcn-parity skill, build the Field system to parity with
+> ui.shadcn.com's field page. Source: `~/Developer/ui/apps/v4/registry/bases/radix/ui/field.tsx`
+> + `style-nova.css` `.cn-field*` + `examples/radix/field-*.tsx` (13 examples).
+> Add the full part vocabulary as new `field/` components (FieldSet,
+> FieldLegend (variant: :legend/:label), FieldGroup, Field (orientation:
+> :vertical/:horizontal/:responsive), FieldContent, FieldLabel, FieldTitle,
+> FieldDescription, FieldError, FieldSeparator) — keep the existing
+> form/form_field live-validation trio untouched; Field is presentational
+> layout, FormField stays the Stimulus validation wrapper (document how they
+> compose). Include the choice-card recipe (bordered label Field wrapping
+> checkbox/radio/switch). AFTERWARDS: rework the examples that stubbed Field
+> with ad-hoc rows — checkbox (Basic/Description/Group), input
+> (Disabled/Invalid/File/Grid/Required/Badge), dialog demo, radio-group
+> (Description/Choice Card/Fieldset), switch (Description/Choice Card),
+> progress Label, collapsible Settings Panel, button-group Popover — onto the
+> real Field parts.
+
+### calendar
+
+> Using the shadcn-parity skill, rebuild Calendar to parity with
+> ui.shadcn.com's calendar page (audit note dated 2026-07-05 on the PARITY
+> line). This is a Stimulus build ≈ sidebar-offcanvas scale: extend
+> `calendar_controller.js` with mode: single (current) / range / multiple
+> selection, month+year dropdown caption (their captionLayout), week numbers,
+> booked/disabled dates (matcher list passed as a value), and the
+> --pk-cell-size/--pk-cell-radius variable system from nova's `.cn-calendar*`.
+> Source: `registry/bases/radix/ui/calendar.tsx` (react-day-picker wrapper —
+> mirror behavior, not code) + `examples/radix/calendar-*.tsx` (8 examples:
+> basic, range, month/year selector, presets, date+time, booked dates, custom
+> cell size, week numbers; hijri is out of scope). Keep the
+> phlex-kit--calendar-input outlet contract (DatePicker depends on it). Range
+> mode needs range-start/range-end/in-range day states in CSS. Tests for the
+> new day-state templates; examples with their copy.
+
+### date-picker (after calendar)
+
+> Using the shadcn-parity skill, bring DatePicker to parity with
+> ui.shadcn.com's date-picker page. Requires the calendar rebuild (range +
+> presets modes) — verify those exist first. Their page is compositions:
+> simple picker, date range picker, with presets (Select + Calendar in a
+> Popover), form field composition. Source: `examples/radix/date-picker-*.tsx`.
+> Mostly docs-site examples + any glue the compositions expose as missing
+> (e.g. range wired into two Inputs).
+
+### combobox
+
+> Using the shadcn-parity skill, bring Combobox to parity with
+> ui.shadcn.com's combobox page (rebuilt upstream API — audit note dated
+> 2026-07-05). Source: `registry/bases/radix/ui/combobox.tsx` +
+> `style-nova.css` `.cn-combobox*` + `examples/radix/combobox-*.tsx` (10
+> sections: Basic, Multiple, Clear Button, Groups, Custom Items, Invalid,
+> Disabled, Auto Highlight, Popup, Input Group). Kit already has
+> combobox_controller.js (300 lines) with badge/input triggers — diff its
+> behavior against theirs (multiple-selection chips, clear button, auto
+> highlight first match, open-on-focus popup mode) and extend. Restyle to the
+> form-control grammar (see skill §1b). Their Chips example maps to the
+> existing ComboboxBadgeTrigger — verify, don't duplicate.
+
+### data-table
+
+> Using the shadcn-parity skill, bring the data-table docs to parity with
+> ui.shadcn.com's data-table page. Their page is a tanstack-table BUILD
+> TUTORIAL (columns → sorting → filtering → visibility → pagination → row
+> selection), not an example gallery. The kit has its own `data_table`
+> (Stimulus sort/filter/paginate). Recreate the tutorial's END STATE as one
+> rich docs example (payments table: checkbox row-selection column, sortable
+> email header, amount column right-aligned, actions dropdown, filter input,
+> column-visibility dropdown, pagination footer) using kit parts, and write
+> the intermediate steps as docs prose (Code-tab comments), not separate
+> examples. Extend the controller only where the end state needs it (e.g.
+> column visibility toggling).
+
+### chart
+
+> Using the shadcn-parity skill, port ui.shadcn.com's chart page to the
+> kit's Chart.js block. Their page is a Recharts tutorial: Your First Chart →
+> Add a Grid → Add an Axis → Add Tooltip → Add Legend → Chart Config →
+> Theming. Recreate each tutorial step as a docs example driven by Chart.js
+> options (grid: scales.grid, axis: scales.x/y ticks, tooltip/legend:
+> plugins), reusing the --pk-chart-1..5 tokens, and extend
+> `docs/06-CHARTS.md` with the step-by-step guide. No new controller work
+> expected — the chart block + host-supplied window.Chart pattern stays.
+
+### message-scroller
+
+> Using the shadcn-parity skill, verify MessageScroller against
+> ui.shadcn.com's message-scroller page (a streaming-chat BEHAVIOR doc — 11
+> stateful React demos). The kit controller exists (11.8KB). Diff its
+> behavior against their documented concepts: anchoring turns (anchor the
+> latest user turn to the top), opening position, following the live edge
+> while streaming, load-history preserving scroll position, keeping context
+> visible, scroll-to-bottom affordance. Build 3-4 docs examples that
+> simulate streaming with a small inline Stimulus controller or setInterval
+> script (their Commands/GroupChat demos), and fix any controller gaps the
+> diff finds. This is verification-first: read their mdx concepts section
+> closely before touching code.
+
+### sidebar (icon rail)
+
+> Using the shadcn-parity skill, finish the Sidebar audit (offcanvas mode
+> shipped in PR #19). Remaining per the PARITY note: `collapsible: :icon`
+> rail mode (sidebar collapses to an icon strip — labels hide, menu buttons
+> become icon squares, tooltips show labels, groups collapse), cookie
+> persistence of the collapsed state (their sidebar_state cookie, read
+> server-side to avoid flash), the SidebarRail grab-strip part, and the ⌘B
+> keyboard shortcut. Source: `registry/bases/radix/ui/sidebar.tsx` (big) +
+> `style-nova.css` `.cn-sidebar*`. Extend the existing phlex-kit--sidebar
+> controller + SidebarWrapper API (collapsible: :offcanvas | :icon | :none);
+> keep DOM-only state + the scrim/Escape/turbo:before-cache behaviors.
+> Audit the full page top-to-bottom afterwards and check the line off.
+
+### unified overlay pass (small)
+
+> One-pass overlay change across the kit: nova's overlays are now
+> `bg-black/10` + `backdrop-blur-xs` (with a supports-backdrop-filter guard)
+> — the kit is unified at rgb(0 0 0/.5) + blur(8px). Change dialog
+> (::backdrop), alert-dialog, sheet, drawer, command overlays TOGETHER, add
+> an @supports fallback that darkens to /50 when backdrop-filter is
+> unavailable, and spot-check every overlay page in both themes. Update the
+> PARITY dialog-line note when done.
