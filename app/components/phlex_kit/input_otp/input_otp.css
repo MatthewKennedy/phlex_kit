@@ -1,10 +1,12 @@
-/* Co-located with input_otp.rb — UI::InputOTP, shadcn parity: joined cells
-   (shared borders, outer corners rounded), ring on the active cell. */
+/* Co-located with input_otp.rb — PhlexKit::InputOTP, shadcn parity: joined
+   cells (shared borders, outer corners rounded), ring on the active cell,
+   nova metrics (size-8 slots, ring-colored focus, theme-forked fill,
+   invalid states on slot + group). */
 .pk-input-otp { display: flex; align-items: center; gap: .5rem; }
 .pk-input-otp-group { display: flex; align-items: center; }
 .pk-input-otp-slot {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2rem;
+  height: 2rem;
   border: 1px solid var(--pk-input);
   background: color-mix(in oklab, var(--pk-input) 30%, transparent);
   color: var(--pk-text);
@@ -26,7 +28,29 @@
 .pk-input-otp-slot:focus {
   position: relative;
   z-index: 1;
-  border-color: var(--pk-brand);
+  border-color: var(--pk-ring);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+.pk-input-otp-slot[aria-invalid="true"] { border-color: var(--pk-red); }
+.pk-input-otp-slot[aria-invalid="true"]:focus {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
+}
+.pk-input-otp-group:has([aria-invalid="true"]) {
+  border-radius: var(--pk-radius);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
+}
+.pk-input-otp-slot:disabled { cursor: not-allowed; opacity: .5; }
+:root[data-theme="light"] .pk-input-otp-slot { background: transparent; }
+:root[data-theme="light"] .pk-input-otp-slot[aria-invalid="true"]:focus,
+:root[data-theme="light"] .pk-input-otp-group:has([aria-invalid="true"]) {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-input-otp-slot { background: transparent; }
+  :root[data-theme="system"] .pk-input-otp-slot[aria-invalid="true"]:focus,
+  :root[data-theme="system"] .pk-input-otp-group:has([aria-invalid="true"]) {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+  }
 }
 .pk-input-otp-separator { color: var(--pk-muted); }

@@ -3,11 +3,11 @@
 module Docs
   module Examples
     module InputOtp
-      class Default < Phlex::HTML
+      class FourDigits < Phlex::HTML
         def view_template
-          render PhlexKit::InputOtp.new(length: 6, name: "code") do
+          render PhlexKit::InputOtp.new(length: 4, name: "code-four") do
             render PhlexKit::InputOtpGroup.new do
-              6.times { render PhlexKit::InputOtpSlot.new }
+              4.times { render PhlexKit::InputOtpSlot.new }
             end
           end
         end

@@ -3,11 +3,11 @@
 module Docs
   module Examples
     module InputOtp
-      class Default < Phlex::HTML
+      class Invalid < Phlex::HTML
         def view_template
-          render PhlexKit::InputOtp.new(length: 6, name: "code") do
+          render PhlexKit::InputOtp.new(length: 6, name: "code-invalid") do
             render PhlexKit::InputOtpGroup.new do
-              6.times { render PhlexKit::InputOtpSlot.new }
+              6.times { render PhlexKit::InputOtpSlot.new(aria: { invalid: "true" }) }
             end
           end
         end
