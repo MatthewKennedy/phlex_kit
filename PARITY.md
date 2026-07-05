@@ -55,7 +55,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] scroll-area — native-scroll implementation already at parity (thin themed scrollbars ≈ their 2.5-wide rounded thumbs); their two examples (Tags list w/ separators, Horizontal artwork strip)
 - [x] select — trigger respec'd to the input grammar (translucent dark fill + hover step, ring focus was brand, invalid states, gap-1.5 pl-2.5/pr-2, size: :sm w/ radius cap), check indicator moved to the RIGHT (their right-2 absolute; was left), item pr-8 rounded-md, label to text-xs muted, viewport ring + rounded-lg, new SelectSeparator part; five examples. "Align Item With Trigger" is Radix item-aligned positioning — skipped
 - [x] separator — already at parity; their four examples (Default, Vertical, Menu, List)
-- [ ] sheet
+- [x] sheet — panel respec'd to nova: NO panel padding (header/footer bring p-4, body px-4 via SheetMiddle), gap-0.5 header, title text-base/medium, close top-3/right-3, side panels 75%/max-w-sm; added show_close_button: + SheetClose wrapper; three examples. Overlay stays kit-unified
 - [ ] sidebar — static part set at parity (GroupLabel/GroupContent/GroupAction/MenuAction/MenuBadge/MenuSkeleton/MenuSub*/Separator/Input added, 16rem width, optional --pk-sidebar-* tokens, menu: :default/:solid matching the create page's Menu option with shadcn's stock accent look as default); offcanvas collapse shipped (SidebarWrapper collapsible: :offcanvas + SidebarTrigger + scrim, desktop slide-away / mobile overlay drawer); icon-collapse mode + cookie persistence still omitted — page not fully audited
 - [x] skeleton — fill fixed brand-tint→muted surface (their bg-muted); their five examples (Avatar, Card, Text, Form, Table)
 - [ ] slider
