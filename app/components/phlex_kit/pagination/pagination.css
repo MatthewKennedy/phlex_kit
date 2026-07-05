@@ -1,5 +1,12 @@
-/* Co-located with pagination.rb. Items reuse .pk-button. Tokens global. */
+/* Co-located with pagination.rb. Items reuse .pk-button (numbers are square
+   ghost buttons, outline when active; Previous/Next carry a chevron with a
+   label that hides on small screens). Matched to nova (gap-0.5 content,
+   size-8 ellipsis, near-side padding trims on Previous/Next). Tokens global. */
 .pk-pagination { margin-inline: auto; display: flex; width: 100%; justify-content: center; }
-.pk-pagination-content { display: flex; flex-direction: row; align-items: center; gap: .25rem; list-style: none; margin: 0; padding: 0; }
-.pk-pagination-ellipsis { display: flex; height: 2.25rem; width: 2.25rem; align-items: center; justify-content: center; }
+.pk-pagination-content { display: flex; flex-direction: row; align-items: center; gap: .125rem; list-style: none; margin: 0; padding: 0; }
+.pk-pagination-ellipsis { display: flex; height: 2rem; width: 2rem; align-items: center; justify-content: center; }
 .pk-pagination-ellipsis > svg { width: 1rem; height: 1rem; }
+.pk-button.pk-pagination-previous { padding-left: .375rem; }
+.pk-button.pk-pagination-next { padding-right: .375rem; }
+.pk-pagination-label { display: none; }
+@media (min-width: 640px) { .pk-pagination-label { display: block; } }

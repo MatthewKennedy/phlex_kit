@@ -3,16 +3,15 @@
 module Docs
   module Examples
     module Pagination
-      class Default < Phlex::HTML
+      class Simple < Phlex::HTML
         def view_template
           render PhlexKit::Pagination.new do
             render PhlexKit::PaginationContent.new do
-              render PhlexKit::PaginationPrevious.new(href: "#")
               render PhlexKit::PaginationLink.new(href: "#") { "1" }
               render PhlexKit::PaginationLink.new(href: "#", active: true) { "2" }
               render PhlexKit::PaginationLink.new(href: "#") { "3" }
-              render PhlexKit::PaginationEllipsis.new
-              render PhlexKit::PaginationNext.new(href: "#")
+              render PhlexKit::PaginationLink.new(href: "#") { "4" }
+              render PhlexKit::PaginationLink.new(href: "#") { "5" }
             end
           end
         end

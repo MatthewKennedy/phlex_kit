@@ -47,7 +47,7 @@ matches (parts/props), and its metrics have been compared.
 - [ ] message-scroller — AUDITED 2026-07-05 (scope only): their page is a streaming-chat behavior doc with 11 large stateful React demos (anchoring modes, streaming, load-history, visibility). Kit controller exists (11.8KB); parity = behavior verification + simulated-stream demos. Own session
 - [x] native-select — nova respec mirroring input: rounded-lg (was r-2px), translucent dark fill w/ hover step (transparent light), ring focus (was brand), aria-invalid states w/ 20/40 split, sm radius cap; four examples
 - [x] navigation-menu — metric fixes only (structure at parity): triggers/links to rounded-lg px-2.5 py-1.5 on MUTED hovers (was accent) w/ half-fill open state, panel ring-bordered p-1, in-panel links rounded-md, svg-4. Page has no Examples section; Link Component is router-specific
-- [ ] pagination
+- [x] pagination — added PaginationLink (square ghost/outline-active) + PaginationPrevious/Next (chevron + sm-hidden label, near-side trim) matching their part API (PaginationItem kept as the combined back-compat part), content gap-0.5, ellipsis size-8; three examples (Default, Simple, Icons Only w/ rows-per-page Select)
 - [ ] popover
 - [ ] progress
 - [ ] radio-group
