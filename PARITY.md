@@ -50,7 +50,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] pagination — added PaginationLink (square ghost/outline-active) + PaginationPrevious/Next (chevron + sm-hidden label, near-side trim) matching their part API (PaginationItem kept as the combined back-compat part), content gap-0.5, ellipsis size-8; three examples (Default, Simple, Icons Only w/ rows-per-page Select)
 - [x] popover — added PopoverHeader/Title/Description parts + align: :end on content (their align prop), panel respec'd to nova (w-72, p-2.5 gap-2.5 column, rounded-lg, foreground-tint ring, text-sm); three examples; bubble + button-group examples retrofitted onto the real parts
 - [x] progress — nova metrics: h-1 (was h-2), muted track (was brand/20); Default + Label examples (their Controlled is React state)
-- [ ] radio-group
+- [x] radio-group — RadioButton rebuilt custom-drawn (same recipe as the checkbox respec: appearance:none, input border + translucent dark fill, brand fill + fg dot when checked, touch bleed, focus/invalid rings, theme forks), group gap-3→gap-2; six examples (Default, Description, Choice Card, Fieldset, Disabled, Invalid)
 - [ ] resizable
 - [ ] scroll-area
 - [ ] select

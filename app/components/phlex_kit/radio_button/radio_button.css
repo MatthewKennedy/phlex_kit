@@ -1,9 +1,53 @@
-/* Co-located with radio_button.rb. Theme tokens from the global stylesheet. */
+/* Co-located with radio_button.rb — PhlexKit::RadioButton. Matched to
+   shadcn/ui's current radio-group item (same recipe as the checkbox):
+   appearance:none circle with the input border + translucent dark fill,
+   brand fill with a primary-foreground dot when checked, extended touch
+   target, focus + aria-invalid rings. Native input semantics kept — no JS. */
 .pk-radio {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: inline-grid;
+  place-content: center;
   height: 1rem;
   width: 1rem;
   flex: none;
+  margin: 0;
   border-radius: 9999px;
-  accent-color: var(--pk-brand);
+  border: 1px solid var(--pk-input);
+  background: color-mix(in oklab, var(--pk-input) 30%, transparent);
+  cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
 }
+.pk-radio::before { content: ""; position: absolute; inset: -.5rem; }
+.pk-radio:checked { background: var(--pk-brand); border-color: var(--pk-brand); }
+.pk-radio:checked::after {
+  content: "";
+  width: .5rem;
+  height: .5rem;
+  border-radius: 9999px;
+  background: var(--pk-brand-ink);
+}
+.pk-radio:focus-visible {
+  outline: none;
+  border-color: var(--pk-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+.pk-radio[aria-invalid="true"] {
+  border-color: color-mix(in oklab, var(--pk-red) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
+}
+.pk-radio[aria-invalid="true"]:checked { border-color: var(--pk-brand); }
 .pk-radio:disabled { cursor: not-allowed; opacity: .5; }
+:root[data-theme="light"] .pk-radio:not(:checked) { background: transparent; }
+:root[data-theme="light"] .pk-radio[aria-invalid="true"] {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-radio:not(:checked) { background: transparent; }
+  :root[data-theme="system"] .pk-radio[aria-invalid="true"] {
+    border-color: var(--pk-red);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+  }
+}
