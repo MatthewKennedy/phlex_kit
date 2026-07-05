@@ -5,10 +5,13 @@ module Docs
     module Alert
       class Destructive < Phlex::HTML
         def view_template
-          div(class: "w-lg") do
+          div(class: "w-md") do
             render PhlexKit::Alert.new(variant: :destructive) do
-              render PhlexKit::AlertTitle.new { "Unable to process your payment." }
-              render PhlexKit::AlertDescription.new { "Please verify your billing information and try again." }
+              render PhlexKit::Icon.new(:circle_alert, size: nil)
+              render PhlexKit::AlertTitle.new { "Payment failed" }
+              render PhlexKit::AlertDescription.new do
+                plain "Your payment could not be processed. Please check your payment method and try again."
+              end
             end
           end
         end

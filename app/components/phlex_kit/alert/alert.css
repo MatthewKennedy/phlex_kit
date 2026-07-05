@@ -1,32 +1,70 @@
-/* Co-located with alert.rb — UI::Alert (+ Title / Description). ruby_ui's
-   structure kept; Tailwind replaced with vanilla CSS on the palette tokens.
-   Geometry from ruby_ui (ring-1 ring-inset → border, rounded-lg, px-4 py-4,
-   text-sm). The variant tints reuse the flash colours (success/destructive/
-   warning) the admin already used. Theme tokens come from the global stylesheet. */
+/* Co-located with alert.rb — PhlexKit::Alert (+ Title / Description / Action).
+   Matched to shadcn/ui's current alert (nova): a grid callout on the card
+   surface. A leading `> svg` child switches on the two-column icon layout
+   (icon spans both rows); an AlertAction pins to the top-right corner and
+   reserves right padding on the box. Variants tint the TEXT only — the
+   background stays the card surface (shadcn dropped the tinted-fill look).
+   success/warning are kit extras (ruby_ui heritage) in the same grammar. */
 .pk-alert {
-  position: relative;
+  display: grid;
+  gap: .125rem;
   width: 100%;
   border: 1px solid var(--pk-border);
   border-radius: var(--pk-radius);
-  padding: .85rem 1rem;
+  padding: .5rem .625rem;
   font-size: .875rem;
-  background: color-mix(in oklab, var(--pk-surface) 60%, transparent);
+  line-height: 1.25rem;
+  text-align: left;
+  background: var(--pk-surface);
   color: var(--pk-text);
 }
-.pk-alert.success {
-  border-color: color-mix(in oklab, var(--pk-green) 40%, var(--pk-border));
-  background: color-mix(in oklab, var(--pk-green) 8%, transparent);
-  color: var(--pk-green);
+.pk-alert:has(> .pk-alert-action) {
+  position: relative;
+  padding-right: 4.5rem;
 }
-.pk-alert.destructive {
-  border-color: color-mix(in oklab, var(--pk-red) 40%, var(--pk-border));
-  background: color-mix(in oklab, var(--pk-red) 8%, transparent);
-  color: var(--pk-red);
+.pk-alert:has(> svg) {
+  grid-template-columns: auto 1fr;
+  column-gap: .5rem;
 }
-.pk-alert.warning {
-  border-color: color-mix(in oklab, var(--pk-amber) 40%, var(--pk-border));
-  background: color-mix(in oklab, var(--pk-amber) 8%, transparent);
-  color: var(--pk-amber);
+.pk-alert > svg {
+  grid-row: span 2;
+  translate: 0 .125rem;
+  width: 1rem;
+  height: 1rem;
+  color: currentColor;
 }
-.pk-alert-title { margin: 0 0 .25rem; font-weight: 500; line-height: 1.1; letter-spacing: -.01em; }
-.pk-alert-description { font-size: .875rem; }
+.pk-alert.destructive { color: var(--pk-red); }
+.pk-alert.destructive .pk-alert-description {
+  color: color-mix(in oklab, var(--pk-red) 90%, transparent);
+}
+.pk-alert.success { color: var(--pk-green); }
+.pk-alert.success .pk-alert-description {
+  color: color-mix(in oklab, var(--pk-green) 90%, transparent);
+}
+.pk-alert.warning { color: var(--pk-amber); }
+.pk-alert.warning .pk-alert-description {
+  color: color-mix(in oklab, var(--pk-amber) 90%, transparent);
+}
+.pk-alert-title { font-weight: 500; }
+.pk-alert:has(> svg) .pk-alert-title { grid-column-start: 2; }
+.pk-alert-description {
+  color: var(--pk-muted);
+  font-size: .875rem;
+  text-wrap: balance;
+}
+@media (min-width: 768px) {
+  .pk-alert-description { text-wrap: pretty; }
+}
+.pk-alert-description p:not(:last-child) { margin-bottom: 1rem; }
+.pk-alert-title a,
+.pk-alert-description a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.pk-alert-title a:hover,
+.pk-alert-description a:hover { color: var(--pk-text); }
+.pk-alert-action {
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+}

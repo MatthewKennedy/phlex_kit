@@ -8,7 +8,7 @@ matches (parts/props), and its metrics have been compared.
 ## Components (ui.shadcn.com/docs/components/radix/…)
 
 - [x] accordion — added type: :single (shadcn default, closes siblings)/:multiple, disabled items, bordered modifier; five examples
-- [ ] alert
+- [x] alert — added AlertAction, icon-grid layout (`:has(> svg)`), role="alert", title h5→div, text-tint variants on card surface (shadcn dropped tinted fills; success/warning kept as kit extras), link underlines; four examples incl. light-dark() custom colors
 - [x] alert-dialog — added AlertDialogMedia, size: :sm, action variants, footer band, centered media stack
 - [x] aspect-ratio — square + portrait examples (component already at parity)
 - [x] attachment — states/sizes/orientation, media variants, AttachmentTrigger, AttachmentGroup + horizontal scroll-fade
