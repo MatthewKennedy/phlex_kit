@@ -1,24 +1,64 @@
-/* Co-located with bubble.rb. Theme tokens from the global stylesheet. The variant
-   colours the child [data-slot=bubble-content]. */
+/* Co-located with bubble.rb — PhlexKit::Bubble (+ Content / Reactions / Group).
+   Matched to shadcn/ui's current bubble (nova). The variant colours the child
+   [data-slot=bubble-content]; hover fills apply only when the content itself
+   is a <button>/<a> (BubbleContent as: :button / :a). tinted derives its fill
+   from the brand color via relative oklch — lightness pinned per theme.
+   ghost is frameless and full-width (assistant prose). */
 .pk-bubble {
   position: relative; display: flex; width: fit-content; min-width: 0;
   flex-direction: column; gap: .25rem; max-width: 80%;
 }
 .pk-bubble[data-align="end"] { align-self: flex-end; }
+.pk-bubble[data-variant="ghost"] { max-width: 100%; border: none; }
+/* Inside a Message row aligned to the end, bubbles follow. */
+.pk-message[data-align="end"] .pk-bubble { align-self: flex-end; }
 .pk-bubble-content {
   width: fit-content; max-width: 100%; min-width: 0; overflow: hidden;
-  overflow-wrap: break-word; border: 1px solid transparent; border-radius: 1.5rem;
-  padding: .625rem .75rem; font-size: .875rem; line-height: 1.625;
+  overflow-wrap: break-word; border: 1px solid transparent; border-radius: .75rem;
+  padding: .5rem .75rem; font-size: .875rem; line-height: 1.625;
 }
 .pk-bubble[data-align="end"] > .pk-bubble-content { align-self: flex-end; }
-/* variants */
+button.pk-bubble-content { text-align: left; font: inherit; }
+a.pk-bubble-content { color: inherit; text-decoration: none; }
+button.pk-bubble-content, a.pk-bubble-content {
+  cursor: pointer; outline: none;
+  transition: color .15s ease, background-color .15s ease;
+}
+:is(button, a).pk-bubble-content:focus-visible {
+  border-color: var(--pk-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+/* variants (dark-first; light overrides below) */
 .pk-bubble[data-variant="default"]     > .pk-bubble-content { background: var(--pk-brand); color: var(--pk-brand-ink); }
+.pk-bubble[data-variant="default"]     > :is(button, a).pk-bubble-content:hover { background: color-mix(in oklab, var(--pk-brand) 80%, transparent); }
 .pk-bubble[data-variant="secondary"]   > .pk-bubble-content { background: var(--pk-surface-2); color: var(--pk-text); }
-.pk-bubble[data-variant="muted"]       > .pk-bubble-content { background: var(--pk-surface-2); color: var(--pk-text); }
-.pk-bubble[data-variant="tinted"]      > .pk-bubble-content { background: color-mix(in oklab, var(--pk-brand) 18%, transparent); color: var(--pk-text); }
+.pk-bubble[data-variant="secondary"]   > :is(button, a).pk-bubble-content:hover { background: color-mix(in oklch, var(--pk-surface-2), var(--pk-text) 5%); }
+.pk-bubble[data-variant="muted"]       > .pk-bubble-content { background: var(--pk-surface-2); }
+.pk-bubble[data-variant="muted"]       > :is(button, a).pk-bubble-content:hover { background: color-mix(in oklch, var(--pk-surface-2), var(--pk-text) 5%); }
+.pk-bubble[data-variant="tinted"]      > .pk-bubble-content { background: oklch(from var(--pk-brand) 0.3 calc(c * 0.4) h); color: var(--pk-text); }
+.pk-bubble[data-variant="tinted"]      > :is(button, a).pk-bubble-content:hover { background: oklch(from var(--pk-brand) 0.35 calc(c * 0.5) h); }
 .pk-bubble[data-variant="outline"]     > .pk-bubble-content { background: var(--pk-bg); border-color: var(--pk-border); color: var(--pk-text); }
+.pk-bubble[data-variant="outline"]     > :is(button, a).pk-bubble-content:hover { background: color-mix(in oklab, var(--pk-input) 30%, transparent); color: var(--pk-text); }
 .pk-bubble[data-variant="ghost"]       > .pk-bubble-content { background: transparent; border-radius: 0; padding: 0; }
-.pk-bubble[data-variant="destructive"] > .pk-bubble-content { background: color-mix(in oklab, var(--pk-red) 12%, transparent); color: var(--pk-red); }
+.pk-bubble[data-variant="ghost"]       > :is(button, a).pk-bubble-content:hover { background: color-mix(in oklab, var(--pk-surface-2) 50%, transparent); color: var(--pk-text); }
+.pk-bubble[data-variant="destructive"] > .pk-bubble-content { background: color-mix(in oklab, var(--pk-red) 20%, transparent); color: var(--pk-red); }
+.pk-bubble[data-variant="destructive"] > :is(button, a).pk-bubble-content:hover { background: color-mix(in oklab, var(--pk-red) 30%, transparent); }
+
+:root[data-theme="light"] .pk-bubble[data-variant="tinted"] > .pk-bubble-content { background: oklch(from var(--pk-brand) 0.93 calc(c * 0.4) h); }
+:root[data-theme="light"] .pk-bubble[data-variant="tinted"] > :is(button, a).pk-bubble-content:hover { background: oklch(from var(--pk-brand) 0.88 calc(c * 0.5) h); }
+:root[data-theme="light"] .pk-bubble[data-variant="outline"] > :is(button, a).pk-bubble-content:hover { background: var(--pk-surface-2); }
+:root[data-theme="light"] .pk-bubble[data-variant="ghost"] > :is(button, a).pk-bubble-content:hover { background: var(--pk-surface-2); }
+:root[data-theme="light"] .pk-bubble[data-variant="destructive"] > .pk-bubble-content { background: color-mix(in oklab, var(--pk-red) 10%, transparent); }
+:root[data-theme="light"] .pk-bubble[data-variant="destructive"] > :is(button, a).pk-bubble-content:hover { background: color-mix(in oklab, var(--pk-red) 20%, transparent); }
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-bubble[data-variant="tinted"] > .pk-bubble-content { background: oklch(from var(--pk-brand) 0.93 calc(c * 0.4) h); }
+  :root[data-theme="system"] .pk-bubble[data-variant="tinted"] > :is(button, a).pk-bubble-content:hover { background: oklch(from var(--pk-brand) 0.88 calc(c * 0.5) h); }
+  :root[data-theme="system"] .pk-bubble[data-variant="outline"] > :is(button, a).pk-bubble-content:hover { background: var(--pk-surface-2); }
+  :root[data-theme="system"] .pk-bubble[data-variant="ghost"] > :is(button, a).pk-bubble-content:hover { background: var(--pk-surface-2); }
+  :root[data-theme="system"] .pk-bubble[data-variant="destructive"] > .pk-bubble-content { background: color-mix(in oklab, var(--pk-red) 10%, transparent); }
+  :root[data-theme="system"] .pk-bubble[data-variant="destructive"] > :is(button, a).pk-bubble-content:hover { background: color-mix(in oklab, var(--pk-red) 20%, transparent); }
+}
+
 .pk-bubble-group { display: flex; min-width: 0; flex-direction: column; gap: .5rem; }
 .pk-bubble-reactions {
   position: absolute; z-index: 10; display: flex; width: fit-content;
@@ -26,6 +66,7 @@
   box-shadow: 0 0 0 3px var(--pk-surface); background: var(--pk-surface-2);
   flex: none; gap: .25rem; padding: .125rem .375rem; font-size: .875rem;
 }
+.pk-bubble-reactions:has(button) { padding: 0; }
 .pk-bubble-reactions[data-side="bottom"] { bottom: 0; transform: translateY(75%); }
 .pk-bubble-reactions[data-side="top"] { top: 0; transform: translateY(-75%); }
 .pk-bubble-reactions[data-align="end"] { right: .75rem; }
