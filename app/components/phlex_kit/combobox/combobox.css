@@ -24,10 +24,15 @@
   cursor: pointer;
   transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
-.pk-combobox-trigger:hover { background: var(--pk-accent); }
+.pk-combobox-trigger { background: color-mix(in oklab, var(--pk-input) 30%, transparent); }
+.pk-combobox-trigger:hover { background: color-mix(in oklab, var(--pk-input) 50%, transparent); }
+.pk-combobox-trigger[aria-invalid="true"] {
+  border-color: color-mix(in oklab, var(--pk-red) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
+}
 .pk-combobox-trigger:focus-visible {
   outline: none;
-  border-color: var(--pk-brand);
+  border-color: var(--pk-ring);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-combobox-trigger:disabled,
@@ -177,8 +182,18 @@
   cursor: text;
   transition: border-color .15s ease, box-shadow .15s ease;
 }
+.pk-combobox-input-trigger { background: color-mix(in oklab, var(--pk-input) 30%, transparent); }
+.pk-combobox-input-trigger[aria-invalid="true"] {
+  border-color: color-mix(in oklab, var(--pk-red) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
+}
+.pk-combobox-input-trigger:has(.pk-combobox-input-trigger-field:disabled) {
+  pointer-events: none;
+  opacity: .5;
+  background: color-mix(in oklab, var(--pk-input) 80%, transparent);
+}
 .pk-combobox-input-trigger:focus-within {
-  border-color: var(--pk-brand);
+  border-color: var(--pk-ring);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-combobox-input-trigger-field {
@@ -308,3 +323,22 @@
   box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-combobox-clear-button svg { width: .875rem; height: .875rem; }
+
+:root[data-theme="light"] .pk-combobox-trigger,
+:root[data-theme="light"] .pk-combobox-input-trigger { background: transparent; }
+:root[data-theme="light"] .pk-combobox-trigger:hover { background: transparent; }
+:root[data-theme="light"] .pk-combobox-trigger[aria-invalid="true"],
+:root[data-theme="light"] .pk-combobox-input-trigger[aria-invalid="true"] {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-combobox-trigger,
+  :root[data-theme="system"] .pk-combobox-input-trigger { background: transparent; }
+  :root[data-theme="system"] .pk-combobox-trigger:hover { background: transparent; }
+  :root[data-theme="system"] .pk-combobox-trigger[aria-invalid="true"],
+  :root[data-theme="system"] .pk-combobox-input-trigger[aria-invalid="true"] {
+    border-color: var(--pk-red);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+  }
+}

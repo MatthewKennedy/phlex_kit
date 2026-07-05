@@ -14,7 +14,8 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static values = {
     term: String,
-    minPopoverWidth: { type: Number, default: 240 }
+    minPopoverWidth: { type: Number, default: 240 },
+    autoHighlight: { type: Boolean, default: false }
   }
 
   static targets = [
@@ -240,6 +241,13 @@ export default class extends Controller {
 
     if (this.hasEmptyStateTarget) {
       this.emptyStateTarget.classList.toggle("pk-hidden", resultCount !== 0)
+    }
+
+    // autoHighlight: keep the first visible option marked while typing so
+    // Enter picks it immediately (their autoHighlight prop).
+    if (this.autoHighlightValue && filterTerm && resultCount > 0) {
+      this.selectedItemIndex = 0
+      this.focusSelectedInput()
     }
   }
 

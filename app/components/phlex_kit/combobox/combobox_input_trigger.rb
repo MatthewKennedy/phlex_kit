@@ -9,15 +9,19 @@ module PhlexKit
   # popover's own bindings only fire for the button+search layout.
   # See combobox.rb.
   class ComboboxInputTrigger < BaseComponent
-    def initialize(placeholder: "", **attrs)
+    def initialize(placeholder: "", disabled: false, invalid: false, **attrs)
       @placeholder = placeholder
+      @disabled = disabled
+      @invalid = invalid
       @attrs = attrs
     end
 
     def view_template
+      wrapper_aria = { haspopup: "listbox", expanded: "false" }
+      wrapper_aria[:invalid] = "true" if @invalid
       div(**mix({
         class: "pk-combobox-input-trigger",
-        aria: { haspopup: "listbox", expanded: "false" },
+        aria: wrapper_aria,
         data: {
           placeholder: @placeholder,
           phlex_kit__combobox_target: "trigger",
@@ -34,6 +38,7 @@ module PhlexKit
         input(
           type: :text,
           placeholder: @placeholder,
+          disabled: @disabled,
           autocomplete: "off",
           autocorrect: "off",
           spellcheck: "false",

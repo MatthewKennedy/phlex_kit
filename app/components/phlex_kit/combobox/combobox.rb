@@ -13,8 +13,9 @@ module PhlexKit
   # latter two shipped unfinished in ruby_ui (no controller support) and are
   # completed here. Tailwind → vanilla `.pk-combobox*` (combobox.css).
   class Combobox < BaseComponent
-    def initialize(term: nil, **attrs)
+    def initialize(term: nil, auto_highlight: false, **attrs)
       @term = term
+      @auto_highlight = auto_highlight
       @attrs = attrs
     end
 
@@ -25,6 +26,7 @@ module PhlexKit
         data: {
           controller: "phlex-kit--combobox",
           phlex_kit__combobox_term_value: @term,
+          phlex_kit__combobox_auto_highlight_value: (@auto_highlight ? "true" : nil),
           action: "turbo:morph@window->phlex-kit--combobox#updateTriggerContent click@window->phlex-kit--combobox#onClickOutside"
         }
       }, @attrs), &)

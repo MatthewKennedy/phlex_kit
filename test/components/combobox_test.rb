@@ -90,4 +90,16 @@ class ComboboxTest < Minitest::Test
   def test_badge_is_a_chip
     assert_includes render(PhlexKit::ComboboxBadge.new { "ruby" }), "pk-combobox-badge"
   end
+
+  def test_auto_highlight_value
+    html = render(PhlexKit::Combobox.new(auto_highlight: true) { "x" })
+    assert_includes html, %(data-phlex-kit--combobox-auto-highlight-value="true")
+    refute_includes render(PhlexKit::Combobox.new { "x" }), "auto-highlight-value"
+  end
+
+  def test_input_trigger_invalid_and_disabled
+    html = render(PhlexKit::ComboboxInputTrigger.new(placeholder: "Pick", invalid: true, disabled: true))
+    assert_includes html, %(aria-invalid="true")
+    assert_includes html, "disabled"
+  end
 end
