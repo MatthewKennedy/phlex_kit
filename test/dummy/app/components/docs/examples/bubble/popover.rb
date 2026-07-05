@@ -14,7 +14,7 @@ module Docs
               render PhlexKit::BubbleReactions.new do
                 render PhlexKit::Popover.new do
                   render PhlexKit::PopoverTrigger.new do
-                    render PhlexKit::Button.new(variant: :ghost, size: :sm, icon: true, aria: { label: "Show error details" }) do
+                    render PhlexKit::Button.new(variant: :ghost, size: :xs, icon: true, aria: { label: "Show error details" }) do
                       render PhlexKit::Icon.new(:info)
                     end
                   end

@@ -14,7 +14,7 @@ module Docs
               render PhlexKit::BubbleReactions.new do
                 render PhlexKit::Tooltip.new do
                   render PhlexKit::TooltipTrigger.new do
-                    render PhlexKit::Button.new(variant: :ghost, size: :sm, icon: true) do
+                    render PhlexKit::Button.new(variant: :ghost, size: :xs, icon: true) do
                       render PhlexKit::Icon.new(:check)
                     end
                   end

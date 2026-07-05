@@ -1,19 +1,20 @@
 module PhlexKit
-  # Button, ported from ruby_ui's RubyUI::Button (https://ruby-ui.com) to full
-  # variant/size parity. Renders a <button>; the `mix` pass-through means a
-  # caller's `class:` augments ours and a phlex-reactive `**on(:event)` bundle
-  # flows straight onto the element:
+  # Button, ported from ruby_ui's RubyUI::Button and matched to shadcn/ui's
+  # current button. Renders a <button>, or an <a> when `href:` is given
+  # (their asChild link button). The `mix` pass-through means a caller's
+  # `class:` augments ours and a phlex-reactive `**on(:event)` bundle flows
+  # straight onto the element:
   #
   #   render PhlexKit::Button.new(variant: :primary, **on(:publish)) { "Approve" }
+  #   render PhlexKit::Button.new(href: "/login") { "Login" }
   #
-  # For a button-styled link, put the classes on an <a> directly
-  # (`class: "pk-button outline sm"`) — that's ruby_ui's Link approach.
-  #
-  # Variants/sizes mirror ruby_ui; Tailwind is replaced with vanilla `.pk-button`
-  # CSS (button.css). `VARIANTS.fetch`/`SIZES.fetch` fail loud on a bad value.
+  # Mark leading/trailing glyphs with data-icon: "inline-start"/"inline-end"
+  # to tighten the near-side padding like theirs. `icon: true` makes the
+  # button square (their icon/icon-xs/… sizes — compose with `size:`).
+  # :primary is their :default; :xl is a kit extra. `VARIANTS.fetch`/
+  # `SIZES.fetch` fail loud on a bad value.
   class Button < BaseComponent
-    # variant => modifier class. Default is :primary (the filled brand button),
-    # matching ruby_ui.
+    # variant => modifier class. Default is :primary (the filled brand button).
     VARIANTS = {
       primary: "primary",
       secondary: "secondary",
@@ -24,22 +25,28 @@ module PhlexKit
     }.freeze
 
     SIZES = {
+      xs: "xs",
       sm: "sm",
       md: nil,
       lg: "lg",
       xl: "xl"
     }.freeze
 
-    def initialize(variant: :primary, size: :md, type: :button, icon: false, **attrs)
+    def initialize(variant: :primary, size: :md, type: :button, icon: false, href: nil, **attrs)
       @variant = variant.to_sym
       @size = size.to_sym
       @type = type
       @icon = icon
+      @href = href
       @attrs = attrs
     end
 
     def view_template(&block)
-      button(**mix({ type: @type, class: classes }, @attrs), &block)
+      if @href
+        a(**mix({ href: @href, class: classes }, @attrs), &block)
+      else
+        button(**mix({ type: @type, class: classes }, @attrs), &block)
+      end
     end
 
     private

@@ -31,7 +31,7 @@ module Docs
             render PhlexKit::Bubble.new(variant: :destructive) do
               render PhlexKit::BubbleContent.new { "Are you sure I can run this command?" }
               render PhlexKit::BubbleReactions.new do
-                render PhlexKit::Button.new(variant: :ghost, size: :sm) { "Yes, run it" }
+                render PhlexKit::Button.new(variant: :ghost, size: :xs) { "Yes, run it" }
               end
             end
           end

@@ -16,7 +16,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] badge — restyled to the solid pill spec (h-5, full-round, solid primary; old tinted-ring look dropped), added ghost/link variants, href: renders <a> (their asChild) with link-only hover fills, data-icon inline-start/end padding insets, focus ring, dark/light destructive tint split; five examples + kit-extras demo
 - [x] breadcrumb — structure already at parity; metric fixes (item gap 1.5→1, ellipsis box 2.25rem→size-5) and their four examples (Basic, Custom separator w/ block dot, Dropdown, Collapsed). "Link component" page section is React-router-specific (our BreadcrumbLink takes href natively) — skipped like RTL
 - [x] bubble — content metrics to rounded-xl/px-3/py-2, interactive content (button/a) hover fills + focus ring per variant, tinted rebuilt on relative-oklch with dark/light lightness pins, destructive 10/20 theme split, ghost full-width, reactions :has(button) p-0, Message-align passthrough; eight examples
-- [ ] button
+- [x] button — added xs size (+ icon-xs/sm/lg squares via icon:), href: renders <a> (their asChild), destructive restyled solid-red→tinted (10/20 theme split), outline theme-forked (translucent input fill dark / bordered light), hover fills to /80 + oklch secondary mix, active translate-y nudge (not aria-haspopup), aria-expanded held states, per-size radius caps, data-icon insets, svg-4 defaults; their twelve examples (Button Group → own page)
 - [ ] button-group
 - [ ] calendar
 - [x] card — CardAction, size: :sm, --pk-card-spacing, footer band, image cards; five examples

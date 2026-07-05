@@ -12,7 +12,7 @@ module Docs
                 plain "Enable it under your profile settings to get started."
               end
               render PhlexKit::AlertAction.new do
-                render PhlexKit::Button.new(size: :sm) { "Enable" }
+                render PhlexKit::Button.new(size: :xs) { "Enable" }
               end
             end
           end
