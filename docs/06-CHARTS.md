@@ -207,3 +207,24 @@ lowest-friction option when you just need charts on the page.
 - **`"is not a registered controller/scale"` errors.** You imported `chart.js`
   but didn't `Chart.register(...registerables)` (or didn't register the specific
   pieces your chart type needs). See step 2.
+
+## From shadcn's build-a-chart tutorial
+
+ui.shadcn.com's chart page is a Recharts tutorial. The kit's equivalents are
+plain Chart.js options on `PhlexKit::Chart` — the docs site's chart page
+walks the same five steps live. The mapping:
+
+| shadcn / Recharts | PhlexKit / Chart.js |
+|---|---|
+| `<BarChart data={…}>` + series `<Bar dataKey=…>` | `type: "bar"` + `data.datasets` (one per series) |
+| `<CartesianGrid vertical={false} />` | `scales.y.grid` on, `scales.x.grid.display: false` |
+| `<XAxis dataKey="month" tickFormatter={…} />` | `scales.x.display: true` (+ `ticks.callback` when configuring in JS — options passed as JSON can't carry functions, so pre-shorten labels server-side) |
+| `<ChartTooltip content={<ChartTooltipContent />} />` | `plugins.tooltip.enabled: true` — the controller themes it from `--pk-surface`/`--pk-border`/`--pk-text` |
+| `<ChartLegend content={<ChartLegendContent />} />` | `plugins.legend` (bottom position, rounded point-style swatches) |
+| `ChartConfig` (labels/colors decoupled from data) | dataset `label:` + the `--pk-chart-1..5` tokens — the controller assigns them per dataset, so colors live in the THEME, not the data |
+| Theming (`var(--chart-1)`, dark variants) | already automatic: tokens re-resolve on theme change and the controller re-renders (theme observer) |
+
+Recharts-only concepts with no kit equivalent by design: `ChartContainer`'s
+aspect-ratio wrapper (size the canvas's parent instead), `accessibilityLayer`
+(Chart.js canvas a11y differs — set `aria-label` on the Chart), and custom
+JSX tooltip/legend content (Chart.js option callbacks, host-side).
