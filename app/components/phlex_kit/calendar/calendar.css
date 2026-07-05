@@ -67,6 +67,7 @@
 .pk-calendar-weekdays-row { display: flex; }
 .pk-calendar-week { display: flex; width: 100%; margin-top: .5rem; }
 .pk-calendar-weekday {
+  flex: none;
   width: var(--pk-cell-size);
   border-radius: var(--pk-cell-radius);
   font-size: .8rem;
@@ -75,6 +76,7 @@
 }
 .pk-calendar-weeknumber,
 .pk-calendar-weeknumber-head {
+  flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -88,6 +90,12 @@
 
 .pk-calendar-cell {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--pk-cell-size);
+  height: var(--pk-cell-size);
   padding: 0;
   text-align: center;
   font-size: .875rem;
@@ -142,6 +150,7 @@
 .pk-calendar-cell:has(> .in-range) { background: var(--pk-accent); }
 .pk-calendar-day.in-range {
   width: 100%;
+  height: 100%;
   border-radius: 0;
   background: var(--pk-accent);
 }
