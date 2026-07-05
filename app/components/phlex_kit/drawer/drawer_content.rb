@@ -1,8 +1,12 @@
 module PhlexKit
-  # <template> holding the drawer overlay + bottom panel (cloned into <body>
-  # on open, like SheetContent). See drawer.rb.
+  # <template> holding the drawer overlay + panel (cloned into <body> on open,
+  # like SheetContent). `side:` picks the attached edge — :bottom (default),
+  # :top, :left or :right, matching shadcn's direction prop. See drawer.rb.
   class DrawerContent < BaseComponent
-    def initialize(**attrs)
+    SIDES = { bottom: "bottom", top: "top", left: "left", right: "right" }.freeze
+
+    def initialize(side: :bottom, **attrs)
+      @side = side.to_sym
       @attrs = attrs
     end
 
@@ -10,7 +14,7 @@ module PhlexKit
       template(data: { phlex_kit__sheet_target: "content" }) do
         div(data: { controller: "phlex-kit--sheet-content" }) do
           div(class: "pk-drawer-overlay", data: { action: "click->phlex-kit--sheet-content#close" })
-          div(**mix({ class: "pk-drawer", role: "dialog", aria: { modal: "true" } }, @attrs)) do
+          div(**mix({ class: "pk-drawer #{SIDES.fetch(@side)}", role: "dialog", aria: { modal: "true" } }, @attrs)) do
             div(class: "pk-drawer-handle", aria: { hidden: "true" })
             yield if block
           end

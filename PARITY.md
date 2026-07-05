@@ -30,7 +30,7 @@ matches (parts/props), and its metrics have been compared.
 - [ ] data-table — their page is a tanstack-table build tutorial; kit has its own data_table. Own session
 - [ ] date-picker — blocked on the calendar rebuild (range/presets compositions)
 - [x] dialog — fixed the footer band's undefined --pk-dialog-spacing (only alert-dialog defined it — margins silently no-op'd), respec'd to nova: 24rem default width (their max-w-sm) with viewport clamp + retuned size ladder, foreground-tint ring border, rounded-xl, p-4/gap-4/text-sm, title text-base/medium, close at top-2/right-2, description link styling; added show_close_button: + DialogClose part. Overlay kept at the kit-unified 0.5/8px — nova moved to black/10+blur-xs, change all overlays (dialog/alert-dialog/sheet/command) together as a follow-up. Five examples
-- [ ] drawer
+- [x] drawer — added side: :top/:left/:right to DrawerContent (their direction prop; edge-attached rounding/border + per-side slide animations), nova metrics (title base/medium, header gap-0.5, text-sm body), handle hidden by default like nova's .cn-drawer-handle (re-show via CSS); Scrollable Content + Sides examples. "Responsive Dialog" is a React media-query component swap — documented, not ported
 - [x] dropdown-menu — Group/Shortcut/CheckboxItem/RadioGroup+Item/Sub family, destructive items; seven examples
 - [ ] empty
 - [ ] field (maps to our form + form_field)
