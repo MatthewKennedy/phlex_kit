@@ -33,8 +33,8 @@ matches (parts/props), and its metrics have been compared.
 - [x] drawer — added side: :top/:left/:right to DrawerContent (their direction prop; edge-attached rounding/border + per-side slide animations), nova metrics (title base/medium, header gap-0.5, text-sm body), handle hidden by default like nova's .cn-drawer-handle (re-show via CSS); Scrollable Content + Sides examples. "Responsive Dialog" is a React media-query component swap — documented, not ported
 - [x] dropdown-menu — Group/Shortcut/CheckboxItem/RadioGroup+Item/Sub family, destructive items; seven examples
 - [x] empty — nova metrics: borderless by default (dashed border now opt-in via `.outline` — their base sets only border-STYLE), rounded-xl (was 1.5rem), p-6 (was 3rem), title 1.125rem→text-sm/medium, icon chip 2.5→2rem w/ svg-4, content gap-2.5; their six examples (Default, Outline, Background, Avatar, Avatar Group, InputGroup)
-- [ ] field (maps to our form + form_field)
-- [ ] hover-card
+- [ ] field (maps to our form + form_field) — AUDITED 2026-07-05 (scope only): their Field system is a full part vocabulary (FieldSet/FieldLegend/FieldGroup/Field/FieldContent/FieldLabel/FieldDescription/FieldError, orientation: horizontal/vertical/responsive, choice cards) with 13 examples; kit has the ruby_ui live-validation form_field trio. Own session — and afterwards rework the checkbox/dialog/collapsible examples that stub Field with ad-hoc rows
+- [x] hover-card — added side: :top/:left/:right on content (their side prop, CSS-positioned), nova metrics (p-2.5 was 1rem, rounded-lg, text-sm, foreground-tint ring); Basic + Sides examples. Trigger-delay knobs are Radix props — controller uses its own fixed delays
 - [ ] input
 - [ ] input-group
 - [ ] input-otp

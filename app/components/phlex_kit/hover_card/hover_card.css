@@ -1,8 +1,16 @@
-/* Co-located with hover_card.rb. Tokens from the global stylesheet. */
+/* Co-located with hover_card.rb. Matched to shadcn/ui's current hover-card
+   (nova): 16rem popover panel, rounded-lg, p-2.5, text-sm, foreground-tint
+   ring. side: top/left/right flip the CSS position (bottom default).
+   Tokens from the global stylesheet. */
 .pk-hover-card { position: relative; display: inline-block; }
 .pk-hover-card-trigger { display: inline-block; }
 .pk-hover-card-content {
-  position: absolute; z-index: 50; top: calc(100% + .5rem); left: 0; width: 16rem;
-  border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px); background: var(--pk-surface);
-  color: var(--pk-text); padding: 1rem; box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
+  position: absolute; z-index: 50; top: calc(100% + .25rem); left: 0; width: 16rem;
+  border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
+  border-radius: var(--pk-radius); background: var(--pk-surface);
+  color: var(--pk-text); padding: .625rem; font-size: .875rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
 }
+.pk-hover-card-content.top { top: auto; bottom: calc(100% + .25rem); }
+.pk-hover-card-content.left { top: 50%; left: auto; right: calc(100% + .25rem); transform: translateY(-50%); }
+.pk-hover-card-content.right { top: 50%; left: calc(100% + .25rem); transform: translateY(-50%); }
