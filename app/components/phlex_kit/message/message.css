@@ -1,4 +1,6 @@
-/* Co-located with message.rb. Theme tokens from the global stylesheet. */
+/* Co-located with message.rb. Matched to shadcn/ui's current message: the
+   avatar rises above a footer row, header/footer lose their inset beside
+   ghost bubbles. Theme tokens from the global stylesheet. */
 .pk-message {
   position: relative; display: flex; width: 100%; min-width: 0;
   gap: .5rem; font-size: .875rem;
@@ -18,3 +20,8 @@
   align-items: center; justify-content: center; align-self: flex-end;
   overflow: hidden; border-radius: 9999px; background: var(--pk-surface-2);
 }
+/* Keep the avatar level with the bubble when a footer row follows. */
+.pk-message:has(.pk-message-footer) .pk-message-avatar { transform: translateY(-2rem); }
+/* Frameless ghost bubbles sit flush — drop the header/footer inset. */
+.pk-message:has([data-variant="ghost"]) .pk-message-header,
+.pk-message:has([data-variant="ghost"]) .pk-message-footer { padding-inline: 0; }

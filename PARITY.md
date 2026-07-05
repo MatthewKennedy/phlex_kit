@@ -43,7 +43,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] label — already at parity (their page has no Examples section; "Label in Field" belongs to the field audit); demo updated to their checkbox-pair copy
 - [x] marker — border variant fixed full-box→bottom-border-only (their border-b pb-2), separator content flex-none/centered, interactive markers (href:/as: :button) with underline+hover brighten, min-h to 1rem; their seven examples (Status w/ Spinner, Shimmer on .pk-shimmer)
 - [x] menubar — mirrored the full menu family (Group/Label/Shortcut/CheckboxItem/RadioGroup+Item/Sub trio, destructive + inset items), nova metrics (h-8 bar w/ 3px padding, tight px-1.5 triggers on muted hover, min-w-36 ring-bordered panels, rounded-md rows); five examples incl. the big four-menu demo
-- [ ] message
+- [x] message — two nova rules added (avatar rises 2rem above a footer row; header/footer lose their inset beside ghost bubbles), structure already at parity; their five examples (Avatar, Group, Header and Footer, Actions, Attachment) + kept Conversation demo
 - [ ] message-scroller
 - [ ] native-select
 - [ ] navigation-menu
