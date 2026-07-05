@@ -1,10 +1,15 @@
-/* Co-located with calendar.rb — UI::Calendar. ruby_ui's structure + Stimulus
-   kept (the controller renders week rows from <template>s; its Mustache
-   dependency replaced with a tiny interpolator); Tailwind replaced with vanilla
-   CSS on the palette tokens. Geometry from ruby_ui (p-3 card, h-7 nav buttons,
-   2rem day cells, flex week rows). Theme tokens come from the global
-   stylesheet. */
+/* Co-located with calendar.rb — PhlexKit::Calendar. ruby_ui's structure +
+   Stimulus kept (the controller renders week rows from <template>s; its
+   Mustache dependency replaced with a tiny interpolator); extended to
+   shadcn's current surface. Sizing rides nova's variable system:
+   --pk-cell-size (default 2rem) and --pk-cell-radius drive every day cell —
+   the Custom Cell Size example just overrides --pk-cell-size inline. Range
+   days paint a contiguous accent band (in-range cells square off; the
+   start/end caps keep their outer radius). Booked (explicitly disabled)
+   days strike through at full opacity, like theirs. */
 .pk-calendar {
+  --pk-cell-size: 2rem;
+  --pk-cell-radius: calc(var(--pk-radius) - 2px);
   display: inline-flex;
   flex-direction: column;
   gap: 1rem;
@@ -19,6 +24,18 @@
   padding-top: .25rem;
 }
 .pk-calendar-title { font-size: .875rem; font-weight: 500; }
+
+/* Month/year dropdown caption (caption_layout: :dropdown) — native selects
+   restyled to their compact h-6 caption controls. */
+.pk-calendar-dropdowns { display: flex; align-items: center; gap: .25rem; }
+.pk-native-select-field.pk-calendar-dropdown {
+  width: auto;
+  height: 1.5rem;
+  padding: 0 .25rem 0 .375rem;
+  font-size: .875rem;
+  font-weight: 500;
+  border-color: var(--pk-input);
+}
 
 .pk-calendar-prev, .pk-calendar-next {
   position: absolute;
@@ -50,22 +67,30 @@
 .pk-calendar-weekdays-row { display: flex; }
 .pk-calendar-week { display: flex; width: 100%; margin-top: .5rem; }
 .pk-calendar-weekday {
-  width: 2rem;
-  border-radius: calc(var(--pk-radius) - 2px);
+  width: var(--pk-cell-size);
+  border-radius: var(--pk-cell-radius);
   font-size: .8rem;
   font-weight: 400;
   color: var(--pk-muted);
 }
+.pk-calendar-weeknumber,
+.pk-calendar-weeknumber-head {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--pk-cell-size);
+  height: var(--pk-cell-size);
+  font-size: .75rem;
+  font-weight: 400;
+  color: var(--pk-muted);
+}
+.pk-calendar-weeknumber-head { height: auto; }
 
 .pk-calendar-cell {
   position: relative;
   padding: 0;
   text-align: center;
   font-size: .875rem;
-}
-.pk-calendar-cell:has([aria-selected]) {
-  background: var(--pk-accent);
-  border-radius: calc(var(--pk-radius) - 2px);
 }
 .pk-calendar-cell:focus-within { position: relative; z-index: 20; }
 
@@ -74,11 +99,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: var(--pk-cell-size);
+  height: var(--pk-cell-size);
   padding: 0;
   border: 0;
-  border-radius: calc(var(--pk-radius) - 2px);
+  border-radius: var(--pk-cell-radius);
   background: transparent;
   color: var(--pk-text);
   font: inherit;
@@ -107,3 +132,20 @@
   color: var(--pk-muted);
   opacity: .5;
 }
+/* Booked: explicitly blocked dates keep full opacity, struck through. */
+.pk-calendar-day.booked {
+  text-decoration: line-through;
+  opacity: 1;
+}
+
+/* Range selection: a contiguous accent band between the brand-filled caps. */
+.pk-calendar-cell:has(> .in-range) { background: var(--pk-accent); }
+.pk-calendar-day.in-range {
+  width: 100%;
+  border-radius: 0;
+  background: var(--pk-accent);
+}
+.pk-calendar-cell:has(> .range-cap) { background: var(--pk-accent); }
+.pk-calendar-cell:has(> .range-start.range-cap) { border-radius: var(--pk-cell-radius) 0 0 var(--pk-cell-radius); }
+.pk-calendar-cell:has(> .range-end.range-cap) { border-radius: 0 var(--pk-cell-radius) var(--pk-cell-radius) 0; }
+.pk-calendar-cell:has(> .range-start.range-end) { border-radius: var(--pk-cell-radius); }

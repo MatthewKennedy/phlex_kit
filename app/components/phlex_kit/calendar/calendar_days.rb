@@ -1,7 +1,8 @@
 module PhlexKit
   # <template>s for the five day states (disabled / selected / today / current
   # month / other month). The controller picks one per day and interpolates
-  # {{day}} / {{dayDate}}. See calendar.rb.
+  # {{day}} / {{dayDate}} / {{state}} — state carries the extra range/booked
+  # classes (range-start / range-end / in-range / booked). See calendar.rb.
   class CalendarDays < BaseComponent
     def initialize(**attrs)
       @attrs = attrs
@@ -22,7 +23,7 @@ module PhlexKit
         button(
           data_day: "{{day}}",
           name: "day",
-          class: "pk-calendar-day disabled",
+          class: "pk-calendar-day disabled {{state}}",
           disabled: true,
           role: "gridcell",
           tabindex: "-1",
@@ -38,7 +39,7 @@ module PhlexKit
           data_day: "{{day}}",
           data_action: "click->phlex-kit--calendar#selectDay",
           name: "day",
-          class: "pk-calendar-day selected",
+          class: "pk-calendar-day selected {{state}}",
           role: "gridcell",
           tabindex: "0",
           type: "button",
@@ -53,7 +54,7 @@ module PhlexKit
           data_day: "{{day}}",
           data_action: "click->phlex-kit--calendar#selectDay",
           name: "day",
-          class: "pk-calendar-day today",
+          class: "pk-calendar-day today {{state}}",
           role: "gridcell",
           tabindex: "-1",
           type: "button"
@@ -67,7 +68,7 @@ module PhlexKit
           data_day: "{{day}}",
           data_action: "click->phlex-kit--calendar#selectDay",
           name: "day",
-          class: "pk-calendar-day",
+          class: "pk-calendar-day {{state}}",
           role: "gridcell",
           tabindex: "-1",
           type: "button"
@@ -81,7 +82,7 @@ module PhlexKit
           data_day: "{{day}}",
           data_action: "click->phlex-kit--calendar#selectDay",
           name: "day",
-          class: "pk-calendar-day other",
+          class: "pk-calendar-day other {{state}}",
           role: "gridcell",
           tabindex: "-1",
           type: "button"
