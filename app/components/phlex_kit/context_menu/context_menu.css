@@ -1,19 +1,91 @@
-/* Co-located with context_menu.rb. CSS-positioned at the cursor. Tokens global. */
+/* Co-located with context_menu.rb. CSS-positioned at the cursor. Matches the
+   dropdown-menu grammar (shadcn's context menu shares the same part set):
+   gap-based rows, destructive variant, hidden-input checkbox/radio rows with
+   :has() indicators, pure-CSS hover submenus. Tokens global. */
 .pk-context-menu { position: relative; }
 .pk-context-menu-content {
-  position: absolute; z-index: 50; min-width: 8rem; overflow: hidden;
+  position: absolute; z-index: 50; min-width: 8rem; overflow: visible;
   border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px); background: var(--pk-surface);
   color: var(--pk-text); padding: .25rem; box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
 }
 .pk-context-menu-item {
-  position: relative; display: flex; cursor: pointer; user-select: none; align-items: center;
-  border-radius: .125rem; padding: .375rem .5rem .375rem 2rem; font-size: .875rem;
-  color: inherit; text-decoration: none; outline: none;
+  position: relative; display: flex; align-items: center; gap: .5rem;
+  width: 100%; cursor: pointer; user-select: none;
+  border-radius: calc(var(--pk-radius) - 4px); padding: .375rem .5rem; font-size: .875rem;
+  color: var(--pk-text); text-decoration: none; outline: none;
 }
+.pk-context-menu-item > svg { flex: none; width: 1rem; height: 1rem; color: var(--pk-muted); }
 .pk-context-menu-item:hover, .pk-context-menu-item:focus { background: var(--pk-accent); color: var(--pk-text); }
 .pk-context-menu-item[data-disabled="true"] { pointer-events: none; opacity: .5; }
-.pk-context-menu-check { position: absolute; left: .5rem; display: inline-flex; height: .875rem; width: .875rem; align-items: center; justify-content: center; }
+.pk-context-menu-item.inset { padding-left: 2rem; }
+.pk-context-menu-check {
+  display: inline-flex; align-items: center; justify-content: center;
+  flex: none; width: 1rem; height: 1rem;
+}
+.pk-context-menu-check svg { width: .875rem; height: .875rem; }
 .pk-context-menu-shortcut { margin-left: auto; font-size: .75rem; letter-spacing: .1em; color: var(--pk-muted); }
 .pk-context-menu-label { padding: .375rem .5rem; font-size: .875rem; font-weight: 600; color: var(--pk-text); }
 .pk-context-menu-label.inset { padding-left: 2rem; }
 .pk-context-menu-separator { height: 1px; margin: .25rem -.25rem; background: var(--pk-border); }
+.pk-context-menu-group { display: contents; }
+
+/* Destructive rows (irreversible actions). */
+.pk-context-menu-item.destructive { color: var(--pk-red); }
+.pk-context-menu-item.destructive > svg { color: var(--pk-red); }
+.pk-context-menu-item.destructive:hover,
+.pk-context-menu-item.destructive:focus {
+  background: color-mix(in oklab, var(--pk-red) 12%, transparent);
+  color: var(--pk-red);
+}
+
+/* Checkbox / radio rows: real (hidden) inputs; indicator shows via :has. */
+.pk-context-menu-item-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+.pk-context-menu-checkbox-item,
+.pk-context-menu-radio-item { position: relative; }
+.pk-context-menu-item-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  visibility: hidden;
+}
+.pk-context-menu-item-indicator svg { width: .875rem; height: .875rem; }
+.pk-context-menu-radio-item .pk-context-menu-item-indicator svg { width: .5rem; height: .5rem; }
+.pk-context-menu-item:has(.pk-context-menu-item-input:checked) .pk-context-menu-item-indicator { visibility: visible; }
+.pk-context-menu-item:has(.pk-context-menu-item-input:focus-visible) {
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+
+/* Submenu: trigger row + side panel, revealed on hover/focus — pure CSS. */
+.pk-context-menu-sub { position: relative; }
+.pk-context-menu-sub-chevron { margin-left: auto; width: 1rem; height: 1rem; }
+.pk-context-menu-sub-content {
+  position: absolute;
+  top: -0.25rem;
+  left: 100%;
+  z-index: 60;
+  min-width: 10rem;
+  padding-left: .25rem; /* hover bridge over the gap */
+  display: none;
+}
+.pk-context-menu-sub-viewport {
+  min-width: 10rem;
+  border-radius: calc(var(--pk-radius) - 2px);
+  border: 1px solid var(--pk-border);
+  background: var(--pk-surface);
+  color: var(--pk-text);
+  padding: .25rem;
+  box-shadow: 0 8px 24px rgb(0 0 0 / .3);
+}
+.pk-context-menu-sub:hover > .pk-context-menu-sub-content,
+.pk-context-menu-sub:focus-within > .pk-context-menu-sub-content { display: block; }
+.pk-context-menu-sub:hover > .pk-context-menu-sub-trigger,
+.pk-context-menu-sub:focus-within > .pk-context-menu-sub-trigger { background: var(--pk-accent); }
