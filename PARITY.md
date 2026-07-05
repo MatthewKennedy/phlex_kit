@@ -61,10 +61,10 @@ matches (parts/props), and its metrics have been compared.
 - [ ] slider
 - [ ] sonner (maps to our toast — audit together with toast)
 - [x] spinner — already at parity (loader icon + spin); Size/Button/Badge examples (Input Group + Empty compositions live on those pages)
-- [ ] switch
+- [x] switch — respec'd to nova geometry (32×18.4px track / 24×14 sm, size-4 thumb sliding calc(100%-2px)), input-tone unchecked fill, theme-aware thumb (bg in light, fg/brand-ink in dark), size: :sm, focus + invalid rings, real hidden input (was display:none); six examples
 - [ ] table
 - [ ] tabs
-- [ ] textarea
+- [x] textarea — same nova respec as input (rounded-lg, translucent dark fill, ring focus, invalid/disabled fills, iOS-zoom text-base→md:text-sm); four examples
 - [ ] toast
 - [ ] toggle
 - [ ] toggle-group

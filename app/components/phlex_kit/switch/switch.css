@@ -1,28 +1,65 @@
-/* Co-located with switch.rb. Theme tokens from the global stylesheet. */
+/* Co-located with switch.rb. Matched to shadcn/ui's current switch (nova):
+   32×18.4px track (sm 24×14) with a size-4 thumb sliding calc(100%-2px);
+   unchecked fills with the input tone (stronger in dark), checked with the
+   brand; the thumb is the page background in light, foreground in dark
+   (brand-ink when checked). Pure CSS (:has(:checked)), no Stimulus. */
 .pk-switch {
+  position: relative;
   display: inline-flex;
-  height: 1.5rem;
-  width: 2.75rem;
+  height: 18.4px;
+  width: 32px;
   flex: none;
   cursor: pointer;
   align-items: center;
-  border: 2px solid transparent;
+  border: 1px solid transparent;
   border-radius: 9999px;
-  background: var(--pk-border);
-  transition: background-color .15s ease;
+  background: color-mix(in oklab, var(--pk-input) 80%, transparent);
+  transition: background-color .15s ease, box-shadow .15s ease;
 }
+.pk-switch.sm { height: 14px; width: 24px; }
 .pk-switch:has(.pk-switch-input:checked) { background: var(--pk-brand); }
 .pk-switch:has(.pk-switch-input:disabled) { cursor: not-allowed; opacity: .5; }
-.pk-switch-input { display: none; }
+.pk-switch:has(.pk-switch-input:focus-visible) {
+  border-color: var(--pk-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+.pk-switch:has(.pk-switch-input[aria-invalid="true"]) {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
+}
+.pk-switch-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
 .pk-switch-thumb {
   pointer-events: none;
   display: block;
-  height: 1.25rem;
-  width: 1.25rem;
+  height: 1rem;
+  width: 1rem;
   border-radius: 9999px;
-  background: var(--pk-surface);
-  box-shadow: 0 1px 3px rgb(0 0 0 / .3);
-  transition: transform .15s ease;
+  background: var(--pk-text);
+  transition: transform .15s ease, background-color .15s ease;
   transform: translateX(0);
 }
-.pk-switch:has(.pk-switch-input:checked) .pk-switch-thumb { transform: translateX(1.25rem); }
+.pk-switch.sm .pk-switch-thumb { height: .75rem; width: .75rem; }
+.pk-switch:has(.pk-switch-input:checked) .pk-switch-thumb {
+  transform: translateX(calc(100% - 2px));
+  background: var(--pk-brand-ink);
+}
+:root[data-theme="light"] .pk-switch { background: var(--pk-input); }
+:root[data-theme="light"] .pk-switch:has(.pk-switch-input:checked) { background: var(--pk-brand); }
+:root[data-theme="light"] .pk-switch-thumb { background: var(--pk-bg) !important; }
+:root[data-theme="light"] .pk-switch:has(.pk-switch-input[aria-invalid="true"]) {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-switch { background: var(--pk-input); }
+  :root[data-theme="system"] .pk-switch:has(.pk-switch-input:checked) { background: var(--pk-brand); }
+  :root[data-theme="system"] .pk-switch-thumb { background: var(--pk-bg) !important; }
+  :root[data-theme="system"] .pk-switch:has(.pk-switch-input[aria-invalid="true"]) {
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+  }
+}

@@ -1,27 +1,47 @@
-/* Co-located with textarea.rb — UI::Textarea. Same vanilla treatment as
-   .pk-input (input.css): ruby_ui's geometry (rounded-md / px-3 / text-sm /
-   shadow / ring-on-focus), our palette tokens, height left to the `rows`
-   attribute exactly as ruby_ui does. Theme tokens come from the global
-   stylesheet. */
+/* Co-located with textarea.rb — PhlexKit::Textarea. Same nova treatment as
+   .pk-input (input.css): rounded-lg, translucent dark fill / transparent
+   light, ring focus, invalid + disabled states, text-base on small screens
+   (iOS zoom guard) dropping to text-sm from md. Height stays with `rows`. */
 .pk-textarea {
   width: 100%;
-  border-radius: calc(var(--pk-radius) - 2px);
+  border-radius: var(--pk-radius);
   border: 1px solid var(--pk-input);
-  background: var(--pk-bg);
+  background: color-mix(in oklab, var(--pk-input) 30%, transparent);
   color: var(--pk-text);
-  padding: .5rem .75rem;
+  padding: .5rem .625rem;
   font: inherit;
-  font-size: .875rem;
-    transition: color .15s ease, border-color .15s ease, box-shadow .15s ease;
+  font-size: 1rem;
+  transition: color .15s ease, border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+@media (min-width: 768px) {
+  .pk-textarea { font-size: .875rem; }
 }
 .pk-textarea::placeholder { color: var(--pk-muted); }
 .pk-textarea:focus-visible {
   outline: none;
-  border-color: var(--pk-brand);
+  border-color: var(--pk-ring);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
-.pk-textarea:disabled { cursor: not-allowed; opacity: .5; }
+.pk-textarea:disabled {
+  cursor: not-allowed;
+  opacity: .5;
+  background: color-mix(in oklab, var(--pk-input) 80%, transparent);
+}
 .pk-textarea[aria-invalid="true"] {
+  border-color: color-mix(in oklab, var(--pk-red) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
+}
+:root[data-theme="light"] .pk-textarea { background: transparent; }
+:root[data-theme="light"] .pk-textarea:disabled { background: color-mix(in oklab, var(--pk-input) 50%, transparent); }
+:root[data-theme="light"] .pk-textarea[aria-invalid="true"] {
   border-color: var(--pk-red);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 30%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-textarea { background: transparent; }
+  :root[data-theme="system"] .pk-textarea:disabled { background: color-mix(in oklab, var(--pk-input) 50%, transparent); }
+  :root[data-theme="system"] .pk-textarea[aria-invalid="true"] {
+    border-color: var(--pk-red);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+  }
 }
