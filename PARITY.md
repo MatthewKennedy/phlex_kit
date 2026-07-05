@@ -62,7 +62,7 @@ matches (parts/props), and its metrics have been compared.
 - [ ] sonner (maps to our toast — audit together with toast)
 - [x] spinner — already at parity (loader icon + spin); Size/Button/Badge examples (Input Group + Empty compositions live on those pages)
 - [x] switch — respec'd to nova geometry (32×18.4px track / 24×14 sm, size-4 thumb sliding calc(100%-2px)), input-tone unchecked fill, theme-aware thumb (bg in light, fg/brand-ink in dark), size: :sm, focus + invalid rings, real hidden input (was display:none); six examples
-- [ ] table
+- [x] table — metric fixes: heads to text-foreground (were muted) + whitespace-nowrap, footer gains the muted/50 fill, row hover to /50 + data-[state=selected] fill, checkbox-column pr-0; Footer + Actions examples added
 - [ ] tabs
 - [x] textarea — same nova respec as input (rounded-lg, translucent dark fill, ring focus, invalid/disabled fills, iOS-zoom text-base→md:text-sm); four examples
 - [ ] toast
