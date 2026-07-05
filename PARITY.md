@@ -13,7 +13,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] aspect-ratio — square + portrait examples (component already at parity)
 - [x] attachment — states/sizes/orientation, media variants, AttachmentTrigger, AttachmentGroup + horizontal scroll-fade
 - [x] avatar — added AvatarBadge + AvatarGroupCount, ::after hairline border (mix-blend darken/lighten per theme — first theme-scoped component CSS), un-clipped root so badges overhang (image/fallback round themselves), fallback muted-fg, group :has() count sizing; eight examples
-- [ ] badge
+- [x] badge — restyled to the solid pill spec (h-5, full-round, solid primary; old tinted-ring look dropped), added ghost/link variants, href: renders <a> (their asChild) with link-only hover fills, data-icon inline-start/end padding insets, focus ring, dark/light destructive tint split; five examples + kit-extras demo
 - [ ] breadcrumb
 - [ ] bubble
 - [ ] button

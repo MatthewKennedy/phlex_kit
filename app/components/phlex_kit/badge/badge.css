@@ -1,50 +1,72 @@
-/* Co-located with badge.rb — UI::Badge. ruby_ui's Tailwind replaced with vanilla
-   CSS on the palette tokens, at variant/size parity. Geometry from ruby_ui
-   (inline-flex, rounded-md, ring-1 ring-inset → 1px border, bg tint, px-2 py-1
-   text-xs). Theme tokens come from the global stylesheet. */
+/* Co-located with badge.rb — PhlexKit::Badge. Matched to shadcn/ui's current
+   badge (nova): a fixed-height solid pill (h-5, full-round), gap for inline
+   glyphs, near-side padding tightened when a child carries
+   data-icon="inline-start/end". Hover fills apply to LINK badges only
+   (href:), except ghost which hovers everywhere, like theirs. destructive's
+   tint is stronger in dark mode (their dark:bg-destructive/20).
+   success/warning + sm/lg sizes are kit extras. */
 .pk-badge {
   display: inline-flex;
   align-items: center;
-  border-radius: calc(var(--pk-radius) - 2px);
-  padding: .25rem .5rem;
+  justify-content: center;
+  width: fit-content;
+  flex-shrink: 0;
+  gap: .25rem;
+  overflow: hidden;
+  white-space: nowrap;
+  height: 1.25rem;
+  border-radius: 2rem;
+  border: 1px solid transparent;
+  padding: .125rem .5rem;
   font-size: .75rem;
   font-weight: 500;
   line-height: 1;
-  border: 1px solid transparent;
+  text-decoration: none;
+  transition: color .15s ease, background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+/* shadcn forces glyphs to size-3 with `!` — override Spinner's own sizing. */
+.pk-badge > svg { width: .75rem !important; height: .75rem !important; pointer-events: none; }
+.pk-badge:has(> [data-icon="inline-start"]) { padding-left: .375rem; }
+.pk-badge:has(> [data-icon="inline-end"]) { padding-right: .375rem; }
+.pk-badge:focus-visible {
+  outline: none;
+  border-color: var(--pk-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 
-/* Sizes (md is the base above). */
-.pk-badge.sm { padding: .125rem .375rem; font-size: .7rem; }
-.pk-badge.lg { padding: .25rem .75rem; font-size: .875rem; }
+/* Sizes (md is the base above) — kit extras. */
+.pk-badge.sm { height: 1rem; padding: 0 .375rem; font-size: .7rem; }
+.pk-badge.sm:has(> [data-icon="inline-start"]) { padding-left: .25rem; }
+.pk-badge.sm:has(> [data-icon="inline-end"]) { padding-right: .25rem; }
+.pk-badge.lg { height: 1.5rem; padding: .125rem .75rem; font-size: .875rem; }
 
-/* Variants — colored text over a faint tint of the same hue + matching ring. */
-.pk-badge.primary {
-  color: var(--pk-brand);
-  background: color-mix(in oklab, var(--pk-brand) 8%, transparent);
-  border-color: color-mix(in oklab, var(--pk-brand) 25%, transparent);
+.pk-badge.primary { background: var(--pk-brand); color: var(--pk-brand-ink); }
+a.pk-badge.primary:hover { background: color-mix(in oklab, var(--pk-brand) 80%, transparent); }
+.pk-badge.secondary { background: var(--pk-surface-2); color: var(--pk-text); }
+a.pk-badge.secondary:hover { background: color-mix(in oklab, var(--pk-surface-2) 80%, transparent); }
+.pk-badge.outline { border-color: var(--pk-border); color: var(--pk-text); }
+a.pk-badge.outline:hover { background: var(--pk-surface-2); color: var(--pk-muted); }
+.pk-badge.ghost { color: var(--pk-text); }
+.pk-badge.ghost:hover { background: var(--pk-surface-2); color: var(--pk-muted); }
+.pk-badge.link { color: var(--pk-brand); }
+.pk-badge.link:hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* Tinted text variants — 20% fill in dark, 10% in light (their /20 dark, /10). */
+.pk-badge.destructive { color: var(--pk-red); background: color-mix(in oklab, var(--pk-red) 20%, transparent); }
+a.pk-badge.destructive:hover { background: color-mix(in oklab, var(--pk-red) 30%, transparent); }
+.pk-badge.destructive:focus-visible {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
 }
-.pk-badge.secondary {
-  color: var(--pk-muted);
-  background: color-mix(in oklab, var(--pk-muted) 12%, transparent);
-  border-color: color-mix(in oklab, var(--pk-muted) 25%, transparent);
-}
-.pk-badge.outline {
-  color: var(--pk-text);
-  background: transparent;
-  border-color: var(--pk-border);
-}
-.pk-badge.destructive {
-  color: var(--pk-red);
-  background: color-mix(in oklab, var(--pk-red) 10%, transparent);
-  border-color: color-mix(in oklab, var(--pk-red) 25%, transparent);
-}
-.pk-badge.success {
-  color: var(--pk-green);
-  background: color-mix(in oklab, var(--pk-green) 10%, transparent);
-  border-color: color-mix(in oklab, var(--pk-green) 25%, transparent);
-}
-.pk-badge.warning {
-  color: var(--pk-amber);
-  background: color-mix(in oklab, var(--pk-amber) 10%, transparent);
-  border-color: color-mix(in oklab, var(--pk-amber) 25%, transparent);
+.pk-badge.success { color: var(--pk-green); background: color-mix(in oklab, var(--pk-green) 20%, transparent); }
+.pk-badge.warning { color: var(--pk-amber); background: color-mix(in oklab, var(--pk-amber) 20%, transparent); }
+:root[data-theme="light"] .pk-badge.destructive { background: color-mix(in oklab, var(--pk-red) 10%, transparent); }
+:root[data-theme="light"] .pk-badge.destructive:focus-visible { box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent); }
+:root[data-theme="light"] .pk-badge.success { background: color-mix(in oklab, var(--pk-green) 10%, transparent); }
+:root[data-theme="light"] .pk-badge.warning { background: color-mix(in oklab, var(--pk-amber) 10%, transparent); }
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-badge.destructive { background: color-mix(in oklab, var(--pk-red) 10%, transparent); }
+  :root[data-theme="system"] .pk-badge.destructive:focus-visible { box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent); }
+  :root[data-theme="system"] .pk-badge.success { background: color-mix(in oklab, var(--pk-green) 10%, transparent); }
+  :root[data-theme="system"] .pk-badge.warning { background: color-mix(in oklab, var(--pk-amber) 10%, transparent); }
 }

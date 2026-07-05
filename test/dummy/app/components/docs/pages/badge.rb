@@ -7,6 +7,10 @@ module Docs
 
       def demos
         demo Docs::Examples::Badge::Variants, title: "Variants"
+        demo Docs::Examples::Badge::WithIcon, title: "With Icon"
+        demo Docs::Examples::Badge::WithSpinner, title: "With Spinner"
+        demo Docs::Examples::Badge::Link, title: "Link"
+        demo Docs::Examples::Badge::CustomColors, title: "Custom Colors"
         demo Docs::Examples::Badge::Status, title: "Status extras"
       end
     end
