@@ -12,7 +12,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] alert-dialog — added AlertDialogMedia, size: :sm, action variants, footer band, centered media stack
 - [x] aspect-ratio — square + portrait examples (component already at parity)
 - [x] attachment — states/sizes/orientation, media variants, AttachmentTrigger, AttachmentGroup + horizontal scroll-fade
-- [ ] avatar
+- [x] avatar — added AvatarBadge + AvatarGroupCount, ::after hairline border (mix-blend darken/lighten per theme — first theme-scoped component CSS), un-clipped root so badges overhang (image/fallback round themselves), fallback muted-fg, group :has() count sizing; eight examples
 - [ ] badge
 - [ ] breadcrumb
 - [ ] bubble

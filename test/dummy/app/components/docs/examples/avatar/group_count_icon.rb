@@ -3,7 +3,7 @@
 module Docs
   module Examples
     module Avatar
-      class Group < Phlex::HTML
+      class GroupCountIcon < Phlex::HTML
         def view_template
           render PhlexKit::AvatarGroup.new(style: "filter: grayscale(1)") do
             render PhlexKit::Avatar.new do
@@ -17,6 +17,9 @@ module Docs
             render PhlexKit::Avatar.new do
               render PhlexKit::AvatarImage.new(src: "https://github.com/evilrabbit.png", alt: "@evilrabbit")
               render PhlexKit::AvatarFallback.new { "ER" }
+            end
+            render PhlexKit::AvatarGroupCount.new do
+              render PhlexKit::Icon.new(:plus, size: nil)
             end
           end
         end

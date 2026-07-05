@@ -1,22 +1,45 @@
-/* Co-located with avatar.rb — UI::Avatar (+ Image / Fallback). ruby_ui's Tailwind
-   → vanilla CSS on the palette tokens. The controller toggles `.hidden` between
-   image and fallback. Theme tokens come from the global stylesheet. */
+/* Co-located with avatar.rb — PhlexKit::Avatar (+ Image / Fallback / Badge /
+   Group / GroupCount). Matched to shadcn/ui's current avatar (nova): the root
+   is NOT overflow-clipped (a Badge hangs over the edge) — image and fallback
+   round themselves, and a ::after overlay draws the hairline border, blended
+   darken (light mode) / lighten (dark mode) so it hugs any photo. The
+   controller toggles `.hidden` between image and fallback. shadcn ships
+   sm/default/lg; xs/xl are kit extras. */
 .pk-avatar {
   position: relative;
   display: inline-flex;
   flex-shrink: 0;
-  overflow: hidden;
+  user-select: none;
   border-radius: 999px;
   height: 2rem;
   width: 2rem;
   font-size: .875rem;
+}
+.pk-avatar::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--pk-border);
+  border-radius: 999px;
+  mix-blend-mode: lighten;
+  pointer-events: none;
+}
+:root[data-theme="light"] .pk-avatar::after { mix-blend-mode: darken; }
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-avatar::after { mix-blend-mode: darken; }
 }
 .pk-avatar.xs { height: 1rem; width: 1rem; font-size: .5rem; }
 .pk-avatar.sm { height: 1.5rem; width: 1.5rem; font-size: .75rem; }
 .pk-avatar.lg { height: 2.5rem; width: 2.5rem; font-size: 1rem; }
 .pk-avatar.xl { height: 5rem; width: 5rem; font-size: 1.875rem; }
 
-.pk-avatar-image { aspect-ratio: 1 / 1; height: 100%; width: 100%; object-fit: cover; }
+.pk-avatar-image {
+  aspect-ratio: 1 / 1;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 999px;
+}
 .pk-avatar-fallback {
   display: flex;
   height: 100%;
@@ -25,11 +48,59 @@
   justify-content: center;
   border-radius: 999px;
   background: var(--pk-surface-2);
-  font-weight: 500;
+  color: var(--pk-muted);
 }
 .pk-avatar-image.hidden, .pk-avatar-fallback.hidden { display: none; }
 
-/* Overlapping row (shadcn's -space-x-2 grouped avatars). */
+/* Status dot pinned to the bottom-right corner; sized by the avatar's size
+   modifier, glyph hidden when there's no room (shadcn's AvatarBadge). */
+.pk-avatar-badge {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  border-radius: 999px;
+  background: var(--pk-brand);
+  color: var(--pk-brand-ink);
+  box-shadow: 0 0 0 2px var(--pk-bg);
+  width: .625rem;
+  height: .625rem;
+}
+.pk-avatar-badge > svg { width: .5rem; height: .5rem; }
+.pk-avatar.xs .pk-avatar-badge { width: .375rem; height: .375rem; }
+.pk-avatar.sm .pk-avatar-badge { width: .5rem; height: .5rem; }
+.pk-avatar.xs .pk-avatar-badge > svg,
+.pk-avatar.sm .pk-avatar-badge > svg { display: none; }
+.pk-avatar.lg .pk-avatar-badge { width: .75rem; height: .75rem; }
+.pk-avatar.xl .pk-avatar-badge { width: 1rem; height: 1rem; }
+.pk-avatar.xl .pk-avatar-badge > svg { width: .625rem; height: .625rem; }
+
+/* Overlapping row (shadcn's -space-x-2 grouped avatars); a trailing
+   GroupCount pill follows the avatars' size via :has(). */
 .pk-avatar-group { display: flex; }
-.pk-avatar-group .pk-avatar { box-shadow: 0 0 0 2px var(--pk-bg); }
-.pk-avatar-group .pk-avatar:not(:first-child) { margin-left: -.5rem; }
+.pk-avatar-group .pk-avatar,
+.pk-avatar-group .pk-avatar-group-count { box-shadow: 0 0 0 2px var(--pk-bg); }
+.pk-avatar-group > :not(:first-child) { margin-left: -.5rem; }
+
+.pk-avatar-group-count {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--pk-surface-2);
+  color: var(--pk-muted);
+  width: 2rem;
+  height: 2rem;
+  font-size: .875rem;
+}
+.pk-avatar-group-count > svg { width: 1rem; height: 1rem; }
+.pk-avatar-group:has(.pk-avatar.sm) .pk-avatar-group-count { width: 1.5rem; height: 1.5rem; font-size: .75rem; }
+.pk-avatar-group:has(.pk-avatar.sm) .pk-avatar-group-count > svg { width: .75rem; height: .75rem; }
+.pk-avatar-group:has(.pk-avatar.lg) .pk-avatar-group-count { width: 2.5rem; height: 2.5rem; font-size: 1rem; }
+.pk-avatar-group:has(.pk-avatar.lg) .pk-avatar-group-count > svg { width: 1.25rem; height: 1.25rem; }
