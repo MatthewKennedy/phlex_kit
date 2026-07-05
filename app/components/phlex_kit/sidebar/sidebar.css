@@ -3,8 +3,10 @@
    / MenuAction / MenuBadge / MenuSkeleton / MenuSub / MenuSubItem / MenuSubButton
    / Separator / Input / Inset). ruby_ui's structure at collapsible:none, extended
    to shadcn/ui's static part set; Tailwind → vanilla CSS on the palette tokens.
-   The collapsible/offcanvas/icon modes (+ their trigger/rail/Stimulus/cookie/
-   Sheet) are deliberately not ported.
+   Collapsible modes: offcanvas (slide away) and icon (3rem rail — labels
+   hide, buttons become icon squares with pure-CSS hover tooltips), both with
+   the mobile drawer + scrim, the SidebarRail grab strip, ⌘B, and cookie
+   persistence via the phlex-kit--sidebar controller.
    Theme tokens come from the global stylesheet. The sidebar reads the shared
    palette by default; --pk-sidebar[-text|-accent|-border|-primary|-primary-ink]
    are optional per-role overrides (shadcn sidebar-* parity), undefined by
@@ -164,10 +166,69 @@
    Mobile (<768px): the rail is a fixed overlay drawer behind a scrim
    (data-open). The trigger only shows inside an offcanvas wrapper. The 767px
    cutoff matches sidebar_controller.js. */
-.pk-sidebar-wrapper.collapsible-offcanvas .pk-sidebar {
-  transition: margin-left .2s ease, transform .2s ease;
+.pk-sidebar-wrapper.collapsible-offcanvas .pk-sidebar,
+.pk-sidebar-wrapper.collapsible-icon .pk-sidebar {
+  position: relative;
+  transition: margin-left .2s ease, transform .2s ease, width .2s ease;
 }
 .pk-sidebar-wrapper.collapsible-offcanvas[data-collapsed] .pk-sidebar { margin-left: -16rem; }
+
+/* Icon mode: the rail shrinks to a 3rem strip — labels and text hide, menu
+   buttons become centered icon squares, hover shows a data-tooltip bubble. */
+.pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar { width: 3rem; }
+.pk-sidebar-wrapper.collapsible-icon[data-collapsed] :is(.pk-sidebar-group-label, .pk-sidebar-group-action, .pk-sidebar-menu-badge, .pk-sidebar-menu-action, .pk-sidebar-menu-sub, .pk-sidebar-input, .pk-sidebar-separator) { display: none; }
+.pk-sidebar-wrapper.collapsible-icon[data-collapsed] :is(.pk-sidebar-header, .pk-sidebar-content, .pk-sidebar-footer) {
+  padding-inline: .5rem;
+  align-items: center;
+}
+.pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button {
+  width: 2rem;
+  height: 2rem;
+  padding: .5rem;
+  justify-content: center;
+}
+.pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button > :not(svg) { display: none; }
+.pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button[data-tooltip] { position: relative; }
+.pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: calc(100% + .625rem);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+  width: max-content;
+  padding: .375rem .75rem;
+  border-radius: calc(var(--pk-radius) - 2px);
+  background: var(--pk-text);
+  color: var(--pk-bg);
+  font-size: .75rem;
+  pointer-events: none;
+}
+
+/* Edge grab strip (SidebarRail) — invisible, click toggles. */
+.pk-sidebar-rail {
+  position: absolute;
+  inset-block: 0;
+  right: -.5rem;
+  z-index: 20;
+  width: 1rem;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: w-resize;
+  display: none;
+}
+.pk-sidebar-wrapper.collapsible-offcanvas .pk-sidebar-rail,
+.pk-sidebar-wrapper.collapsible-icon .pk-sidebar-rail { display: block; }
+.pk-sidebar-wrapper[data-collapsed] .pk-sidebar-rail { cursor: e-resize; }
+.pk-sidebar-rail:hover::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: 2px;
+  background: var(--pk-sidebar-border, var(--pk-border));
+}
 
 .pk-sidebar-trigger {
   display: none;
@@ -184,12 +245,18 @@
 }
 .pk-sidebar-trigger:hover { background: var(--pk-accent); }
 .pk-sidebar-trigger svg { width: 1rem; height: 1rem; }
-.collapsible-offcanvas .pk-sidebar-trigger { display: inline-flex; }
+:is(.collapsible-offcanvas, .collapsible-icon) .pk-sidebar-trigger { display: inline-flex; }
 
 .pk-sidebar-scrim { display: none; }
 
 @media (max-width: 767px) {
-  .pk-sidebar-wrapper.collapsible-offcanvas .pk-sidebar {
+  /* Below the cutoff both collapsible modes become the overlay drawer. */
+  .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar { width: 16rem; }
+  .pk-sidebar-wrapper.collapsible-icon[data-collapsed] :is(.pk-sidebar-group-label, .pk-sidebar-group-action, .pk-sidebar-menu-badge, .pk-sidebar-menu-action, .pk-sidebar-menu-sub, .pk-sidebar-input, .pk-sidebar-separator) { display: revert; }
+  .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button { width: 100%; height: auto; padding: .5rem; justify-content: flex-start; }
+  .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button > :not(svg) { display: revert; }
+  .pk-sidebar-wrapper.collapsible-icon .pk-sidebar-rail { display: none; }
+  .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon) .pk-sidebar {
     position: fixed;
     inset-block: 0;
     left: 0;
@@ -199,8 +266,8 @@
     transform: translateX(-100%);
     box-shadow: 0 8px 30px rgb(0 0 0 / .35);
   }
-  .pk-sidebar-wrapper.collapsible-offcanvas[data-open] .pk-sidebar { transform: none; }
-  .pk-sidebar-wrapper.collapsible-offcanvas[data-open] .pk-sidebar-scrim {
+  .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon)[data-open] .pk-sidebar { transform: none; }
+  .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon)[data-open] .pk-sidebar-scrim {
     display: block;
     position: fixed;
     inset: 0;
@@ -213,5 +280,5 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pk-sidebar-wrapper.collapsible-offcanvas .pk-sidebar { transition: none; }
+  .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon) .pk-sidebar { transition: none; }
 }

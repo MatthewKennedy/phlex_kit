@@ -1,10 +1,13 @@
 /* Co-located with sheet.rb. Matched to nova: the panel carries NO padding
    (header/footer bring their own p-4; body content adds px-4), gap-4 column,
    text-sm, title text-base/medium, close pinned top-3/right-3, side panels
-   75%-wide capped at 24rem. Overlay stays kit-unified (see PARITY dialog
-   note). Theme tokens from the global stylesheet. */
+   75%-wide capped at 24rem. Overlay at the kit-unified black/10 + blur-xs
+   (see dialog.css). Theme tokens from the global stylesheet. */
 .pk-sheet-trigger { display: inline-block; }
-.pk-sheet-backdrop { position: fixed; inset: 0; z-index: 50; background: rgb(0 0 0 / .5); backdrop-filter: blur(8px); }
+.pk-sheet-backdrop { position: fixed; inset: 0; z-index: 50; background: rgb(0 0 0 / .1); backdrop-filter: blur(4px); }
+@supports not (backdrop-filter: blur(1px)) {
+  .pk-sheet-backdrop { background: rgb(0 0 0 / .5); }
+}
 .pk-sheet-content {
   position: fixed; z-index: 50; display: flex; flex-direction: column; gap: 1rem;
   background: var(--pk-surface); color: var(--pk-text); padding: 0;

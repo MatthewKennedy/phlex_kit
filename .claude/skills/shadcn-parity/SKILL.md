@@ -62,8 +62,9 @@ source — faster and more exact than the live page:
   translucent `--pk-input` 30% fill in dark / transparent in light, hover
   step to 50% where theirs has one, focus ring on `--pk-ring` (NEVER brand),
   `aria-invalid` ring at red 40% dark / 20% light, disabled fill 80%/50%.
-- Overlays stay kit-unified at `rgb(0 0 0/.5)` + `blur(8px)` until the
-  one-pass follow-up (nova moved to black/10 + blur-xs) — see PARITY.md.
+- Overlays are kit-unified at nova's `rgb(0 0 0/.1)` + `blur(4px)`, with an
+  `@supports not (backdrop-filter: …)` fallback darkening to `/50` — always
+  change all five (dialog/alert-dialog/sheet/drawer/command) together.
 - If a page is too big for the current session (controller build, tutorial
   port), DON'T half-do it: leave it `[ ]` in PARITY.md with a dated
   audit-scope note and move on. Precedent: calendar, chart, combobox, field.
@@ -80,7 +81,8 @@ Follow CLAUDE.md conventions strictly. Specifics that recur in parity work:
   `color-mix(in oklab, var(--pk-surface-2) 50%, transparent)` fill.
 - Shimmering titles reuse the `.pk-shimmer` recipe scoped to
   `[data-state="…"]` selectors; the `pk-shimmer` keyframes are global.
-- Overlays are unified: `rgb(0 0 0 / .5)` + `backdrop-filter: blur(8px)`.
+- Overlays are unified: `rgb(0 0 0 / .1)` + `backdrop-filter: blur(4px)`
+  (fallback `/50` without backdrop-filter support).
 - Full-card triggers sit at `z-index: 1` with actions at `z-index: 2`, hover
   tint + focus ring on the card via `:has()`.
 - Icons: the kit bundles no icon set. Use emoji/glyph stand-ins in demos and

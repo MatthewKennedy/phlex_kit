@@ -140,4 +140,28 @@ class SidebarTest < Minitest::Test
     assert_includes html, "≡"
     refute_includes html, "<svg"
   end
+
+  def test_icon_collapsible_wrapper
+    html = render(PhlexKit::SidebarWrapper.new(collapsible: :icon) { "x" })
+    assert_includes html, "collapsible-icon"
+    assert_includes html, "phlex-kit--sidebar"
+    assert_includes html, "keydown.meta+b@window"
+    refute_includes html, "data-collapsed"
+  end
+
+  def test_default_collapsed_renders_server_side
+    html = render(PhlexKit::SidebarWrapper.new(collapsible: :icon, default_collapsed: true) { "x" })
+    assert_includes html, "data-collapsed"
+  end
+
+  def test_rail_part
+    html = render(PhlexKit::SidebarRail.new)
+    assert_includes html, "pk-sidebar-rail"
+    assert_includes html, "phlex-kit--sidebar#toggle"
+  end
+
+  def test_menu_button_tooltip
+    html = render(PhlexKit::SidebarMenuButton.new(tooltip: "Dashboard") { "Dashboard" })
+    assert_includes html, %(data-tooltip="Dashboard")
+  end
 end

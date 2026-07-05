@@ -2,10 +2,10 @@
    box + ::backdrop. Matched to shadcn/ui's current dialog (nova): popover
    surface with a foreground-tint ring, rounded-xl, --pk-dialog-spacing: 1rem
    driving padding + the full-bleed footer band, text-sm body, close pinned at
-   top-2/right-2. Their default width is max-w-sm (24rem) = our md. NOTE:
-   nova's overlay is now black/10 + blur-xs — the kit keeps its unified
-   0.5/8px overlay across dialog/alert-dialog/sheet/command until all change
-   together (see PARITY.md). Theme tokens from the global stylesheet. */
+   top-2/right-2. Their default width is max-w-sm (24rem) = our md.
+   Overlays are kit-unified at nova's black/10 + blur-xs (darkening to /50
+   where backdrop-filter is unsupported) — changed across dialog/
+   alert-dialog/sheet/drawer/command in one pass. Tokens global. */
 .pk-dialog-trigger { display: inline-block; }
 .pk-dialog {
   --pk-dialog-spacing: 1rem;
@@ -20,7 +20,10 @@
   box-shadow: 0 10px 30px rgb(0 0 0 / .35);
 }
 .pk-dialog[open] { display: flex; flex-direction: column; }
-.pk-dialog::backdrop { background: rgb(0 0 0 / .5); backdrop-filter: blur(8px); }
+.pk-dialog::backdrop { background: rgb(0 0 0 / .1); backdrop-filter: blur(4px); }
+@supports not (backdrop-filter: blur(1px)) {
+  .pk-dialog::backdrop { background: rgb(0 0 0 / .5); }
+}
 .pk-dialog.xs { max-width: min(16rem, calc(100% - 2rem)); }
 .pk-dialog.sm { max-width: min(20rem, calc(100% - 2rem)); }
 .pk-dialog.lg { max-width: min(32rem, calc(100% - 2rem)); }
