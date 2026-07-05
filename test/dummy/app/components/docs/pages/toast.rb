@@ -3,9 +3,13 @@
 module Docs
   module Pages
     class Toast < Docs::BasePage
-      self.description = "Sonner-style stacked notifications: server flash or window.PhlexKit.toast."
+      self.description = "An opinionated toast stack — sonner's API on Stimulus."
+
       def demos
-        demo Docs::Examples::Toast::Default, title: "Spawning toasts"
+        demo Docs::Examples::Toast::Default, title: "Default"
+        demo Docs::Examples::Toast::Types, title: "Types"
+        demo Docs::Examples::Toast::Description, title: "Description"
+        demo Docs::Examples::Toast::Position, title: "Position"
       end
     end
   end
