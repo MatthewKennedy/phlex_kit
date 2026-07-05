@@ -5,9 +5,9 @@ module Docs
     module Label
       class Default < Phlex::HTML
         def view_template
-          render PhlexKit::Label.new do
-            render PhlexKit::Checkbox.new(name: "terms2")
-            plain "Accept terms and conditions"
+          div(class: "row") do
+            render PhlexKit::Checkbox.new(id: "label-terms", name: "label-terms")
+            render PhlexKit::Label.new(for: "label-terms") { "Accept terms and conditions" }
           end
         end
       end
