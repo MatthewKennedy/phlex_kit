@@ -3,7 +3,10 @@ module PhlexKit
   # up/down chevron, and opens the panel on click (`phlex-kit--select#onClick`).
   # See select.rb.
   class SelectTrigger < BaseComponent
-    def initialize(**attrs)
+    SIZES = { md: nil, sm: "sm" }.freeze
+
+    def initialize(size: :md, **attrs)
+      @size = size.to_sym
       @attrs = attrs
     end
 
@@ -11,7 +14,7 @@ module PhlexKit
       button(**mix({
         type: :button,
         role: "combobox",
-        class: "pk-select-trigger",
+        class: [ "pk-select-trigger", SIZES.fetch(@size) ].compact.join(" "),
         aria: { expanded: "false", haspopup: "listbox", autocomplete: "none" },
         data: { action: "phlex-kit--select#onClick", phlex_kit__select_target: "trigger" }
       }, @attrs)) do
