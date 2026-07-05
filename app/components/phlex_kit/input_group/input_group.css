@@ -1,35 +1,111 @@
-/* Co-located with input_group.rb — UI::InputGroup, shadcn parity: the shell
-   carries the border/fill and focus ring; the inner .pk-input goes naked. */
+/* Co-located with input_group.rb — PhlexKit::InputGroup, shadcn parity: the
+   shell carries the border/fill and focus ring; the inner .pk-input /
+   .pk-textarea go naked. Matched to nova: fixed h-8 (auto with a textarea or
+   block addon), ring-colored focus, invalid + disabled states lifted from
+   the control via :has(), block addons stack the group into a column,
+   theme-forked fill (translucent input in dark / transparent in light). */
 .pk-input-group {
+  position: relative;
   display: flex;
   align-items: center;
   width: 100%;
+  min-width: 0;
+  height: 2rem;
   border: 1px solid var(--pk-input);
   border-radius: var(--pk-radius);
   background: color-mix(in oklab, var(--pk-input) 30%, transparent);
-  transition: border-color .15s ease, box-shadow .15s ease;
+  transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+.pk-input-group:has(> textarea),
+.pk-input-group:has(> .pk-textarea),
+.pk-input-group:has(> .pk-input-group-addon.block-start),
+.pk-input-group:has(> .pk-input-group-addon.block-end) {
+  height: auto;
+  flex-direction: column;
+  align-items: stretch;
 }
 .pk-input-group:focus-within {
-  border-color: var(--pk-brand);
+  border-color: var(--pk-ring);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
-.pk-input-group .pk-input {
+.pk-input-group:has([aria-invalid="true"]) {
+  border-color: color-mix(in oklab, var(--pk-red) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
+}
+.pk-input-group:has(:disabled) {
+  opacity: .5;
+  background: color-mix(in oklab, var(--pk-input) 80%, transparent);
+}
+.pk-input-group .pk-input,
+.pk-input-group .pk-textarea {
   border: 0;
   background: transparent;
   box-shadow: none;
   flex: 1;
 }
-.pk-input-group .pk-input:focus-visible { outline: none; box-shadow: none; border: 0; }
+.pk-input-group .pk-input:focus-visible,
+.pk-input-group .pk-textarea:focus-visible { outline: none; box-shadow: none; border: 0; }
+.pk-input-group .pk-input:disabled,
+.pk-input-group .pk-textarea:disabled { background: transparent; }
+/* Tighten the control's near-side padding beside an inline addon. */
+.pk-input-group:has(> .pk-input-group-addon.start) > .pk-input { padding-left: .375rem; }
+.pk-input-group:has(> .pk-input-group-addon.end) > .pk-input { padding-right: .375rem; }
+
 .pk-input-group-addon {
   display: flex;
   align-items: center;
-  gap: .25rem;
+  justify-content: center;
+  gap: .5rem;
   flex: none;
-  padding: 0 .625rem;
+  cursor: text;
+  user-select: none;
+  padding-block: .375rem;
+  color: var(--pk-muted);
+  font-size: .875rem;
+  font-weight: 500;
+}
+.pk-input-group-addon.start { order: -1; padding-left: .5rem; }
+.pk-input-group-addon.end { order: 99; padding-right: .5rem; }
+.pk-input-group-addon.block-start,
+.pk-input-group-addon.block-end {
+  width: 100%;
+  justify-content: flex-start;
+  padding-inline: .625rem;
+}
+.pk-input-group-addon.block-start { order: -1; padding-top: .5rem; }
+.pk-input-group-addon.block-end { order: 99; padding-bottom: .5rem; }
+.pk-input-group-addon.block-start.bordered { border-bottom: 1px solid var(--pk-border); padding-bottom: .5rem; }
+.pk-input-group-addon.block-end.bordered { border-top: 1px solid var(--pk-border); padding-top: .5rem; }
+.pk-input-group-addon svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+.pk-input-group-addon > kbd { border-radius: calc(var(--pk-radius) - 5px); }
+.pk-input-group-addon.start:has(> .pk-button) { margin-left: -0.3rem; }
+.pk-input-group-addon.end:has(> .pk-button) { margin-right: -0.3rem; }
+
+.pk-button.pk-input-group-button {
+  gap: .25rem;
+  border-radius: calc(var(--pk-radius) - 3px);
+  box-shadow: none;
+}
+.pk-input-group-text {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
   color: var(--pk-muted);
   font-size: .875rem;
 }
-.pk-input-group-addon.start { padding-right: 0; }
-.pk-input-group-addon.end { padding-left: 0; }
-.pk-input-group-addon svg { width: 1rem; height: 1rem; }
-.pk-input-group-text { color: var(--pk-muted); }
+.pk-input-group-text svg { pointer-events: none; }
+
+:root[data-theme="light"] .pk-input-group { background: transparent; }
+:root[data-theme="light"] .pk-input-group:has(:disabled) { background: color-mix(in oklab, var(--pk-input) 50%, transparent); }
+:root[data-theme="light"] .pk-input-group:has([aria-invalid="true"]) {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-input-group { background: transparent; }
+  :root[data-theme="system"] .pk-input-group:has(:disabled) { background: color-mix(in oklab, var(--pk-input) 50%, transparent); }
+  :root[data-theme="system"] .pk-input-group:has([aria-invalid="true"]) {
+    border-color: var(--pk-red);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+  }
+}

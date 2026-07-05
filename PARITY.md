@@ -36,7 +36,7 @@ matches (parts/props), and its metrics have been compared.
 - [ ] field (maps to our form + form_field) — AUDITED 2026-07-05 (scope only): their Field system is a full part vocabulary (FieldSet/FieldLegend/FieldGroup/Field/FieldContent/FieldLabel/FieldDescription/FieldError, orientation: horizontal/vertical/responsive, choice cards) with 13 examples; kit has the ruby_ui live-validation form_field trio. Own session — and afterwards rework the checkbox/dialog/collapsible examples that stub Field with ad-hoc rows
 - [x] hover-card — added side: :top/:left/:right on content (their side prop, CSS-positioned), nova metrics (p-2.5 was 1rem, rounded-lg, text-sm, foreground-tint ring); Basic + Sides examples. Trigger-delay knobs are Radix props — controller uses its own fixed delays
 - [x] input — nova respec: focus ring on --pk-ring (was brand), theme-forked fill (input/30 dark, transparent light), tinted disabled fill, invalid ring 20/40 split, styled file-selector button, text-base→md:text-sm (iOS zoom guard); eight examples (Field compositions stubbed with FormField pending the field audit)
-- [ ] input-group
+- [x] input-group — added block_start/block_end addon aligns (group stacks to a column, full-width header/footer rows w/ .bordered rule) + InputGroupButton part (ghost-xs Button tuned flush), shell respec'd: fixed h-8 (auto w/ textarea or block addon), ring-colored focus (was brand), :has() invalid/disabled lift, theme-forked fill, textarea collapse, control padding tightened beside inline addons, addon button/kbd negative margins; eleven examples. "Custom Input" section is a Tailwind-restyle recipe — skipped
 - [ ] input-otp
 - [ ] item
 - [ ] kbd
