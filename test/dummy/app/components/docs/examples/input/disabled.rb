@@ -5,12 +5,10 @@ module Docs
     module Input
       class Disabled < Phlex::HTML
         def view_template
-          div(class: "w-sm") do
-            render PhlexKit::FormField.new do
-              render PhlexKit::FormFieldLabel.new(for: "input-demo-disabled") { "Email" }
-              render PhlexKit::Input.new(id: "input-demo-disabled", type: :email, placeholder: "Email", disabled: true)
-              render PhlexKit::FormFieldHint.new { "This field is currently disabled." }
-            end
+          render PhlexKit::Field.new(disabled: true, class: "w-sm") do
+            render PhlexKit::FieldLabel.new(for: "input-demo-disabled") { "Email" }
+            render PhlexKit::Input.new(id: "input-demo-disabled", type: :email, placeholder: "Email", disabled: true)
+            render PhlexKit::FieldDescription.new { "This field is currently disabled." }
           end
         end
       end

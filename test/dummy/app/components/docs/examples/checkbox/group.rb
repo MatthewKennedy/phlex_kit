@@ -12,16 +12,14 @@ module Docs
         ].freeze
 
         def view_template
-          fieldset(style: "border: 0; padding: 0; margin: 0;") do
-            legend(style: "font-size: .875rem; font-weight: 500; padding: 0;") { "Show these items on the desktop:" }
-            p(style: "margin: .25rem 0 .75rem; font-size: .875rem; color: var(--pk-muted);") do
-              plain "Select the items you want to show on the desktop."
-            end
-            div(class: "stack", style: "gap: .75rem;") do
+          render PhlexKit::FieldSet.new(class: "w-sm") do
+            render PhlexKit::FieldLegend.new(variant: :label) { "Show these items on the desktop:" }
+            render PhlexKit::FieldDescription.new { "Select the items you want to show on the desktop." }
+            render PhlexKit::FieldGroup.new(style: "gap: .75rem") do
               ITEMS.each do |id, text, checked|
-                div(class: "pk-checkbox-row") do
+                render PhlexKit::Field.new(orientation: :horizontal) do
                   render PhlexKit::Checkbox.new(id: "finder-pref-#{id}", name: "finder-pref-#{id}", checked: checked)
-                  render PhlexKit::Label.new(for: "finder-pref-#{id}", style: "font-weight: 400;") { text }
+                  render PhlexKit::FieldLabel.new(for: "finder-pref-#{id}", style: "font-weight: 400") { text }
                 end
               end
             end

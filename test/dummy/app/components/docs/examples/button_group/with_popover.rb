@@ -18,8 +18,11 @@ module Docs
                   render PhlexKit::PopoverTitle.new { "Start a new task with Copilot" }
                   render PhlexKit::PopoverDescription.new { "Describe your task in natural language." }
                 end
-                render PhlexKit::Textarea.new(placeholder: "I need to...", rows: 3)
-                p(style: "font-size: .75rem; color: var(--pk-muted); margin: 0;") { "Copilot will open a pull request for review." }
+                render PhlexKit::Field.new do
+                  render PhlexKit::FieldLabel.new(for: "bg-pop-task", class: "pk-sr-only") { "Task Description" }
+                  render PhlexKit::Textarea.new(id: "bg-pop-task", placeholder: "I need to...", rows: 3)
+                  render PhlexKit::FieldDescription.new { "Copilot will open a pull request for review." }
+                end
               end
             end
           end

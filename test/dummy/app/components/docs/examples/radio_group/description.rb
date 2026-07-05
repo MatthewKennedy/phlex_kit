@@ -12,11 +12,11 @@ module Docs
         def view_template
           render PhlexKit::RadioGroup.new(class: "w-sm", style: "gap: .75rem") do
             PLANS.each do |value, title, description, checked|
-              div(class: "row", style: "align-items: flex-start") do
-                render PhlexKit::RadioButton.new(id: "plan-#{value}", name: "rg-plan", value: value, checked: checked, style: "margin-top: .125rem")
-                div do
-                  render PhlexKit::Label.new(for: "plan-#{value}") { title }
-                  p(style: "margin: .25rem 0 0; font-size: .875rem; color: var(--pk-muted);") { description }
+              render PhlexKit::Field.new(orientation: :horizontal) do
+                render PhlexKit::RadioButton.new(id: "plan-#{value}", name: "rg-plan", value: value, checked: checked)
+                render PhlexKit::FieldContent.new do
+                  render PhlexKit::FieldLabel.new(for: "plan-#{value}") { title }
+                  render PhlexKit::FieldDescription.new { description }
                 end
               end
             end

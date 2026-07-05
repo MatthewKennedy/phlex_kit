@@ -14,8 +14,14 @@ module Docs
               render PhlexKit::CardContent.new do
                 render PhlexKit::Collapsible.new(style: "display: flex; align-items: flex-start; gap: .5rem;") do
                   div(style: "display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; width: 100%;") do
-                    render PhlexKit::Input.new(id: "radius-x", placeholder: "0", value: "0", aria: { label: "Radius X" })
-                    render PhlexKit::Input.new(id: "radius-y", placeholder: "0", value: "0", aria: { label: "Radius Y" })
+                    render PhlexKit::Field.new do
+                      render PhlexKit::FieldLabel.new(for: "radius-x", class: "pk-sr-only") { "Radius X" }
+                      render PhlexKit::Input.new(id: "radius-x", placeholder: "0", value: "0")
+                    end
+                    render PhlexKit::Field.new do
+                      render PhlexKit::FieldLabel.new(for: "radius-y", class: "pk-sr-only") { "Radius Y" }
+                      render PhlexKit::Input.new(id: "radius-y", placeholder: "0", value: "0")
+                    end
                     render PhlexKit::CollapsibleContent.new(style: "grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1fr; gap: .5rem;") do
                       render PhlexKit::Input.new(id: "radius-x2", placeholder: "0", value: "0", aria: { label: "Radius X" })
                       render PhlexKit::Input.new(id: "radius-y2", placeholder: "0", value: "0", aria: { label: "Radius Y" })

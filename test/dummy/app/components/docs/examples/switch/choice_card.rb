@@ -6,12 +6,14 @@ module Docs
       class ChoiceCard < Phlex::HTML
         def view_template
           div(class: "w-sm") do
-            label(style: "display: flex; gap: .75rem; align-items: flex-start; justify-content: space-between; border: 1px solid var(--pk-border); border-radius: var(--pk-radius); padding: .75rem; cursor: pointer;") do
-              div do
-                div(style: "font-size: .875rem; font-weight: 500;") { "Enable notifications" }
-                p(style: "margin: .25rem 0 0; font-size: .875rem; color: var(--pk-muted);") { "Get notified when someone mentions you." }
+            render PhlexKit::FieldLabel.new do
+              render PhlexKit::Field.new(orientation: :horizontal) do
+                render PhlexKit::FieldContent.new do
+                  render PhlexKit::FieldTitle.new { "Enable notifications" }
+                  render PhlexKit::FieldDescription.new { "Get notified when someone mentions you." }
+                end
+                render PhlexKit::Switch.new(name: "sw-card", checked: true)
               end
-              render PhlexKit::Switch.new(name: "sw-card", checked: true)
             end
           end
         end

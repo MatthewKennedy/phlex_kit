@@ -10,14 +10,17 @@ module Docs
         ].freeze
 
         def view_template
-          # A bordered label makes the whole card the click target.
+          # FieldLabel wrapping a Field = the choice-card recipe (highlights
+          # while its radio is checked).
           render PhlexKit::RadioGroup.new(class: "w-sm", style: "gap: .75rem") do
             PLANS.each do |value, title, description, checked|
-              label(style: "display: flex; gap: .75rem; align-items: flex-start; border: 1px solid var(--pk-border); border-radius: var(--pk-radius); padding: .75rem; cursor: pointer;") do
-                render PhlexKit::RadioButton.new(name: "rg-billing", value: value, checked: checked, style: "margin-top: .125rem")
-                div do
-                  div(style: "font-size: .875rem; font-weight: 500;") { title }
-                  p(style: "margin: .25rem 0 0; font-size: .875rem; color: var(--pk-muted);") { description }
+              render PhlexKit::FieldLabel.new(for: "rg-billing-#{value}") do
+                render PhlexKit::Field.new(orientation: :horizontal) do
+                  render PhlexKit::RadioButton.new(id: "rg-billing-#{value}", name: "rg-billing", value: value, checked: checked)
+                  render PhlexKit::FieldContent.new do
+                    render PhlexKit::FieldTitle.new { title }
+                    render PhlexKit::FieldDescription.new { description }
+                  end
                 end
               end
             end

@@ -5,12 +5,10 @@ module Docs
     module Switch
       class Description < Phlex::HTML
         def view_template
-          div(class: "row w-sm", style: "align-items: flex-start; justify-content: space-between;") do
-            div do
-              render PhlexKit::Label.new(for: "sw-share") { "Share across devices" }
-              p(style: "margin: .25rem 0 0; font-size: .875rem; color: var(--pk-muted);") do
-                plain "Focus is shared across devices, and turns off when you leave the app."
-              end
+          render PhlexKit::Field.new(orientation: :horizontal, class: "w-sm") do
+            render PhlexKit::FieldContent.new do
+              render PhlexKit::FieldLabel.new(for: "sw-share") { "Share across devices" }
+              render PhlexKit::FieldDescription.new { "Focus is shared across devices, and turns off when you leave the app." }
             end
             render PhlexKit::Switch.new(id: "sw-share", name: "sw-share")
           end

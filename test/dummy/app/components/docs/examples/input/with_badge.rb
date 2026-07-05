@@ -5,14 +5,12 @@ module Docs
     module Input
       class WithBadge < Phlex::HTML
         def view_template
-          div(class: "w-sm") do
-            render PhlexKit::FormField.new do
-              render PhlexKit::FormFieldLabel.new(for: "input-badge", style: "display: flex; align-items: center;") do
-                plain "Webhook URL"
-                render PhlexKit::Badge.new(variant: :secondary, style: "margin-left: auto") { "Beta" }
-              end
-              render PhlexKit::Input.new(id: "input-badge", type: :url, placeholder: "https://api.example.com/webhook")
+          render PhlexKit::Field.new(class: "w-sm") do
+            render PhlexKit::FieldLabel.new(for: "input-badge", style: "width: 100%") do
+              plain "Webhook URL"
+              render PhlexKit::Badge.new(variant: :secondary, style: "margin-left: auto") { "Beta" }
             end
+            render PhlexKit::Input.new(id: "input-badge", type: :url, placeholder: "https://api.example.com/webhook")
           end
         end
       end

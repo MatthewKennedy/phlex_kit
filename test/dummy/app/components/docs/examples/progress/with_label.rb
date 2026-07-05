@@ -5,8 +5,8 @@ module Docs
     module Progress
       class WithLabel < Phlex::HTML
         def view_template
-          div(class: "stack w-sm", style: "gap: .5rem") do
-            render PhlexKit::Label.new(for: "progress-upload", style: "display: flex; width: 100%;") do
+          render PhlexKit::Field.new(class: "w-sm") do
+            render PhlexKit::FieldLabel.new(for: "progress-upload", style: "width: 100%") do
               span { "Upload progress" }
               span(style: "margin-left: auto; color: var(--pk-muted); font-variant-numeric: tabular-nums;") { "66%" }
             end

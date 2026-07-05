@@ -15,13 +15,13 @@ module Docs
                 render PhlexKit::DialogDescription.new { "Make changes to your profile here. Click save when you're done." }
               end
               render PhlexKit::DialogMiddle.new do
-                div(class: "stack") do
-                  render PhlexKit::FormField.new do
-                    render PhlexKit::FormFieldLabel.new(for: "dlg-name") { "Name" }
+                render PhlexKit::FieldGroup.new(style: "gap: 1rem") do
+                  render PhlexKit::Field.new do
+                    render PhlexKit::FieldLabel.new(for: "dlg-name") { "Name" }
                     render PhlexKit::Input.new(id: "dlg-name", value: "Pedro Duarte")
                   end
-                  render PhlexKit::FormField.new do
-                    render PhlexKit::FormFieldLabel.new(for: "dlg-username") { "Username" }
+                  render PhlexKit::Field.new do
+                    render PhlexKit::FieldLabel.new(for: "dlg-username") { "Username" }
                     render PhlexKit::Input.new(id: "dlg-username", value: "@peduarte")
                   end
                 end
