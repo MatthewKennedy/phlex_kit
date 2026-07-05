@@ -3,7 +3,7 @@
 module Docs
   module Examples
     module Breadcrumb
-      class Default < Phlex::HTML
+      class Collapsed < Phlex::HTML
         def view_template
           render PhlexKit::Breadcrumb.new do
             render PhlexKit::BreadcrumbList.new do
