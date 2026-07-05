@@ -52,7 +52,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] progress — nova metrics: h-1 (was h-2), muted track (was brand/20); Default + Label examples (their Controlled is React state)
 - [x] radio-group — RadioButton rebuilt custom-drawn (same recipe as the checkbox respec: appearance:none, input border + translucent dark fill, brand fill + fg dot when checked, touch bleed, focus/invalid rings, theme forks), group gap-3→gap-2; six examples (Default, Description, Choice Card, Fieldset, Disabled, Invalid)
 - [x] resizable — added with_handle: grip pill (their withHandle / .cn-resizable-handle-icon, rotates with vertical groups); engine already at parity; their three examples incl. the nested demo
-- [ ] scroll-area
+- [x] scroll-area — native-scroll implementation already at parity (thin themed scrollbars ≈ their 2.5-wide rounded thumbs); their two examples (Tags list w/ separators, Horizontal artwork strip)
 - [ ] select
 - [x] separator — already at parity; their four examples (Default, Vertical, Menu, List)
 - [ ] sheet

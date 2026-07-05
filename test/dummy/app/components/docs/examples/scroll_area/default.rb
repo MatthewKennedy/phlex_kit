@@ -5,11 +5,14 @@ module Docs
     module ScrollArea
       class Default < Phlex::HTML
         def view_template
-          div(class: "w-sm", style: "height:200px;border:1px solid var(--pk-border);border-radius:var(--pk-radius)") do
-            render PhlexKit::ScrollArea.new(style: "height:100%;padding:1rem") do
-              strong(style: "font-size:.875rem") { "Tags" }
-              20.times do |i|
-                div(style: "padding:.5rem 0;border-bottom:1px solid var(--pk-border);font-size:.875rem") { "v1.2.0-beta.#{20 - i}" }
+          div(style: "height: 18rem; width: 12rem; border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px);") do
+            render PhlexKit::ScrollArea.new(style: "height: 100%") do
+              div(style: "padding: 1rem") do
+                h4(style: "margin: 0 0 1rem; font-size: .875rem; font-weight: 500; line-height: 1;") { "Tags" }
+                50.downto(1) do |i|
+                  div(style: "font-size: .875rem") { "v1.2.0-beta.#{i}" }
+                  render PhlexKit::Separator.new(style: "margin: .5rem 0")
+                end
               end
             end
           end
