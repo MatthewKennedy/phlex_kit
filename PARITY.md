@@ -54,13 +54,13 @@ matches (parts/props), and its metrics have been compared.
 - [ ] resizable
 - [ ] scroll-area
 - [ ] select
-- [ ] separator
+- [x] separator — already at parity; their four examples (Default, Vertical, Menu, List)
 - [ ] sheet
 - [ ] sidebar — static part set at parity (GroupLabel/GroupContent/GroupAction/MenuAction/MenuBadge/MenuSkeleton/MenuSub*/Separator/Input added, 16rem width, optional --pk-sidebar-* tokens, menu: :default/:solid matching the create page's Menu option with shadcn's stock accent look as default); offcanvas collapse shipped (SidebarWrapper collapsible: :offcanvas + SidebarTrigger + scrim, desktop slide-away / mobile overlay drawer); icon-collapse mode + cookie persistence still omitted — page not fully audited
-- [ ] skeleton
+- [x] skeleton — fill fixed brand-tint→muted surface (their bg-muted); their five examples (Avatar, Card, Text, Form, Table)
 - [ ] slider
 - [ ] sonner (maps to our toast — audit together with toast)
-- [ ] spinner
+- [x] spinner — already at parity (loader icon + spin); Size/Button/Badge examples (Input Group + Empty compositions live on those pages)
 - [ ] switch
 - [ ] table
 - [ ] tabs

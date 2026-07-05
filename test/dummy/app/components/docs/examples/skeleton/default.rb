@@ -5,11 +5,11 @@ module Docs
     module Skeleton
       class Default < Phlex::HTML
         def view_template
-          div(class: "row") do
-            render PhlexKit::Skeleton.new(style: "width:3rem;height:3rem;border-radius:9999px")
-            div(class: "stack", style: "gap:.5rem") do
-              render PhlexKit::Skeleton.new(style: "width:250px;height:1rem")
-              render PhlexKit::Skeleton.new(style: "width:200px;height:1rem")
+          div(class: "row", style: "gap: 1rem") do
+            render PhlexKit::Skeleton.new(style: "height: 3rem; width: 3rem; border-radius: 999px;")
+            div(class: "stack", style: "gap: .5rem") do
+              render PhlexKit::Skeleton.new(style: "height: 1rem; width: 250px")
+              render PhlexKit::Skeleton.new(style: "height: 1rem; width: 200px")
             end
           end
         end

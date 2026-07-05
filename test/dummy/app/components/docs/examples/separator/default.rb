@@ -5,17 +5,13 @@ module Docs
     module Separator
       class Default < Phlex::HTML
         def view_template
-          div(class: "w-sm") do
-            strong(style: "font-size:.875rem") { "PhlexKit" }
-            div(style: "font-size:.875rem;color:var(--pk-muted)") { "A vanilla-CSS component kit." }
-            render PhlexKit::Separator.new(style: "margin-block:.75rem")
-            div(class: "row", style: "height:1.25rem;font-size:.875rem") do
-              span { "Docs" }
-              render PhlexKit::Separator.new(orientation: :vertical)
-              span { "Source" }
-              render PhlexKit::Separator.new(orientation: :vertical)
-              span { "Gallery" }
+          div(class: "stack w-sm", style: "gap: 1rem; font-size: .875rem;") do
+            div(class: "stack", style: "gap: .375rem") do
+              div(style: "font-weight: 500; line-height: 1;") { "PhlexKit" }
+              div(style: "color: var(--pk-muted)") { "The Foundation for your Design System" }
             end
+            render PhlexKit::Separator.new
+            div { "A set of beautifully designed components that you can customize, extend, and build on." }
           end
         end
       end
