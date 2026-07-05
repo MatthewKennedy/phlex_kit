@@ -3,10 +3,12 @@
 module Docs
   module Pages
     class Resizable < Docs::BasePage
-      self.description = "Accessible resizable panel groups with drag handles."
+      self.description = "Accessible resizable panel groups and layouts with keyboard support."
+
       def demos
-        demo Docs::Examples::Resizable::Horizontal, title: "Horizontal"
+        demo Docs::Examples::Resizable::Horizontal, title: "Default"
         demo Docs::Examples::Resizable::Vertical, title: "Vertical"
+        demo Docs::Examples::Resizable::WithHandle, title: "Handle"
       end
     end
   end

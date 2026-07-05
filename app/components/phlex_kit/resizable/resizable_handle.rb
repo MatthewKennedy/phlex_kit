@@ -1,7 +1,9 @@
 module PhlexKit
-  # Drag handle between two ResizablePanels. See resizable_panel_group.rb.
+  # Drag handle between two ResizablePanels. `with_handle: true` shows the
+  # visible grip pill (their withHandle). See resizable_panel_group.rb.
   class ResizableHandle < BaseComponent
-    def initialize(**attrs)
+    def initialize(with_handle: false, **attrs)
+      @with_handle = with_handle
       @attrs = attrs
     end
 
@@ -15,7 +17,9 @@ module PhlexKit
           phlex_kit__resizable_target: "handle",
           action: "pointerdown->phlex-kit--resizable#start"
         }
-      }, @attrs))
+      }, @attrs)) do
+        span(class: "pk-resizable-handle-grip", aria: { hidden: "true" }) if @with_handle
+      end
     end
   end
 end

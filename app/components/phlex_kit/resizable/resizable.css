@@ -21,3 +21,20 @@
   outline: none;
   box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
+
+/* Visible grip pill (their withHandle / .cn-resizable-handle-icon). */
+.pk-resizable-handle-grip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: .25rem;
+  height: 1.5rem;
+  border-radius: var(--pk-radius);
+  background: var(--pk-border);
+  transform: translate(-50%, -50%);
+}
+.pk-resizable-group.vertical > .pk-resizable-handle .pk-resizable-handle-grip {
+  width: 1.5rem;
+  height: .25rem;
+}

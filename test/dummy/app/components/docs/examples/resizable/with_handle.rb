@@ -3,14 +3,14 @@
 module Docs
   module Examples
     module Resizable
-      class Vertical < Phlex::HTML
+      class WithHandle < Phlex::HTML
         def view_template
-          div(class: "w-sm", style: "height: 200px; border: 1px solid var(--pk-border); border-radius: var(--pk-radius); overflow: hidden;") do
-            render PhlexKit::ResizablePanelGroup.new(direction: :vertical) do
+          div(style: "width: 100%; max-width: 28rem; height: 200px; border: 1px solid var(--pk-border); border-radius: var(--pk-radius); overflow: hidden;") do
+            render PhlexKit::ResizablePanelGroup.new do
               render PhlexKit::ResizablePanel.new do
-                div(class: "docs-panel") { span(style: "font-weight: 600") { "Header" } }
+                div(class: "docs-panel") { span(style: "font-weight: 600") { "Sidebar" } }
               end
-              render PhlexKit::ResizableHandle.new
+              render PhlexKit::ResizableHandle.new(with_handle: true)
               render PhlexKit::ResizablePanel.new(default_size: 3) do
                 div(class: "docs-panel") { span(style: "font-weight: 600") { "Content" } }
               end
