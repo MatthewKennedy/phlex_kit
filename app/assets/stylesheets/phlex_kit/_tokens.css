@@ -63,6 +63,22 @@
   mask-image: linear-gradient(to bottom, transparent 0, black var(--pk-scroll-fade-size));
 }
 .pk-scroll-fade[data-at-start][data-at-end] { mask-image: none; }
+/* Horizontal mode (pair with the controller's axis value "x"). */
+.pk-scroll-fade.horizontal {
+  overflow-y: visible;
+  overflow-x: auto;
+  mask-image: linear-gradient(to right,
+    transparent 0, black var(--pk-scroll-fade-size),
+    black calc(100% - var(--pk-scroll-fade-size)), transparent 100%);
+}
+.pk-scroll-fade.horizontal[data-at-start] {
+  mask-image: linear-gradient(to right,
+    black calc(100% - var(--pk-scroll-fade-size)), transparent 100%);
+}
+.pk-scroll-fade.horizontal[data-at-end] {
+  mask-image: linear-gradient(to right, transparent 0, black var(--pk-scroll-fade-size));
+}
+.pk-scroll-fade.horizontal[data-at-start][data-at-end] { mask-image: none; }
 
 /* Kit elements size predictably: width includes padding + border, so
    `width: 100%` controls (inputs, triggers, option rows) never overflow their
