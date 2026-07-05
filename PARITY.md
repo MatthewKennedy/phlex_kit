@@ -32,7 +32,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] dialog — fixed the footer band's undefined --pk-dialog-spacing (only alert-dialog defined it — margins silently no-op'd), respec'd to nova: 24rem default width (their max-w-sm) with viewport clamp + retuned size ladder, foreground-tint ring border, rounded-xl, p-4/gap-4/text-sm, title text-base/medium, close at top-2/right-2, description link styling; added show_close_button: + DialogClose part. Overlay kept at the kit-unified 0.5/8px — nova moved to black/10+blur-xs, change all overlays (dialog/alert-dialog/sheet/command) together as a follow-up. Five examples
 - [x] drawer — added side: :top/:left/:right to DrawerContent (their direction prop; edge-attached rounding/border + per-side slide animations), nova metrics (title base/medium, header gap-0.5, text-sm body), handle hidden by default like nova's .cn-drawer-handle (re-show via CSS); Scrollable Content + Sides examples. "Responsive Dialog" is a React media-query component swap — documented, not ported
 - [x] dropdown-menu — Group/Shortcut/CheckboxItem/RadioGroup+Item/Sub family, destructive items; seven examples
-- [ ] empty
+- [x] empty — nova metrics: borderless by default (dashed border now opt-in via `.outline` — their base sets only border-STYLE), rounded-xl (was 1.5rem), p-6 (was 3rem), title 1.125rem→text-sm/medium, icon chip 2.5→2rem w/ svg-4, content gap-2.5; their six examples (Default, Outline, Background, Avatar, Avatar Group, InputGroup)
 - [ ] field (maps to our form + form_field)
 - [ ] hover-card
 - [ ] input
