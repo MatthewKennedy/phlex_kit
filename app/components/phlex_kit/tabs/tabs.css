@@ -1,13 +1,77 @@
-/* Co-located with tabs.rb. Theme tokens from the global stylesheet. */
+/* Co-located with tabs.rb. Matched to nova: h-8 list with 3px padding,
+   rounded-md px-1.5 triggers with data-icon insets and svg-4 glyphs, active
+   fill (translucent input in dark) with a soft shadow; the `line` variant is
+   transparent with an animated underline; `orientation: :vertical` stacks
+   the list (underline moves to the right edge). Tokens global. */
+.pk-tabs { display: flex; flex-direction: column; gap: .5rem; }
+.pk-tabs.vertical { flex-direction: row; align-items: flex-start; }
 .pk-tabs-list {
-  display: inline-flex; height: 2.25rem; align-items: center; justify-content: center;
-  border-radius: var(--pk-radius); background: var(--pk-surface-2); padding: .25rem; color: var(--pk-muted);
+  display: inline-flex; width: fit-content; height: 2rem; align-items: center; justify-content: center;
+  border-radius: var(--pk-radius); background: var(--pk-surface-2); padding: 3px; color: var(--pk-muted);
 }
+.pk-tabs.vertical .pk-tabs-list { height: fit-content; flex-direction: column; align-items: stretch; }
 .pk-tabs-trigger {
-  display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;
-  border-radius: calc(var(--pk-radius) - 2px); padding: .25rem .75rem; font-size: .875rem; font-weight: 500;
-  background: none; border: 0; cursor: pointer; color: inherit; transition: all .15s ease;
+  position: relative;
+  display: inline-flex; align-items: center; justify-content: center; gap: .375rem;
+  white-space: nowrap; flex: 1;
+  border: 1px solid transparent;
+  border-radius: calc(var(--pk-radius) - 2px); padding: 2px .375rem; font-size: .875rem; font-weight: 500;
+  background: none; cursor: pointer; color: inherit; transition: all .15s ease;
 }
-.pk-tabs-trigger[data-state="active"] { background: var(--pk-bg); color: var(--pk-text); box-shadow: 0 1px 2px rgb(0 0 0 / .1); }
+.pk-tabs.vertical .pk-tabs-trigger { width: 100%; justify-content: flex-start; }
+.pk-tabs-trigger:hover { color: var(--pk-text); }
+.pk-tabs-trigger svg { pointer-events: none; flex-shrink: 0; }
+.pk-tabs-trigger svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+.pk-tabs-trigger:has(> [data-icon="inline-start"]) { padding-left: .25rem; }
+.pk-tabs-trigger:has(> [data-icon="inline-end"]) { padding-right: .25rem; }
+.pk-tabs-trigger:focus-visible {
+  outline: none;
+  border-color: var(--pk-ring);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+.pk-tabs-trigger[data-state="active"] {
+  background: color-mix(in oklab, var(--pk-input) 30%, transparent);
+  border-color: var(--pk-input);
+  color: var(--pk-text);
+  box-shadow: 0 1px 2px rgb(0 0 0 / .1);
+}
 .pk-tabs-trigger:disabled { pointer-events: none; opacity: .5; }
-.pk-tabs-content { margin-top: .5rem; }
+
+/* line variant: transparent list, underline on the active trigger. */
+.pk-tabs-list.line { background: transparent; border-radius: 0; gap: .25rem; padding: 0; }
+.pk-tabs-list.line .pk-tabs-trigger[data-state="active"] {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.pk-tabs-trigger::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: -5px;
+  height: 2px;
+  background: var(--pk-text);
+  opacity: 0;
+  transition: opacity .15s ease;
+}
+.pk-tabs.vertical .pk-tabs-trigger::after {
+  inset-inline: auto;
+  inset-block: 0;
+  right: -.25rem;
+  width: 2px;
+  height: auto;
+}
+.pk-tabs-list.line .pk-tabs-trigger[data-state="active"]::after { opacity: 1; }
+
+.pk-tabs-content { flex: 1; font-size: .875rem; }
+
+:root[data-theme="light"] .pk-tabs-trigger[data-state="active"] {
+  background: var(--pk-bg);
+  border-color: transparent;
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-tabs-trigger[data-state="active"] {
+    background: var(--pk-bg);
+    border-color: transparent;
+  }
+}
