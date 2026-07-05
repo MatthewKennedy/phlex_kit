@@ -9,6 +9,13 @@ export default class extends Controller {
   toggle() { this.openValue = !this.openValue }
   openValueChanged(isOpen) { isOpen ? this.open() : this.close() }
 
-  open() { if (this.hasContentTarget) { this.contentTarget.classList.remove("pk-hidden"); this.openValue = true } }
-  close() { if (this.hasContentTarget) { this.contentTarget.classList.add("pk-hidden"); this.openValue = false } }
+  open() {
+    if (this.hasContentTarget) { this.contentTarget.classList.remove("pk-hidden"); this.openValue = true }
+    this.element.dataset.state = "open";
+  }
+
+  close() {
+    if (this.hasContentTarget) { this.contentTarget.classList.add("pk-hidden"); this.openValue = false }
+    this.element.dataset.state = "closed";
+  }
 }

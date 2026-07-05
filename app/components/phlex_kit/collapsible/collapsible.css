@@ -1,3 +1,12 @@
-/* Co-located with collapsible.rb. Theme tokens from the global stylesheet. */
+/* Co-located with collapsible.rb. Theme tokens from the global stylesheet.
+   The controller stamps data-state="open|closed" on the root (shadcn's
+   styling hook). Give a trigger glyph .pk-collapsible-chevron to rotate it
+   when open — 180deg by default, override with --pk-collapsible-rotate
+   (file trees use 90deg on a chevron-right). Scoped to the nearest root so
+   nested collapsibles rotate independently. */
 .pk-collapsible-trigger { cursor: pointer; }
 .pk-collapsible-content { overflow-y: hidden; }
+.pk-collapsible-chevron { transition: transform .15s ease; }
+.pk-collapsible[data-state="open"] > .pk-collapsible-trigger .pk-collapsible-chevron {
+  transform: rotate(var(--pk-collapsible-rotate, 180deg));
+}

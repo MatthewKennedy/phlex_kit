@@ -23,7 +23,7 @@ matches (parts/props), and its metrics have been compared.
 - [x] carousel — translate engine already at functional parity (arrows, drag, loop, axis, disabled state; nova only adds rounded-full nav which we had); recreated their Sizes/Spacing/Orientation examples with Card slides. Options/API/Events/Plugins sections are embla-React-specific — documented, not ported
 - [ ] chart — AUDITED 2026-07-05: their page is a Recharts build-a-chart tutorial (grid/axis/tooltip/legend steps + ChartConfig theming), not an example gallery. Port = extend docs/06-CHARTS.md guide + step examples on Chart.js options. Own session; kit chart block itself is live (area/bar/doughnut)
 - [x] checkbox — replaced native accent-color box ("redesign later" debt) with their custom-drawn control: appearance:none, input-border + translucent dark fill, brand fill + masked check when checked, :indeterminate minus, extended touch target (::before bleed), focus + aria-invalid rings; six examples incl. Table
-- [ ] collapsible
+- [x] collapsible — controller now stamps data-state=open/closed on the root (their styling hook) + .pk-collapsible-chevron rotation helper (--pk-collapsible-rotate override, scoped to nearest root for nesting); their three examples (Basic, Settings Panel, recursive File Tree)
 - [ ] combobox
 - [ ] command
 - [ ] context-menu
