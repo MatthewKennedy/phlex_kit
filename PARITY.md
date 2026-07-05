@@ -24,7 +24,7 @@ matches (parts/props), and its metrics have been compared.
 - [ ] chart — AUDITED 2026-07-05: their page is a Recharts build-a-chart tutorial (grid/axis/tooltip/legend steps + ChartConfig theming), not an example gallery. Port = extend docs/06-CHARTS.md guide + step examples on Chart.js options. Own session; kit chart block itself is live (area/bar/doughnut)
 - [x] checkbox — replaced native accent-color box ("redesign later" debt) with their custom-drawn control: appearance:none, input-border + translucent dark fill, brand fill + masked check when checked, :indeterminate minus, extended touch target (::before bleed), focus + aria-invalid rings; six examples incl. Table
 - [x] collapsible — controller now stamps data-state=open/closed on the root (their styling hook) + .pk-collapsible-chevron rotation helper (--pk-collapsible-rotate override, scoped to nearest root for nesting); their three examples (Basic, Settings Panel, recursive File Tree)
-- [ ] combobox
+- [ ] combobox — AUDITED 2026-07-05 (scope only): their page now has 10 example sections incl. chips/multiple/clear/auto-highlight/popup/input-group on the rebuilt parts API; kit controller is 300 lines with badge/input triggers already. Full diff needs its own session
 - [ ] command
 - [ ] context-menu
 - [ ] data-table
