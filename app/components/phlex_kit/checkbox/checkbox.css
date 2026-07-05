@@ -1,20 +1,65 @@
-/* Co-located with checkbox.rb — UI::Checkbox. ruby_ui draws a fully custom box
-   with peer/checked Tailwind utilities; we instead let the native control render
-   and tint it with the brand token via accent-color (themes correctly on the
-   dark background, no SVG). Vanilla CSS, our own look, redesign later. Theme
-   tokens come from the global stylesheet. */
+/* Co-located with checkbox.rb — PhlexKit::Checkbox. Matched to shadcn/ui's
+   current checkbox: appearance:none custom box (size-4, 4px radius,
+   input-border, translucent input fill in dark), solid brand fill when
+   checked with a masked check glyph (currentColor-free — the mask carries
+   the shape, the fill is brand-ink), an :indeterminate minus, an extended
+   touch target (::before inset bleed, their after:-inset-x-3/-inset-y-2),
+   focus + invalid rings. Native input semantics kept — no JS. */
 .pk-checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
   width: 1rem;
   height: 1rem;
-  border-radius: calc(var(--pk-radius) - 4px);
-  accent-color: var(--pk-brand);
+  margin: 0;
+  border: 1px solid var(--pk-input);
+  border-radius: 4px;
+  background: color-mix(in oklab, var(--pk-input) 30%, transparent);
   cursor: pointer;
+  transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+}
+/* Extended touch target. */
+.pk-checkbox::before { content: ""; position: absolute; inset: -.5rem -.75rem; }
+.pk-checkbox:checked, .pk-checkbox:indeterminate {
+  background: var(--pk-brand);
+  border-color: var(--pk-brand);
+}
+.pk-checkbox:checked::after, .pk-checkbox:indeterminate::after {
+  content: "";
+  width: .875rem;
+  height: .875rem;
+  background: var(--pk-brand-ink);
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.pk-checkbox:indeterminate::after {
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3C/svg%3E") center / contain no-repeat;
 }
 .pk-checkbox:focus-visible {
   outline: none;
+  border-color: var(--pk-ring);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
+.pk-checkbox[aria-invalid="true"] {
+  border-color: color-mix(in oklab, var(--pk-red) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
+}
+.pk-checkbox[aria-invalid="true"]:checked { border-color: var(--pk-brand); }
 .pk-checkbox:disabled { cursor: not-allowed; opacity: .5; }
+:root[data-theme="light"] .pk-checkbox:not(:checked):not(:indeterminate) { background: transparent; }
+:root[data-theme="light"] .pk-checkbox[aria-invalid="true"] {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-checkbox:not(:checked):not(:indeterminate) { background: transparent; }
+  :root[data-theme="system"] .pk-checkbox[aria-invalid="true"] {
+    border-color: var(--pk-red);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
+  }
+}
 
 /* A checkbox paired inline with its label (ruby_ui's `flex items-center
    space-x-3` row). Used for checkbox lists like store-assignment; vertical

@@ -21,8 +21,8 @@ matches (parts/props), and its metrics have been compared.
 - [ ] calendar — AUDITED 2026-07-05, needs a dedicated session: kit is single-date only; theirs adds range + multiple modes, month/year dropdown caption, week numbers, booked/disabled dates, --cell-size/--cell-radius vars, presets/time-picker compositions (8 examples). Controller build ≈ sidebar-offcanvas scale
 - [x] card — CardAction, size: :sm, --pk-card-spacing, footer band, image cards; five examples
 - [x] carousel — translate engine already at functional parity (arrows, drag, loop, axis, disabled state; nova only adds rounded-full nav which we had); recreated their Sizes/Spacing/Orientation examples with Card slides. Options/API/Events/Plugins sections are embla-React-specific — documented, not ported
-- [ ] chart
-- [ ] checkbox
+- [ ] chart — AUDITED 2026-07-05: their page is a Recharts build-a-chart tutorial (grid/axis/tooltip/legend steps + ChartConfig theming), not an example gallery. Port = extend docs/06-CHARTS.md guide + step examples on Chart.js options. Own session; kit chart block itself is live (area/bar/doughnut)
+- [x] checkbox — replaced native accent-color box ("redesign later" debt) with their custom-drawn control: appearance:none, input-border + translucent dark fill, brand fill + masked check when checked, :indeterminate minus, extended touch target (::before bleed), focus + aria-invalid rings; six examples incl. Table
 - [ ] collapsible
 - [ ] combobox
 - [ ] command

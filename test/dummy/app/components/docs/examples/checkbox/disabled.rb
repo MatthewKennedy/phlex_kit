@@ -5,9 +5,9 @@ module Docs
     module Checkbox
       class Disabled < Phlex::HTML
         def view_template
-          render PhlexKit::Label.new do
-            render PhlexKit::Checkbox.new(name: "notifications", disabled: true)
-            plain "Enable notifications"
+          div(class: "pk-checkbox-row", style: "opacity: .6") do
+            render PhlexKit::Checkbox.new(id: "toggle-checkbox-disabled", name: "toggle-checkbox-disabled", disabled: true)
+            render PhlexKit::Label.new(for: "toggle-checkbox-disabled") { "Enable notifications" }
           end
         end
       end
