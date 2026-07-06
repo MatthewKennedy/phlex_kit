@@ -4,8 +4,10 @@ import { Controller } from "@hotwired/stimulus"
 // on contextmenu (at the trigger's rect for the keyboard Menu key / Shift+F10,
 // which fire with clientX/Y of 0) and focuses the first item; ArrowDown/
 // ArrowUp/Home/End rove over the items (skipping [data-disabled]); closes on
-// outside click or Escape, returning focus to the trigger. CSS positioning
-// (no floating-ui).
+// outside click or Escape, returning focus to the trigger. The panel is a
+// native [popover=manual] in the top layer (context_menu.css); it is placed
+// in viewport coordinates after showPopover() — a hidden popover has no
+// size — and clamped so it never overflows the viewport (no floating-ui).
 export default class extends Controller {
   static targets = ["content", "trigger", "menuItem"]
 
@@ -21,7 +23,6 @@ export default class extends Controller {
 
   open(e) {
     e.preventDefault()
-    const r = this.element.getBoundingClientRect()
     let x = e.clientX
     let y = e.clientY
     if (x === 0 && y === 0) {
@@ -29,17 +30,20 @@ export default class extends Controller {
       x = t.left
       y = t.bottom
     }
-    this.contentTarget.style.left = `${x - r.left}px`
-    this.contentTarget.style.top = `${y - r.top}px`
-    this.contentTarget.classList.remove("pk-hidden")
-    this.contentTarget.dataset.state = "open"
+    const c = this.contentTarget
+    if (!c.matches(":popover-open")) c.showPopover()
+    x = Math.max(4, Math.min(x, window.innerWidth - c.offsetWidth - 4))
+    y = Math.max(4, Math.min(y, window.innerHeight - c.offsetHeight - 4))
+    c.style.left = `${x}px`
+    c.style.top = `${y}px`
+    c.dataset.state = "open"
     document.addEventListener("click", this.onDoc)
     document.addEventListener("keydown", this.onKey)
     this.items()[0]?.focus()
   }
 
   close(opts = {}) {
-    this.contentTarget.classList.add("pk-hidden")
+    if (this.contentTarget.matches(":popover-open")) this.contentTarget.hidePopover()
     this.contentTarget.dataset.state = "closed"
     document.removeEventListener("click", this.onDoc)
     document.removeEventListener("keydown", this.onKey)
