@@ -49,7 +49,17 @@ module PhlexKit
 
     # (5) Optional convenience alias so revue-style `UI::Button` keeps working.
     config.after_initialize do
-      Object.const_set(:UI, PhlexKit) if PhlexKit.config.define_ui_alias && !Object.const_defined?(:UI)
+      if PhlexKit.config.define_ui_alias
+        if Object.const_defined?(:UI)
+          # Fail loud-ish: silently skipping reads as "alias mysteriously absent".
+          Rails.logger&.warn(
+            "PhlexKit: define_ui_alias is enabled but ::UI is already defined " \
+            "(#{Object.const_get(:UI).inspect}) — alias skipped."
+          )
+        else
+          Object.const_set(:UI, PhlexKit)
+        end
+      end
     end
   end
 end
