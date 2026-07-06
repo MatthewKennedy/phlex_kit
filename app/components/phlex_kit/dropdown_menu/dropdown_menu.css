@@ -12,6 +12,9 @@
   position: fixed;
   position-anchor: --pk-dropdown-menu;
   inset: auto;
+  /* the bordered box is the inner viewport — strip the [popover] UA chrome
+     (border: solid, padding, Canvas background) from this wrapper */
+  border: 0; padding: 0; background: transparent; color: inherit; overflow: visible;
   position-area: block-end span-inline-end;
   margin: 4px 0 0;
   position-try-fallbacks: flip-block;
@@ -116,3 +119,6 @@
 .pk-dropdown-menu-sub:focus-within > .pk-dropdown-menu-sub-content { display: block; }
 .pk-dropdown-menu-sub:hover > .pk-dropdown-menu-sub-trigger,
 .pk-dropdown-menu-sub:focus-within > .pk-dropdown-menu-sub-trigger { background: var(--pk-accent); }
+/* Hiding must survive author display values (a host class like
+   display:grid would beat the UA [popover] { display: none }). */
+.pk-dropdown-menu-content:not(:popover-open) { display: none; }

@@ -82,3 +82,6 @@
   right: 0;
   height: calc(var(--pk-nav-gap) + 1px);
 }
+/* Hiding must survive author display values (a host class like
+   display:grid would beat the UA [popover] { display: none }). */
+.pk-navigation-menu-content:not(:popover-open) { display: none; }

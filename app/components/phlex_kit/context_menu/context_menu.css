@@ -98,3 +98,6 @@
 .pk-context-menu-sub:focus-within > .pk-context-menu-sub-content { display: block; }
 .pk-context-menu-sub:hover > .pk-context-menu-sub-trigger,
 .pk-context-menu-sub:focus-within > .pk-context-menu-sub-trigger { background: var(--pk-accent); }
+/* Hiding must survive author display values (a host class like
+   display:grid would beat the UA [popover] { display: none }). */
+.pk-context-menu-content:not(:popover-open) { display: none; }

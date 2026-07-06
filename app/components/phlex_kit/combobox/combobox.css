@@ -348,3 +348,6 @@
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
   }
 }
+/* Hiding must survive author display values (a host class like
+   display:grid would beat the UA [popover] { display: none }). */
+.pk-combobox-popover:not(:popover-open) { display: none; }

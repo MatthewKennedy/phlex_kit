@@ -154,3 +154,6 @@
 .pk-menubar-sub:focus-within > .pk-menubar-sub-content { display: block; }
 .pk-menubar-sub:hover > .pk-menubar-sub-trigger,
 .pk-menubar-sub:focus-within > .pk-menubar-sub-trigger { background: var(--pk-accent); }
+/* Hiding must survive author display values (a host class like
+   display:grid would beat the UA [popover] { display: none }). */
+.pk-menubar-content:not(:popover-open) { display: none; }
