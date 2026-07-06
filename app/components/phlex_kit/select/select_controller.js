@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Ported from ruby_ui's phlex-kit--select controller. The ONE change from upstream:
-// the @floating-ui/dom dependency is removed — the panel is positioned with plain
-// CSS (.ui-select-content { position:absolute; top:100% }) instead of
-// computePosition/autoUpdate, so this app needs no npm/build step. Everything else
-// (open/close, item selection, keyboard nav, click-outside) is unchanged.
+// Ported from ruby_ui's phlex-kit--select controller, minus the
+// @floating-ui/dom dependency: the panel is a native [popover=manual] in the
+// top layer, anchor-positioned with viewport-edge flipping by select.css
+// (manual so this controller keeps owning open/close, item selection,
+// keyboard nav, and click-outside — all unchanged from upstream).
 export default class extends Controller {
   static targets = ["trigger", "content", "input", "value", "item"];
   static values = { open: Boolean };
@@ -98,7 +98,11 @@ export default class extends Controller {
 
   toogleContent() {
     this.openValue = !this.openValue;
-    this.contentTarget.classList.toggle("hidden");
+    if (this.openValue) {
+      this.contentTarget.showPopover();
+    } else if (this.contentTarget.matches(":popover-open")) {
+      this.contentTarget.hidePopover();
+    }
     this.triggerTarget.setAttribute("aria-expanded", this.openValue);
   }
 

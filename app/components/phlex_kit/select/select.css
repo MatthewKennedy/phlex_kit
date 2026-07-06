@@ -2,15 +2,18 @@
    is the native one). ruby_ui's structure + Stimulus kept; Tailwind replaced with
    our vanilla CSS on the palette tokens. Geometry from ruby_ui (h-9 trigger,
    rounded-md, p-1 viewport, px-2 py-1.5 items, accent on hover/selected). The
-   panel is positioned with plain CSS (top:100%) since we dropped @floating-ui.
-   Theme tokens come from the global stylesheet. */
-.pk-select { position: relative; width: 100%; }
+   panel is a native [popover=manual] in the top layer, anchor-positioned to
+   the trigger (Baseline 2026, no @floating-ui); position-try-fallbacks flips
+   it above at the viewport bottom. Theme tokens come from the global
+   stylesheet. */
+.pk-select { width: 100%; anchor-scope: --pk-select; }
 
 /* Hidden input that carries the form value. */
 .pk-select-input { display: none; }
 
 /* Closed-state trigger button (mirrors .pk-input geometry). */
 .pk-select-trigger {
+  anchor-name: --pk-select;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -44,20 +47,23 @@
 .pk-select-trigger-icon { flex: none; width: 1rem; height: 1rem; margin-left: .5rem; opacity: .5; }
 .pk-select-value { overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
 
-/* Dropdown panel — opens directly below the trigger (no floating-ui). */
+/* Dropdown panel — anchored directly below the trigger, flips above at the
+   viewport bottom. */
 .pk-select-content {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 50;
+  position: fixed;
+  position-anchor: --pk-select;
+  inset: auto;
+  position-area: block-end span-inline-end;
+  margin: .25rem 0 0;
+  position-try-fallbacks: flip-block;
   /* Content-hugging with the trigger width as the floor — items never wrap,
      so a narrow trigger (e.g. the currency select in a button group) still
-     gets a readable panel; for form selects min-width keeps panel = trigger. */
+     gets a readable panel; for form selects the anchor-size floor keeps
+     panel = trigger (percentages resolve against the position-area cell,
+     not the trigger, once anchored). */
   width: max-content;
-  min-width: 100%;
-  margin-top: .25rem;
+  min-width: anchor-size(width);
 }
-.pk-select-content.hidden { display: none; }
 .pk-select-viewport {
   max-height: 24rem;
   overflow: auto;
