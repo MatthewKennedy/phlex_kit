@@ -16,7 +16,7 @@ module PhlexKit
         role: "menubar",
         data: {
           controller: "phlex-kit--menubar",
-          action: "click@window->phlex-kit--menubar#onClickOutside keydown.esc->phlex-kit--menubar#close"
+          action: "click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown"
         }
       }, @attrs), &)
     end

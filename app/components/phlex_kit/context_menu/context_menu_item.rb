@@ -18,8 +18,12 @@ module PhlexKit
 
     def view_template(&block)
       classes = [ "pk-context-menu-item", VARIANTS.fetch(@variant) ].compact.join(" ")
-      a(**mix({ href: @href, role: "menuitem", tabindex: "-1", class: classes,
-                data: { action: "click->phlex-kit--context-menu#close", phlex_kit__context_menu_target: "menuItem", disabled: @disabled } }, @attrs)) do
+      base = { href: @href, role: "menuitem", tabindex: "-1", class: classes,
+               data: { action: ("click->phlex-kit--context-menu#close" unless @disabled),
+                       phlex_kit__context_menu_target: "menuItem",
+                       disabled: (@disabled ? "true" : nil) }.compact }
+      base[:aria] = { disabled: "true" } if @disabled
+      a(**mix(base, @attrs)) do
         if @checked
           span(class: "pk-context-menu-check") do
             render Icon.new(:check, size: nil)
