@@ -1519,7 +1519,7 @@ module Create
                          gap: 0; padding: 0; /* the kit card's 16px gap/padding would band the sections apart */
                          border-radius: 1rem; overflow: hidden;
                          background: color-mix(in oklab, var(--pk-surface) 92%, transparent);
-                         backdrop-filter: blur(12px); box-shadow: 0 8px 30px rgb(0 0 0 / .25); }
+                         backdrop-filter: blur(12px); box-shadow: none; }
         .cr-cust-head { padding: .625rem .75rem; border-bottom: 1px solid var(--pk-border); }
         .cr-main-menu, .cr-picker { display: block; width: 100%; }
         .cr-main-menu .pk-dropdown-menu-trigger, .cr-picker .pk-dropdown-menu-trigger { display: block; width: 100%; }
