@@ -1491,7 +1491,9 @@ module Create
                      font-weight: 100 900; font-display: swap; }
         :root { --pk-font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
                 --pk-font-mono: "Geist Mono", ui-monospace, monospace; }
-        body { margin: 0; background: var(--pk-bg); color: var(--pk-text); font: 15px/1.5 var(--pk-font-sans); }
+        /* app shell: the page never scrolls — the canvas pans inside <main> */
+        body { margin: 0; height: 100dvh; display: flex; flex-direction: column; overflow: hidden;
+               background: var(--pk-bg); color: var(--pk-text); font: 15px/1.5 var(--pk-font-sans); }
         /* the Heading knob sets --cr-font-heading (knob_css) */
         h1, h2, h3, h4 { font-family: var(--cr-font-heading, inherit); }
 
@@ -1568,7 +1570,8 @@ module Create
            positioned ancestor (e.g. sr-only live regions) resolve against the
            scroller, not the document — otherwise they leak page-level
            horizontal overflow. */
-        .cr-viewport { position: relative; overflow-x: auto; margin: 1.5rem 1.5rem 1.5rem calc(208px + 4.5rem);
+        .cr-viewport { position: relative; overflow: auto; flex: 1; min-height: 0;
+                       margin: 1.5rem 1.5rem 1.5rem calc(208px + 4.5rem);
                        border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) + 8px);
                        background: var(--pk-surface-2); }
         html[data-theme="dark"] .cr-viewport { background: var(--pk-bg); }
@@ -1579,9 +1582,10 @@ module Create
         .cr-col.wide { grid-column: span 2; }
         .cr-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
         .cr-duo.tight { gap: 1rem; }
-        @media (max-width: 900px) { .cr-canvas { grid-template-columns: repeat(7, 300px); }
+        @media (max-width: 900px) { body { height: auto; display: block; overflow: auto; }
+                                    .cr-canvas { grid-template-columns: repeat(7, 300px); }
                                     .cr-viewport { margin: 1.5rem; }
-                                    .cr-menu { position: static; width: auto; margin: 1.5rem; } }
+                                    .cr-menu { position: static; width: auto; margin: 1.5rem; display: block; } }
 
         /* shared card internals */
         .cr-stack { display: flex; flex-direction: column; gap: 1rem; }
