@@ -3,6 +3,11 @@
 require "json" # Carousel serializes its options value standalone (no Rails to_json)
 require "securerandom" # DatePicker generates a default input id
 require "cgi" # DataTable sort/pagination build query strings standalone
+# phlex-rails references ActiveSupport::SafeBuffer at require time; in a Rails
+# app it's already loaded, but a bare `require "phlex_kit"` (script/console)
+# crashes with "uninitialized constant Phlex::ActiveSupport" without these.
+require "active_support"
+require "active_support/core_ext/string/output_safety"
 require "phlex"
 require "phlex-rails"
 
