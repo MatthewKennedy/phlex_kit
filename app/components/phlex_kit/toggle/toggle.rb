@@ -7,7 +7,7 @@ module PhlexKit
     SIZES = { sm: "sm", default: nil, lg: "lg" }.freeze
 
     def self.modifier_classes(variant:, size:)
-      [VARIANTS.fetch(variant, nil), SIZES.fetch(size, nil)].compact
+      [ VARIANTS.fetch(variant, nil), SIZES.fetch(size, nil) ].compact
     end
 
     def initialize(pressed: false, name: nil, value: "1", unpressed_value: nil,
@@ -33,7 +33,7 @@ module PhlexKit
     private
 
     def classes
-      (["pk-toggle"] + self.class.modifier_classes(variant: @variant, size: @size)).join(" ")
+      ([ "pk-toggle" ] + self.class.modifier_classes(variant: @variant, size: @size)).join(" ")
     end
 
     def button_default_attrs

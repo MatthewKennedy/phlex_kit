@@ -83,7 +83,7 @@ module PhlexKit
         mic: [ [ :path, { d: "M12 19v3" } ], [ :path, { d: "M19 10v2a7 7 0 0 1-14 0v-2" } ], [ :rect, { rx: "3", x: "9", y: "2", width: "6", height: "13" } ] ],
         play: [ [ :path, { d: "M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z" } ] ],
         pause: [ [ :rect, { rx: "1", x: "14", y: "3", width: "5", height: "18" } ], [ :rect, { rx: "1", x: "5", y: "3", width: "5", height: "18" } ] ],
-        grip: [ [ :circle, { cx: "9", cy: "12", r: "1" } ], [ :circle, { cx: "9", cy: "5", r: "1" } ], [ :circle, { cx: "9", cy: "19", r: "1" } ], [ :circle, { cx: "15", cy: "12", r: "1" } ], [ :circle, { cx: "15", cy: "5", r: "1" } ], [ :circle, { cx: "15", cy: "19", r: "1" } ] ],
+        grip: [ [ :circle, { cx: "9", cy: "12", r: "1" } ], [ :circle, { cx: "9", cy: "5", r: "1" } ], [ :circle, { cx: "9", cy: "19", r: "1" } ], [ :circle, { cx: "15", cy: "12", r: "1" } ], [ :circle, { cx: "15", cy: "5", r: "1" } ], [ :circle, { cx: "15", cy: "19", r: "1" } ] ]
       }.freeze
     end
   end

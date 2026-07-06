@@ -18,6 +18,18 @@ class Wave4Test < Minitest::Test
     assert_includes html, "phlex-kit--toggle"
   end
 
+  def test_theme_toggle_caller_wrapper_merges_without_dropping_controller
+    html = render(PhlexKit::ThemeToggle.new(wrapper: { class: "extra" }) { "x" })
+    assert_includes html, "phlex-kit--theme-toggle"
+    assert_includes html, "extra"
+  end
+
+  def test_theme_toggle_caller_aria_label_wins_but_wiring_survives
+    html = render(PhlexKit::ThemeToggle.new(aria: { label: "Night mode" }) { "x" })
+    assert_includes html, %(aria-label="Night mode")
+    assert_includes html, "phlex-kit--theme-toggle"
+  end
+
   def test_pagination_item_active_reuses_button
     html = render(PhlexKit::PaginationItem.new(href: "/2", active: true) { "2" })
     assert_includes html, "pk-button outline"

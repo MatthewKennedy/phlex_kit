@@ -5,8 +5,8 @@ require_relative "lib/phlex_kit/version"
 Gem::Specification.new do |spec|
   spec.name    = "phlex_kit"
   spec.version = PhlexKit::VERSION
-  spec.authors = ["Matt Kennedy"]
-  spec.email   = ["m.kennedy@aypex.io"]
+  spec.authors = [ "Matt Kennedy" ]
+  spec.email   = [ "m.kennedy@aypex.io" ]
 
   spec.summary     = "shadcn/ui-style component system for Phlex, styled with vanilla CSS and design tokens."
   spec.description = "PhlexKit brings the shadcn/ui component catalog to Phlex and Rails, " \
@@ -24,15 +24,19 @@ Gem::Specification.new do |spec|
 
   # Ship precompiled-static assets (the whole point): the .rb components, the
   # co-located .css, the token/manifest stylesheets, and the Stimulus controllers.
-  spec.files = Dir[
-    "lib/**/*",
-    "app/**/*",
-    "config/**/*",
-    "MIT-LICENSE",
-    "THIRD_PARTY_LICENSES",
-    "README.md"
-  ]
-  spec.require_paths = ["lib"]
+  # Resolve the globs from the gemspec's own directory — `gem build` run from
+  # any other cwd otherwise packages an empty gem.
+  spec.files = Dir.chdir(__dir__) do
+    Dir[
+      "lib/**/*",
+      "app/**/*",
+      "config/**/*",
+      "MIT-LICENSE",
+      "THIRD_PARTY_LICENSES",
+      "README.md"
+    ]
+  end
+  spec.require_paths = [ "lib" ]
 
   # HARD dependencies — the mature foundation. NOT phlex-reactive; NOT tailwind_merge.
   spec.add_dependency "phlex-rails", ">= 2.0", "< 3"

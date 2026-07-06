@@ -21,20 +21,35 @@ class Wave1Test < Minitest::Test
     assert_includes html, %(type="checkbox")
   end
 
+  def test_switch_role_lives_on_the_checkbox_not_the_label
+    html = render(PhlexKit::Switch.new(name: "active"))
+    assert_match(/<input[^>]+role="switch"/, html)
+    refute_match(/<label[^>]+role=/, html)
+  end
+
+  def test_switch_wrapper_attrs_merge_onto_label
+    html = render(PhlexKit::Switch.new(name: "active", wrapper: { class: "extra" }))
+    assert_match(/<label[^>]+class="pk-switch extra"/, html)
+  end
+
+  def test_switch_without_name_omits_hidden_input
+    refute_includes render(PhlexKit::Switch.new), %(type="hidden")
+  end
+
   def test_radio_button
     assert_includes render(PhlexKit::RadioButton.new(name: "r", value: "1")), %(type="radio")
   end
 
   def test_breadcrumb_compose
     html = render(PhlexKit::Breadcrumb.new do |b|
-      b.render PhlexKit::BreadcrumbList.new {}
+      b.render PhlexKit::BreadcrumbList.new { }
     end)
     assert_includes html, "pk-breadcrumb"
   end
 
   def test_bubble_variant_and_fail_loud
-    assert_includes render(PhlexKit::Bubble.new(variant: :destructive) {}), %(data-variant="destructive")
-    assert_raises(KeyError) { render(PhlexKit::Bubble.new(variant: :nope) {}) }
+    assert_includes render(PhlexKit::Bubble.new(variant: :destructive) { }), %(data-variant="destructive")
+    assert_raises(KeyError) { render(PhlexKit::Bubble.new(variant: :nope) { }) }
   end
 
   def test_empty_media_variant
@@ -42,6 +57,6 @@ class Wave1Test < Minitest::Test
   end
 
   def test_message_align
-    assert_includes render(PhlexKit::Message.new(align: :end) {}), %(data-align="end")
+    assert_includes render(PhlexKit::Message.new(align: :end) { }), %(data-align="end")
   end
 end

@@ -34,10 +34,10 @@ export default class extends Controller {
     maxDate: { type: String, default: null },
     disabledDates: { type: Array, default: [] },
     weekNumbers: { type: Boolean, default: false },
-    viewDate: {
-      type: String,
-      default: new Date().toISOString().slice(0, 10),
-    },
+    // Resolved lazily by viewDate() — a `new Date()` default here would be
+    // frozen at module load (stale "today" in long-lived tabs) and
+    // toISOString() is UTC (wrong day for non-UTC users near midnight).
+    viewDate: { type: String, default: "" },
     format: { type: String, default: "yyyy-MM-dd" },
   };
   static outlets = ["phlex-kit--calendar-input"];
@@ -61,14 +61,14 @@ export default class extends Controller {
     const date = this.viewDate();
     date.setDate(2);
     date.setMonth(Number(e.target.value));
-    this.viewDateValue = date.toISOString().slice(0, 10);
+    this.viewDateValue = this.isoDate(date);
   }
 
   setYear(e) {
     const date = this.viewDate();
     date.setDate(2);
     date.setFullYear(Number(e.target.value));
-    this.viewDateValue = date.toISOString().slice(0, 10);
+    this.viewDateValue = this.isoDate(date);
   }
 
   selectDay(e) {
@@ -132,9 +132,13 @@ export default class extends Controller {
     // update the viewDateValue to the selected date's month (this re-renders)
     const newViewDate = new Date(selectedDate);
     newViewDate.setDate(2); // avoid month-length/timezone edges
-    this.viewDateValue = newViewDate.toISOString().slice(0, 10);
+    this.viewDateValue = this.isoDate(newViewDate);
 
     this.updateCalendar();
+
+    // Stimulus fires valueChanged during value initialization too — a
+    // server-rendered selected_date must not dispatch a change event.
+    if (prevValue === undefined) return;
     this.pushToOutlets();
     this.dispatchChange();
   }
@@ -180,7 +184,7 @@ export default class extends Controller {
     const date = this.viewDate();
     date.setDate(2); // avoid month-length/timezone edges
     date.setMonth(date.getMonth() + adjustment);
-    return date.toISOString().slice(0, 10);
+    return this.isoDate(date);
   }
 
   updateCalendar() {

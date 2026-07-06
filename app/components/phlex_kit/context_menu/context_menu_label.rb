@@ -5,7 +5,7 @@ module PhlexKit
       @attrs = attrs
     end
     def view_template(&)
-      div(**mix({ class: ["pk-context-menu-label", (@inset ? "inset" : nil)].compact.join(" ") }, @attrs), &)
+      div(**mix({ class: [ "pk-context-menu-label", (@inset ? "inset" : nil) ].compact.join(" ") }, @attrs), &)
     end
   end
 end
