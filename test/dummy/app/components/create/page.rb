@@ -1514,6 +1514,7 @@ module Create
         .cr-menu { position: fixed; left: 1.5rem; top: 4.5rem; bottom: 1.5rem; z-index: 30; width: 208px;
                    display: flex; align-items: flex-start; }
         .cr-customizer { width: 100%; max-height: 100%; display: flex; flex-direction: column;
+                         gap: 0; padding: 0; /* the kit card's 16px gap/padding would band the sections apart */
                          border-radius: 1rem; overflow: hidden;
                          background: color-mix(in oklab, var(--pk-surface) 92%, transparent);
                          backdrop-filter: blur(12px); box-shadow: 0 8px 30px rgb(0 0 0 / .25); }
@@ -1528,7 +1529,8 @@ module Create
         .cr-main-menu-trigger:hover { background: var(--pk-accent); }
         .cr-cust-body { display: flex; flex-direction: column; gap: .625rem; padding: .75rem;
                         overflow-y: auto; min-height: 0; }
-        .cr-cust-sep { margin: .125rem -.75rem; }
+        /* pk-separator is width:100%%, so bleeding needs the width extended too */
+        .cr-cust-sep { margin: .125rem -.75rem; width: calc(100%% + 1.5rem); }
         .cr-picker-row { position: relative; display: flex; flex-direction: column; align-items: flex-start;
                          gap: .125rem; width: 100%; padding: .5rem 2.25rem .5rem .625rem; text-align: left;
                          font: inherit; color: var(--pk-text); background: none; border: none; cursor: pointer;
