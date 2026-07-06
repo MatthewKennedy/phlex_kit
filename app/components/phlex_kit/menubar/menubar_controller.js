@@ -18,6 +18,10 @@ export default class extends Controller {
     this.openMenu = null
   }
 
+  disconnect() {
+    clearTimeout(this.graceTimer)
+  }
+
   toggle(e) {
     const menu = e.currentTarget.closest("[data-phlex-kit--menubar-target=\"menu\"]")
     this.openMenu === menu ? this.close() : this.show(menu, true)
@@ -26,10 +30,26 @@ export default class extends Controller {
   // Hover: switches between menus while one is open (menubar), or opens
   // directly when the bar declares data-hover-open (navigation menu).
   switch(e) {
+    clearTimeout(this.graceTimer)
     const menu = e.currentTarget.closest("[data-phlex-kit--menubar-target=\"menu\"]")
-    if (!menu) return this.close() // a link outside any menu item — just close
-    if (this.element.dataset.hoverOpen !== undefined) return this.show(menu)
+    if (this.element.dataset.hoverOpen !== undefined) {
+      if (!menu || !this.panel(menu)) return this.closeSoon() // link, no panel
+      return this.show(menu)
+    }
+    if (!menu) return this.close()
     if (this.openMenu && this.openMenu !== menu) this.show(menu)
+  }
+
+  // Hover closes go through a short grace period so a diagonal pointer path
+  // that clips a sibling link (or briefly exits the nav) on its way to the
+  // panel doesn't slam it shut; reaching the panel or a trigger cancels.
+  closeSoon() {
+    clearTimeout(this.graceTimer)
+    this.graceTimer = setTimeout(() => this.close(), 150)
+  }
+
+  cancelClose() {
+    clearTimeout(this.graceTimer)
   }
 
   show(menu, focus = false) {
@@ -43,6 +63,7 @@ export default class extends Controller {
   }
 
   close(opts = {}) {
+    clearTimeout(this.graceTimer)
     const menu = this.openMenu
     if (!menu) return
     const panel = this.panel(menu)

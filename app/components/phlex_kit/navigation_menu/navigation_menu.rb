@@ -15,7 +15,7 @@ module PhlexKit
         data: {
           controller: "phlex-kit--menubar",
           hover_open: true,
-          action: "click@window->phlex-kit--menubar#onClickOutside keydown.esc->phlex-kit--menubar#close mouseleave->phlex-kit--menubar#close"
+          action: "click@window->phlex-kit--menubar#onClickOutside keydown.esc->phlex-kit--menubar#close mouseleave->phlex-kit--menubar#closeSoon"
         }
       }, @attrs), &)
     end
