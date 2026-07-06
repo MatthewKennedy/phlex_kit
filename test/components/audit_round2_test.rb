@@ -54,6 +54,17 @@ class AuditRound2Test < Minitest::Test
     refute_includes wrapping_a_button, "tabindex"
   end
 
+  def test_bad_variant_errors_name_the_component_and_valid_values
+    err = assert_raises(KeyError) { render(PhlexKit::Button.new(variant: :prmary) { "x" }) }
+    assert_includes err.message, "PhlexKit::Button"
+    assert_includes err.message, ":prmary"
+    assert_includes err.message, ":outline"
+
+    err = assert_raises(KeyError) { render(PhlexKit::Badge.new(size: :giant) { "x" }) }
+    assert_includes err.message, "PhlexKit::Badge"
+    assert_includes err.message, "size"
+  end
+
   def test_selection_summary_is_a_live_status_region
     html = render(PhlexKit::DataTableSelectionSummary.new(total_on_page: 5))
     assert_includes html, %(role="status")

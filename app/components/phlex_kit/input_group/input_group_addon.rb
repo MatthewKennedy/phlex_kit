@@ -17,7 +17,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({ class: "pk-input-group-addon #{ALIGNS.fetch(@align)}", role: "group" }, @attrs), &)
+      div(**mix({ class: "pk-input-group-addon #{fetch_option(ALIGNS, @align, :align)}", role: "group" }, @attrs), &)
     end
   end
 end

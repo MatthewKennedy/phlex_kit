@@ -11,7 +11,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      legend(**mix({ class: "pk-field-legend #{VARIANTS.fetch(@variant)}" }, @attrs), &)
+      legend(**mix({ class: "pk-field-legend #{fetch_option(VARIANTS, @variant, :variant)}" }, @attrs), &)
     end
   end
 end

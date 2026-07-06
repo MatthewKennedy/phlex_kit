@@ -20,8 +20,8 @@ module PhlexKit
 
     def view_template(&)
       div(**mix({
-        class: [ "pk-attachment", SIZES.fetch(@size), ORIENTATIONS.fetch(@orientation) ].compact.join(" "),
-        data: { state: STATES.fetch(@state) }
+        class: [ "pk-attachment", fetch_option(SIZES, @size, :size), fetch_option(ORIENTATIONS, @orientation, :orientation) ].compact.join(" "),
+        data: { state: fetch_option(STATES, @state, :state) }
       }, @attrs), &)
     end
   end

@@ -13,7 +13,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      classes = [ "pk-button-group", ORIENTATIONS.fetch(@orientation) ].compact.join(" ")
+      classes = [ "pk-button-group", fetch_option(ORIENTATIONS, @orientation, :orientation) ].compact.join(" ")
       div(**mix({ class: classes, role: "group" }, @attrs), &)
     end
   end

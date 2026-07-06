@@ -17,7 +17,7 @@ module PhlexKit
 
     def view_template(&)
       div(**mix({
-        class: [ "pk-carousel", ORIENTATIONS.fetch(@orientation) ].join(" "),
+        class: [ "pk-carousel", fetch_option(ORIENTATIONS, @orientation, :orientation) ].join(" "),
         role: "region",
         aria: { roledescription: "carousel" },
         data: {

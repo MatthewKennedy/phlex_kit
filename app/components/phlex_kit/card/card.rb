@@ -27,7 +27,7 @@ module PhlexKit
     end
 
     def view_template(&block)
-      div(**mix({ class: [ "pk-card", SIZES.fetch(@size) ].compact.join(" ") }, @attrs), &block)
+      div(**mix({ class: [ "pk-card", fetch_option(SIZES, @size, :size) ].compact.join(" ") }, @attrs), &block)
     end
   end
 end

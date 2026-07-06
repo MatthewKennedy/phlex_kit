@@ -44,7 +44,7 @@ module PhlexKit
 
     def item_attrs
       data = {
-        variant: VARIANTS.fetch(@variant),
+        variant: fetch_option(VARIANTS, @variant, :variant),
         state: "pending",
         swipe: "none",
         controller: "phlex-kit--toast",

@@ -18,5 +18,17 @@ module PhlexKit
     def on(*, **)
       {}
     end
+
+    private
+
+    # Fail-loud option lookup with an actionable message. Still a KeyError —
+    # the same class a bare VARIANTS.fetch raised — but names the component,
+    # the option, and the valid values instead of "key not found: :prmary".
+    def fetch_option(map, key, name)
+      map.fetch(key) do
+        raise KeyError, "#{self.class.name}: unknown #{name} #{key.inspect} — " \
+                        "valid: #{map.keys.map(&:inspect).join(", ")}"
+      end
+    end
   end
 end

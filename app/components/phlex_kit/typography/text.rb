@@ -42,7 +42,7 @@ module PhlexKit
     private
 
     def classes
-      [ "pk-text", "pk-text-#{SIZES.fetch(@size)}", WEIGHTS.fetch(@weight) ].compact.join(" ")
+      [ "pk-text", "pk-text-#{fetch_option(SIZES, @size, :size)}", fetch_option(WEIGHTS, @weight, :weight) ].compact.join(" ")
     end
   end
 end

@@ -22,7 +22,7 @@ module PhlexKit
     def view_template
       return unless renderable?
       span(**mix({ class: "pk-toast-icon", data: { slot: "icon" } }, @attrs)) do
-        render Icon.new(GLYPHS.fetch(@variant), size: 16, class: svg_classes)
+        render Icon.new(fetch_option(GLYPHS, @variant, :glyph), size: 16, class: svg_classes)
       end
     end
 

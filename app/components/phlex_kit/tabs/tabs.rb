@@ -11,7 +11,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      classes = [ "pk-tabs", ORIENTATIONS.fetch(@orientation) ].compact.join(" ")
+      classes = [ "pk-tabs", fetch_option(ORIENTATIONS, @orientation, :orientation) ].compact.join(" ")
       div(**mix({ class: classes, data: { controller: "phlex-kit--tabs", phlex_kit__tabs_active_value: @default } }, @attrs), &)
     end
   end

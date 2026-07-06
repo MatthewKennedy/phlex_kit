@@ -10,7 +10,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      classes = [ "pk-tooltip-content", SIDES.fetch(@side) ].compact.join(" ")
+      classes = [ "pk-tooltip-content", fetch_option(SIDES, @side, :side) ].compact.join(" ")
       div(**mix({ class: classes, role: "tooltip" }, @attrs), &)
     end
   end
