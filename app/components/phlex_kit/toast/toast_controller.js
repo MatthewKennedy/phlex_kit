@@ -27,6 +27,10 @@ export default class extends Controller {
     this._onPointerUp = this._onPointerUp.bind(this)
     this._onPointerEnter = () => this._pause()
     this._onPointerLeave = () => { if (!this._swipe.active) this._resume() }
+    // Keyboard parity with hover: tabbing into the toast (e.g. to reach its
+    // action button) must pause auto-dismiss just like pointerenter does.
+    this._onFocusIn = () => this._pause()
+    this._onFocusOut = (e) => { if (!this.element.contains(e.relatedTarget)) this._resume() }
     this._onKeyDown = this._onKeyDown.bind(this)
     this._onForceDismiss = (e) => { e.stopPropagation(); this._close() }
     this._onRestart = () => this._restart()
@@ -36,6 +40,8 @@ export default class extends Controller {
     this.element.addEventListener("pointerdown", this._onPointerDown)
     this.element.addEventListener("pointerenter", this._onPointerEnter)
     this.element.addEventListener("pointerleave", this._onPointerLeave)
+    this.element.addEventListener("focusin", this._onFocusIn)
+    this.element.addEventListener("focusout", this._onFocusOut)
     this.element.addEventListener("keydown", this._onKeyDown)
     this.element.addEventListener("phlex-kit:toast:force-dismiss", this._onForceDismiss)
     this.element.addEventListener("phlex-kit:toast:restart", this._onRestart)
@@ -53,6 +59,8 @@ export default class extends Controller {
     this.element.removeEventListener("pointerdown", this._onPointerDown)
     this.element.removeEventListener("pointerenter", this._onPointerEnter)
     this.element.removeEventListener("pointerleave", this._onPointerLeave)
+    this.element.removeEventListener("focusin", this._onFocusIn)
+    this.element.removeEventListener("focusout", this._onFocusOut)
     this.element.removeEventListener("keydown", this._onKeyDown)
     this.element.removeEventListener("phlex-kit:toast:force-dismiss", this._onForceDismiss)
     this.element.removeEventListener("phlex-kit:toast:restart", this._onRestart)
