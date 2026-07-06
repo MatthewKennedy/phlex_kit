@@ -1,9 +1,12 @@
 module PhlexKit
   # The dropdown panel — a native [popover=manual] the trigger toggles,
   # anchor-positioned with viewport-edge flipping. `side:` is :bottom
-  # (default, opens below) or :top (opens above — for triggers near the bottom of
-  # the viewport, e.g. the sidebar footer). See dropdown_menu.rb.
+  # (default, opens below), :top (opens above — for triggers near the bottom
+  # of the viewport, e.g. the sidebar footer), :right or :left (opens beside
+  # the trigger — shadcn's side prop). See dropdown_menu.rb.
   class DropdownMenuContent < BaseComponent
+    SIDES = { bottom: nil, top: "pk-dropdown-menu-content-up", left: "pk-dropdown-menu-content-left", right: "pk-dropdown-menu-content-right" }.freeze
+
     def initialize(side: :bottom, **attrs)
       @side = side.to_sym
       @attrs = attrs
@@ -18,7 +21,7 @@ module PhlexKit
     private
 
     def wrapper_classes
-      [ "pk-dropdown-menu-content", ("pk-dropdown-menu-content-up" if @side == :top) ].compact.join(" ")
+      [ "pk-dropdown-menu-content", fetch_option(SIDES, @side, :side) ].compact.join(" ")
     end
   end
 end
