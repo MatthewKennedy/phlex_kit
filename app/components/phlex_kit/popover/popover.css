@@ -30,3 +30,6 @@
 .pk-popover-header { display: flex; flex-direction: column; gap: .125rem; font-size: .875rem; }
 .pk-popover-title { margin: 0; font-size: .875rem; font-weight: 500; }
 .pk-popover-description { margin: 0; color: var(--pk-muted); }
+/* Hiding must survive author display values (a host class like
+   display:grid would beat the UA [popover] { display: none }). */
+.pk-popover-content:not(:popover-open) { display: none; }

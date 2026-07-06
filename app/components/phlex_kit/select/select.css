@@ -53,6 +53,9 @@
   position: fixed;
   position-anchor: --pk-select;
   inset: auto;
+  /* the bordered box is the inner viewport — strip the [popover] UA chrome
+     (border: solid, padding, Canvas background) from this wrapper */
+  border: 0; padding: 0; background: transparent; color: inherit; overflow: visible;
   position-area: block-end span-inline-end;
   margin: .25rem 0 0;
   position-try-fallbacks: flip-block;
@@ -124,3 +127,6 @@
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
   }
 }
+/* Hiding must survive author display values (a host class like
+   display:grid would beat the UA [popover] { display: none }). */
+.pk-select-content:not(:popover-open) { display: none; }

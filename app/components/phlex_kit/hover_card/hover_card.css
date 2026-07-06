@@ -30,3 +30,6 @@
   position-area: inline-end; margin: 0 0 0 .25rem;
   position-try-fallbacks: flip-inline;
 }
+/* Hiding must survive author display values (a host class like
+   display:grid would beat the UA [popover] { display: none }). */
+.pk-hover-card-content:not(:popover-open) { display: none; }
