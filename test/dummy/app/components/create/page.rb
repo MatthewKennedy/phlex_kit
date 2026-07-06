@@ -2,12 +2,14 @@
 
 module Create
   # A PhlexKit recreation of ui.shadcn.com/create: a top navbar (with docs
-  # navigation + ⌘K command palette), a floating theming menu whose knobs
-  # actually work (?theme= swaps the bundled theme stylesheet, ?icons= swaps
-  # the icon library per-request), and the demo dashboard canvas — a fixed-width
-  # horizontally scrolling grid of top-aligned card columns (one spanning two
-  # tracks for the wide cards), paged by the 01/02 dots — every card built from
-  # kit components.
+  # navigation + ⌘K command palette), the Customizer sidebar (a kit Card of
+  # picker rows — each a side-right DropdownMenu — whose knobs actually work:
+  # ?theme= swaps the bundled theme stylesheet, ?icons= the icon library,
+  # ?heading=/?font= the font tokens, ?chart= the --pk-chart palette, with
+  # named ?preset= bundles), and TWO demo screens — 01 finance, 02 smart-home
+  # + artist — each a fixed-width horizontally scrolling grid of top-aligned
+  # card columns, switched by the floating 01/02 pill (?screen=). Every card
+  # and control is built from kit components.
   class Page < Phlex::HTML
     include Phlex::Rails::Helpers::StylesheetLinkTag
     include Phlex::Rails::Helpers::JavaScriptImportmapTags
@@ -17,9 +19,38 @@ module Create
     THEMES = %w[neutral zinc claude].freeze
     ICON_LIBRARIES = %w[lucide tabler phosphor remix].freeze
 
-    def initialize(theme: nil, icons: nil)
+    # Font knobs swap CSS stacks only — no extra webfonts shipped. nil = the
+    # page's bundled Geist.
+    FONTS = {
+      "serif" => %(Georgia, "Times New Roman", serif),
+      "mono" => %("Geist Mono", ui-monospace, SFMono-Regular, monospace),
+      "rounded" => %(ui-rounded, "SF Pro Rounded", system-ui, sans-serif)
+    }.freeze
+    FONT_LABELS = { nil => "Geist", "serif" => "Serif", "mono" => "Mono", "rounded" => "Rounded" }.freeze
+
+    # --pk-chart-1..5 palettes; nil = the kit's default blues.
+    CHART_PALETTES = {
+      "emerald" => %w[#6ee7b7 #34d399 #10b981 #059669 #047857],
+      "amber" => %w[#fcd34d #fbbf24 #f59e0b #d97706 #b45309],
+      "violet" => %w[#c4b5fd #a78bfa #8b5cf6 #7c3aed #6d28d9],
+      "rose" => %w[#fda4af #fb7185 #f43f5e #e11d48 #be123c]
+    }.freeze
+
+    # Named knob bundles — the shareable "--preset <code>" state.
+    PRESETS = {
+      "b0" => {},
+      "c1" => { theme: "claude", heading: "serif", chart: "amber" },
+      "z2" => { theme: "zinc", heading: "mono", font: "mono", chart: "violet", icons: "tabler" },
+      "n3" => { theme: "neutral", heading: "rounded", chart: "emerald", icons: "phosphor" }
+    }.freeze
+
+    def initialize(theme: nil, icons: nil, heading: nil, font: nil, chart: nil, screen: nil)
       @theme = theme
       @icons = icons
+      @heading = heading
+      @font = font
+      @chart = chart
+      @screen = screen
     end
 
     def view_template
@@ -34,73 +65,17 @@ module Create
           javascript_include_tag "chartjs.umd"
           javascript_importmap_tags
           style { safe(page_css) }
+          style { safe(knob_css) } unless knob_css.empty?
         end
         body do
           navbar
           menu_panel
           main(class: "cr-viewport", id: "cr-viewport") do
-            div(class: "cr-canvas") do
-              column do
-                contribution_history_card
-                distribute_track_card
-                qr_connect_card
-                dividend_income_card
-                dollar_cost_card
-                syncing_card
-              end
-              column do
-                payout_threshold_card
-                claimable_balance_card
-                preferences_card
-                savings_goal_card
-                kitchen_island_card
-              end
-              column(wide: true) do
-                duo do
-                  savings_targets_card
-                  buy_investment_card
-                end
-                recent_transactions_card
-                duo do
-                  quick_links_card
-                  payments_menu_card
-                end
-                duo do
-                  faq_card
-                  front_door_card
-                end
-                duo do
-                  holdings_search_card
-                  cover_art_card
-                end
-              end
-              column do
-                account_access_card
-                duo(tight: true) do
-                  card_balance_card
-                  payment_due_card
-                end
-                yearly_activity_card
-                transfer_funds_card
-                connect_bank_card
-              end
-              column do
-                receiving_method_card
-                power_usage_card
-                upcoming_payments_card
-                living_room_card
-              end
-              column do
-                stock_performance_card
-                explore_catalog_card
-                set_milestone_card
-                social_links_card
-                notifications_card
-              end
+            div(class: "cr-canvas#{" two" if @screen == "2"}") do
+              @screen == "2" ? screen_two : screen_one
             end
           end
-          pager
-          script { safe(pager_js) }
+          screen_pill
           render PhlexKit::ToastRegion.new(close_button: true)
         end
       end
@@ -122,11 +97,23 @@ module Create
       div(class: "cr-duo#{" tight" if tight}", &block)
     end
 
-    def query_for(theme:, icons:)
-      params = {}
-      params[:theme] = theme if theme
-      params[:icons] = icons if icons
-      params.empty? ? "/create" : "/create?#{params.map { |k, v| "#{k}=#{v}" }.join("&")}"
+    # Current knobs merged with changes, as a /create URL (nil drops a param).
+    def url_with(**changes)
+      merged = { theme: @theme, icons: @icons, heading: @heading, font: @font,
+                 chart: @chart, screen: @screen }.merge(changes).compact
+      merged.empty? ? "/create" : "/create?#{merged.map { |k, v| "#{k}=#{v}" }.join("&")}"
+    end
+
+    # Rendered after page_css so these :root overrides win by order.
+    def knob_css
+      rules = []
+      rules << ":root { --pk-font-sans: #{FONTS[@font]}; }" if FONTS[@font]
+      rules << ":root { --cr-font-heading: #{FONTS[@heading]}; }" if FONTS[@heading]
+      if (pal = CHART_PALETTES[@chart])
+        vars = pal.each_with_index.map { |c, i| "--pk-chart-#{i + 1}: #{c};" }.join(" ")
+        rules << ":root { #{vars} }"
+      end
+      rules.join("\n")
     end
 
     # --- navbar ------------------------------------------------------------
@@ -203,10 +190,10 @@ module Create
       end
     end
 
-    def get_code_dialog
+    def get_code_dialog(full: false)
       render PhlexKit::Dialog.new do
-        render PhlexKit::DialogTrigger.new do
-          render PhlexKit::Button.new(size: :sm) { "Get Code" }
+        render PhlexKit::DialogTrigger.new(class: full ? "cr-full" : nil) do
+          render PhlexKit::Button.new(size: :sm, class: full ? "cr-full" : nil) { "Get Code" }
         end
         render PhlexKit::DialogContent.new do
           render PhlexKit::DialogHeader.new do
@@ -214,7 +201,7 @@ module Create
             render PhlexKit::DialogDescription.new do
               plain "This look is the stock kit"
               plain @theme ? " with the bundled #{@theme} theme" : ""
-              plain @icons && @icons != "lucide" ? " and #{@icons} icons" : ""
+              plain (@icons && @icons != "lucide") ? " and #{@icons} icons" : ""
               plain ". No Tailwind, no build step."
             end
           end
@@ -243,50 +230,159 @@ module Create
 
     # --- theming menu panel --------------------------------------------------
 
+    # The Customizer — like ui.shadcn.com/create's sidebar: a kit Card of
+    # picker rows (each a side-right DropdownMenu with a label-over-value
+    # trigger and a right-edge indicator), preset tools, and Get Code.
     def menu_panel
       aside(class: "cr-menu") do
-        div(class: "cr-menu-head") do
-          span { "Menu" }
-          icon(:menu, size: 16)
-        end
-        form(action: "/create", method: "get", class: "cr-menu-form") do
-          knob("Theme") do
-            render PhlexKit::NativeSelect.new(size: :sm, name: "theme", onchange: safe("this.form.submit()")) do
-              render PhlexKit::NativeSelectOption.new(value: "", selected: @theme.nil?) { "Default" }
-              THEMES.each do |t|
-                render PhlexKit::NativeSelectOption.new(value: t, selected: t == @theme) { t.capitalize }
-              end
-            end
+        render PhlexKit::Card.new(class: "cr-customizer") do
+          render PhlexKit::CardHeader.new(class: "cr-cust-head") { main_menu }
+          render PhlexKit::CardContent.new(class: "cr-cust-body") do
+            picker_row(label: "Style", value: "PhlexKit", param: :style,
+                       options: [ [ "PhlexKit", nil ] ]) { style_shape }
+            cust_sep
+            picker_row(label: "Base Color", value: "Neutral", param: :base,
+                       options: [ [ "Neutral", nil ] ]) { color_dot("#a3a3a3") }
+            picker_row(label: "Theme", value: (@theme || "default").capitalize, param: :theme,
+                       options: [ [ "Default", nil ] ] + THEMES.map { |t| [ t.capitalize, t ] }) { color_dot(theme_dot_color) }
+            picker_row(label: "Chart Color", value: (@chart || "blue").capitalize, param: :chart,
+                       options: [ [ "Blue", nil ] ] + CHART_PALETTES.keys.map { |c| [ c.capitalize, c ] }) { color_dot(chart_dot_color) }
+            cust_sep
+            picker_row(label: "Heading", value: FONT_LABELS[@heading], param: :heading,
+                       options: FONT_LABELS.map { |v, l| [ l, v ] }) { span(class: "cr-aa") { "Aa" } }
+            picker_row(label: "Font", value: FONT_LABELS[@font], param: :font,
+                       options: FONT_LABELS.map { |v, l| [ l, v ] }) { span(class: "cr-aa") { "Aa" } }
+            cust_sep
+            picker_row(label: "Icon Library", value: (@icons || "lucide").capitalize, param: :icons,
+                       options: ICON_LIBRARIES.map { |l| [ l.capitalize, l == "lucide" ? nil : l ] }) { icon(:star, size: 15) }
           end
-          knob("Icon Library") do
-            render PhlexKit::NativeSelect.new(size: :sm, name: "icons", onchange: safe("this.form.submit()")) do
-              ICON_LIBRARIES.each do |lib|
-                selected = lib == (@icons || "lucide")
-                render PhlexKit::NativeSelectOption.new(value: lib, selected: selected) { lib.capitalize }
-              end
-            end
+          render PhlexKit::CardFooter.new(class: "cr-cust-foot") do
+            preset_copy_button
+            open_preset_dialog
+            render PhlexKit::Button.new(variant: :outline, size: :sm, class: "cr-full", onclick: safe(shuffle_js)) { "Shuffle" }
           end
-        end
-        render PhlexKit::Separator.new(class: "cr-menu-sep")
-        div(class: "cr-menu-actions") do
-          render PhlexKit::Button.new(variant: :outline, size: :sm, onclick: safe(shuffle_js)) { "Shuffle" }
-          a(href: "/create", class: "pk-button ghost sm") { "Reset" }
+          render PhlexKit::CardFooter.new(class: "cr-cust-foot cr-cust-cta") do
+            get_code_dialog(full: true)
+          end
         end
       end
     end
 
-    def knob(label, &block)
-      div(class: "cr-knob") do
-        span(class: "cr-knob-label") { label }
-        div(class: "cr-knob-control", &block)
+    # "Menu" header row — a dropdown like their MainMenu (Shuffle / Reset).
+    def main_menu
+      render PhlexKit::DropdownMenu.new(class: "cr-main-menu") do
+        render PhlexKit::DropdownMenuTrigger.new do
+          button(type: "button", class: "cr-main-menu-trigger") do
+            span { "Menu" }
+            icon(:menu, size: 16)
+          end
+        end
+        render PhlexKit::DropdownMenuContent.new do
+          render PhlexKit::DropdownMenuItem.new(as: :div, onclick: safe(shuffle_js)) { "Shuffle" }
+          render PhlexKit::DropdownMenuItem.new(href: "/create") { "Reset" }
+        end
+      end
+    end
+
+    def cust_sep
+      render PhlexKit::Separator.new(class: "cr-cust-sep")
+    end
+
+    # One sidebar row: muted label over the current value, indicator pinned to
+    # the right edge; opens a side-right menu of options (check on current).
+    def picker_row(label:, value:, param:, options:, &indicator)
+      current = { theme: @theme, chart: @chart, heading: @heading, font: @font,
+                  icons: @icons == "lucide" ? nil : @icons }[param]
+      render PhlexKit::DropdownMenu.new(class: "cr-picker") do
+        render PhlexKit::DropdownMenuTrigger.new do
+          button(type: "button", class: "cr-picker-row") do
+            span(class: "cr-picker-label") { label }
+            span(class: "cr-picker-value") { value }
+            span(class: "cr-picker-indicator", &indicator)
+          end
+        end
+        render PhlexKit::DropdownMenuContent.new(side: :right, class: "cr-picker-menu") do
+          options.each do |opt_label, opt_value|
+            href = %i[style base].include?(param) ? url_with : url_with(param => opt_value)
+            render PhlexKit::DropdownMenuItem.new(href: href) do
+              span(class: "cr-picker-check#{" on" if opt_value == current}") { icon(:check, size: 14) }
+              plain opt_label
+            end
+          end
+        end
+      end
+    end
+
+    def color_dot(color)
+      span(class: "cr-dot-swatch", style: "background: #{color}")
+    end
+
+    def theme_dot_color
+      { nil => "#3b82f6", "neutral" => "#a3a3a3", "zinc" => "#71717a", "claude" => "#d97757" }[@theme]
+    end
+
+    def chart_dot_color
+      (CHART_PALETTES[@chart] || %w[x #3b82f6])[1]
+    end
+
+    # The rounded-square "style" indicator (their Nova shape).
+    def style_shape
+      svg(viewBox: "0 0 16 16", width: "14", height: "14", fill: "none") do |x|
+        x.rect(x: 1.5, y: 1.5, width: 13, height: 13, rx: 4.5, stroke: "currentColor", "stroke-width": 1.5)
+      end
+    end
+
+    # --- presets ---------------------------------------------------------------
+
+    # The PRESETS entry matching the current knobs, else "custom".
+    def current_preset_code
+      knobs = { theme: @theme, icons: @icons, heading: @heading, font: @font, chart: @chart }.compact
+      (PRESETS.find { |_, bundle| bundle == knobs } || [ "custom" ]).first
+    end
+
+    def preset_copy_button
+      code = current_preset_code
+      copy = "navigator.clipboard.writeText('--preset #{code}');"              "const b = this, t = b.textContent; b.textContent = 'Copied';"              "setTimeout(() => { b.textContent = t; }, 2000);"
+      render PhlexKit::Button.new(variant: :outline, size: :sm, class: "cr-full cr-preset-code", onclick: safe(copy)) { "--preset #{code}" }
+    end
+
+    def open_preset_dialog
+      render PhlexKit::Dialog.new do
+        render PhlexKit::DialogTrigger.new(class: "cr-full") do
+          render PhlexKit::Button.new(variant: :outline, size: :sm, class: "cr-full") { "Open Preset" }
+        end
+        render PhlexKit::DialogContent.new do
+          render PhlexKit::DialogHeader.new do
+            render PhlexKit::DialogTitle.new { "Open Preset" }
+            render PhlexKit::DialogDescription.new { "Paste a preset code, or pick a curated one." }
+          end
+          render PhlexKit::DialogMiddle.new do
+            form(action: "/create", method: "get", class: "cr-preset-form") do
+              render PhlexKit::Input.new(name: "preset", placeholder: "b0")
+              render PhlexKit::Button.new(size: :sm) { "Apply" }
+            end
+            div(class: "cr-preset-list") do
+              PRESETS.each_key do |code|
+                a(href: "/create?preset=#{code}", class: "pk-button outline sm") { "--preset #{code}" }
+              end
+            end
+          end
+        end
       end
     end
 
     def shuffle_js
-      themes = ([ "" ] + THEMES).inspect
-      icons = ICON_LIBRARIES.inspect
-      "const t = #{themes}[Math.floor(Math.random() * 4)], i = #{icons}[Math.floor(Math.random() * 4)]; " \
-        "location.href = '/create?' + new URLSearchParams({ ...(t && { theme: t }), icons: i });"
+      picks = {
+        theme: [ "" ] + THEMES,
+        icons: ICON_LIBRARIES,
+        heading: [ "" ] + FONTS.keys,
+        font: [ "" ] + FONTS.keys,
+        chart: [ "" ] + CHART_PALETTES.keys
+      }
+      js = +"const p = new URLSearchParams(); const pick = (a) => a[Math.floor(Math.random() * a.length)];"
+      picks.each { |k, vals| js << "{ const v = pick(#{vals}.map(String)); if (v) p.set('#{k}', v); }" }
+      js << "location.href = '/create' + (p.size ? '?' + p.toString() : '');"
+      js
     end
 
     # --- canvas cards --------------------------------------------------------
@@ -1303,34 +1399,87 @@ module Create
       end
     end
 
-    # --- pager ---------------------------------------------------------------
+    # --- screens + switcher ---------------------------------------------------
 
-    # Scroll pagination for the horizontal canvas, like ui.shadcn.com/create's
-    # 01/02 dots: 01 scrolls home, 02 scrolls to the far end, and the active
-    # dot tracks scroll position.
-    def pager
-      div(class: "cr-dots") do
-        button(type: "button", class: "cr-dot active", data_page: "0") { "01" }
-        button(type: "button", class: "cr-dot", data_page: "1") { "02" }
+    # Screen 01 — the finance dashboard.
+    def screen_one
+      column do
+        contribution_history_card
+        dividend_income_card
+        dollar_cost_card
+        syncing_card
+      end
+      column do
+        payout_threshold_card
+        claimable_balance_card
+        preferences_card
+        savings_goal_card
+      end
+      column(wide: true) do
+        duo do
+          savings_targets_card
+          buy_investment_card
+        end
+        recent_transactions_card
+        duo do
+          quick_links_card
+          payments_menu_card
+        end
+        duo do
+          faq_card
+          holdings_search_card
+        end
+      end
+      column do
+        account_access_card
+        duo(tight: true) do
+          card_balance_card
+          payment_due_card
+        end
+        yearly_activity_card
+        transfer_funds_card
+        connect_bank_card
+      end
+      column do
+        receiving_method_card
+        upcoming_payments_card
+        set_milestone_card
+      end
+      column do
+        stock_performance_card
+        notifications_card
       end
     end
 
-    def pager_js
-      <<~JS
-        (() => {
-          const viewport = document.getElementById("cr-viewport");
-          const dots = Array.from(document.querySelectorAll(".cr-dot"));
-          const max = () => viewport.scrollWidth - viewport.clientWidth;
-          dots.forEach((dot, i) => dot.addEventListener("click", () => {
-            viewport.scrollTo({ left: i === 0 ? 0 : max(), behavior: "smooth" });
-          }));
-          viewport.addEventListener("scroll", () => {
-            const second = max() > 0 && viewport.scrollLeft > max() / 2;
-            dots[0].classList.toggle("active", !second);
-            dots[1].classList.toggle("active", second);
-          }, { passive: true });
-        })();
-      JS
+    # Screen 02 — smart home + artist tools.
+    def screen_two
+      column do
+        kitchen_island_card
+        front_door_card
+      end
+      column do
+        living_room_card
+        power_usage_card
+      end
+      column do
+        distribute_track_card
+        qr_connect_card
+        explore_catalog_card
+      end
+      column do
+        cover_art_card
+        social_links_card
+      end
+    end
+
+    # Like ui.shadcn.com/create's preview switcher: a floating pill of two
+    # ghost buttons at the canvas's bottom-right, swapping between the two
+    # demo screens (a URL param — the other knobs survive the switch).
+    def screen_pill
+      div(class: "cr-dots") do
+        a(href: url_with(screen: nil), class: "cr-dot#{" active" unless @screen == "2"}") { "01" }
+        a(href: url_with(screen: "2"), class: "cr-dot#{" active" if @screen == "2"}") { "02" }
+      end
     end
 
     # Chrome for this page only — not part of the kit.
@@ -1343,6 +1492,8 @@ module Create
         :root { --pk-font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
                 --pk-font-mono: "Geist Mono", ui-monospace, monospace; }
         body { margin: 0; background: var(--pk-bg); color: var(--pk-text); font: 15px/1.5 var(--pk-font-sans); }
+        /* the Heading knob sets --cr-font-heading (knob_css) */
+        h1, h2, h3, h4 { font-family: var(--cr-font-heading, inherit); }
 
         /* navbar */
         .cr-nav { position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: .75rem;
@@ -1359,30 +1510,63 @@ module Create
                      border-radius: calc(var(--pk-radius) - 2px); cursor: pointer; }
         .cr-search span { flex: 1; text-align: left; }
 
-        /* theming menu */
-        .cr-menu { position: fixed; left: 1.5rem; top: 5rem; z-index: 30; width: 200px;
-                   padding: 1rem; border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) + 4px);
-                   background: var(--pk-surface); box-shadow: 0 8px 30px rgb(0 0 0 / .12); }
-        .cr-menu-head { display: flex; align-items: center; justify-content: space-between;
-                        font-weight: 600; margin-bottom: 1rem; }
-        .cr-menu-form { display: flex; flex-direction: column; gap: .75rem; }
-        .cr-knob-label { display: block; font-size: .6875rem; letter-spacing: .05em; text-transform: uppercase;
-                         color: var(--pk-muted); margin-bottom: .25rem; }
-        .cr-menu-sep { margin: 1rem 0; }
-        .cr-menu-actions { display: flex; flex-direction: column; gap: .5rem; }
-        .cr-menu-actions > * { width: 100%; justify-content: center; }
+        /* the Customizer — shadcn-create's sidebar card grammar */
+        .cr-menu { position: fixed; left: 1.5rem; top: 4.5rem; bottom: 1.5rem; z-index: 30; width: 208px;
+                   display: flex; align-items: flex-start; }
+        .cr-customizer { width: 100%; max-height: 100%; display: flex; flex-direction: column;
+                         border-radius: 1rem; overflow: hidden;
+                         background: color-mix(in oklab, var(--pk-surface) 92%, transparent);
+                         backdrop-filter: blur(12px); box-shadow: 0 8px 30px rgb(0 0 0 / .25); }
+        .cr-cust-head { padding: .625rem .75rem; border-bottom: 1px solid var(--pk-border); }
+        .cr-main-menu, .cr-picker { display: block; width: 100%; }
+        .cr-main-menu .pk-dropdown-menu-trigger, .cr-picker .pk-dropdown-menu-trigger { display: block; width: 100%; }
+        .cr-main-menu-trigger { display: flex; align-items: center; justify-content: space-between; width: 100%;
+                                padding: .375rem .5rem; font: inherit; font-weight: 600; color: var(--pk-text);
+                                background: none; border: none; cursor: pointer;
+                                border-radius: calc(var(--pk-radius) - 2px);
+                                box-shadow: 0 0 0 1px color-mix(in oklab, var(--pk-text) 10%, transparent); }
+        .cr-main-menu-trigger:hover { background: var(--pk-accent); }
+        .cr-cust-body { display: flex; flex-direction: column; gap: .625rem; padding: .75rem;
+                        overflow-y: auto; min-height: 0; }
+        .cr-cust-sep { margin: .125rem -.75rem; }
+        .cr-picker-row { position: relative; display: flex; flex-direction: column; align-items: flex-start;
+                         gap: .125rem; width: 100%; padding: .5rem 2.25rem .5rem .625rem; text-align: left;
+                         font: inherit; color: var(--pk-text); background: none; border: none; cursor: pointer;
+                         border-radius: calc(var(--pk-radius) - 2px);
+                         box-shadow: 0 0 0 1px color-mix(in oklab, var(--pk-text) 10%, transparent); }
+        .cr-picker-row:hover { background: var(--pk-accent); }
+        .cr-picker-label { font-size: .75rem; color: var(--pk-muted); }
+        .cr-picker-value { font-size: .875rem; font-weight: 500; }
+        .cr-picker-indicator { position: absolute; right: .625rem; top: 50%; transform: translateY(-50%);
+                               display: inline-flex; align-items: center; justify-content: center;
+                               width: 1rem; height: 1rem; color: var(--pk-muted); }
+        .cr-dot-swatch { width: .875rem; height: .875rem; border-radius: 999px; display: inline-block; }
+        .cr-aa { font-size: .8125rem; font-weight: 600; }
+        .cr-picker-menu .pk-dropdown-menu-viewport { min-width: 11rem; }
+        .cr-picker-check { display: inline-flex; width: 1rem; visibility: hidden; }
+        .cr-picker-check.on { visibility: visible; }
+        .cr-cust-foot { display: flex; flex-direction: column; gap: .5rem; padding: .75rem;
+                        border-top: 1px solid var(--pk-border); }
+        .cr-cust-foot > *, .cr-cust-foot .pk-dialog-trigger { width: 100%; }
+        .cr-cust-foot .pk-button { width: 100%; justify-content: center; }
+        .cr-preset-code { font-family: var(--pk-font-mono); }
+        .cr-preset-form { display: flex; gap: .5rem; }
+        .cr-preset-form .pk-input { flex: 1; }
+        .cr-preset-list { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+        .cr-preset-list .pk-button { font-family: var(--pk-font-mono); }
 
         /* canvas — fixed-width horizontal scroller of top-aligned columns,
            like ui.shadcn.com/create (7 tracks, one column spans two). The
            scroller is an inset, rounded, muted container sitting to the right
            of the menu — cards clip at its edge rather than scrolling under
            the menu panel. */
-        .cr-viewport { overflow-x: auto; margin: 1.5rem 1.5rem 1.5rem calc(200px + 4.5rem);
+        .cr-viewport { overflow-x: auto; margin: 1.5rem 1.5rem 1.5rem calc(208px + 4.5rem);
                        border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) + 8px);
                        background: var(--pk-surface-2); }
         html[data-theme="dark"] .cr-viewport { background: var(--pk-bg); }
         .cr-canvas { display: grid; grid-template-columns: repeat(7, 383px); gap: 2.5rem;
                      align-items: start; width: max-content; padding: 2.5rem; }
+        .cr-canvas.two { grid-template-columns: repeat(4, 383px); }
         .cr-col { display: flex; flex-direction: column; gap: 2.5rem; min-width: 0; }
         .cr-col.wide { grid-column: span 2; }
         .cr-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; align-items: start; }
@@ -1492,13 +1676,16 @@ module Create
         .cr-check-row { display: flex; align-items: flex-start; gap: .625rem; cursor: pointer; }
         .cr-check-row .pk-checkbox { margin-top: .125rem; }
 
-        /* page dots */
-        .cr-dots { position: fixed; right: 1.5rem; bottom: 1.5rem; z-index: 30; display: flex; gap: .25rem;
-                   padding: .25rem; border: 1px solid var(--pk-border); border-radius: 999px;
-                   background: var(--pk-surface); }
-        .cr-dot { padding: .125rem .625rem; font: inherit; font-size: .75rem; border-radius: 999px;
-                  color: var(--pk-muted); background: none; border: none; cursor: pointer; }
-        .cr-dot.active { background: var(--pk-brand); color: var(--pk-brand-ink); }
+        /* screen switcher pill — their preview-switcher grammar */
+        .cr-dots { position: fixed; right: 2rem; bottom: 2rem; z-index: 30; display: flex; gap: .125rem;
+                   padding: .25rem; border-radius: .75rem;
+                   background: color-mix(in oklab, var(--pk-surface) 90%, transparent);
+                   backdrop-filter: blur(12px); box-shadow: 0 8px 30px rgb(0 0 0 / .35); }
+        .cr-dot { display: inline-flex; align-items: center; justify-content: center;
+                  min-width: 2rem; height: 1.75rem; padding: 0 .625rem; font-size: .75rem; font-weight: 500;
+                  border-radius: .5rem; color: var(--pk-muted); text-decoration: none; }
+        .cr-dot:hover { background: var(--pk-accent); color: var(--pk-text); }
+        .cr-dot.active { background: var(--pk-accent); color: var(--pk-text); }
       CSS
     end
   end
