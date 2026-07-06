@@ -45,6 +45,16 @@ source — faster and more exact than the live page:
 
 ## 1b. Established kit conventions (use these, don't invent new ones)
 
+- Floating panels (popover/hover_card/dropdown/select/combobox/context_menu/
+  menubar/nav_menu) are native `[popover="auto"|"manual"]` elements with CSS
+  anchor positioning: trigger `anchor-name` + wrapper `anchor-scope`, panel
+  `position: fixed; position-anchor; inset: auto; position-area;
+  position-try-fallbacks` (flip at viewport edges), `anchor-size(width)` for
+  trigger-width floors. Gotchas: gate `display` on `:popover-open`; the
+  `[popover]` UA `overflow:auto` clips out-of-box bridge pseudos (restate
+  `overflow:visible`); flip tactics flip margins/insets but NOT padding
+  (bridges go symmetric). Tooltip is the exception: CSS-only `:hover` reveal,
+  anchor positioning without the popover attribute. Precedent: PRs #22–#29.
 - Their `asChild` → an `href:` param (renders `<a>`) and/or `as: :button`.
   Precedent: Button, Badge, Item, Marker, Bubble.
 - Their `data-icon="inline-start"/"inline-end"` attribute is adopted VERBATIM
