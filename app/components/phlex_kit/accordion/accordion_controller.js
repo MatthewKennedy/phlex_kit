@@ -3,8 +3,10 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="phlex-kit--accordion"
 // Ported from ruby_ui's ruby-ui--accordion controller, reworked to use the native
 // Web Animations API instead of the `motion` package (no extra JS dependency).
+let uid = 0
+
 export default class extends Controller {
-  static targets = ["icon", "content"]
+  static targets = ["icon", "content", "trigger"]
   static values = {
     open: { type: Boolean, default: false },
     animationDuration: { type: Number, default: 150 },
@@ -12,6 +14,7 @@ export default class extends Controller {
   }
 
   connect() {
+    this.wireAria()
     const d = this.animationDurationValue
     this.animationDurationValue = 0
     this.openValue ? this.open() : this.close()
@@ -35,7 +38,28 @@ export default class extends Controller {
       if (ctrl && ctrl.openValue) ctrl.openValue = false
     })
   }
-  openValueChanged(isOpen) { isOpen ? this.open() : this.close() }
+  openValueChanged(isOpen) {
+    if (this.hasTriggerTarget) this.triggerTarget.setAttribute("aria-expanded", isOpen ? "true" : "false")
+    isOpen ? this.open() : this.close()
+  }
+
+  // Pair the trigger with its content: assign per-instance ids (render time
+  // has no shared item value, so the parts can't derive them), wire
+  // aria-controls/aria-labelledby, and propagate a disabled item onto the
+  // actual button so it drops out of the tab order.
+  wireAria() {
+    if (!this.hasTriggerTarget) return
+    const id = ++uid
+    const trigger = this.triggerTarget
+    if (!trigger.id) trigger.id = `pk-accordion-trigger-${id}`
+    if (this.hasContentTarget) {
+      const content = this.contentTarget
+      if (!content.id) content.id = `pk-accordion-panel-${id}`
+      trigger.setAttribute("aria-controls", content.id)
+      content.setAttribute("aria-labelledby", trigger.id)
+    }
+    if ("disabled" in this.element.dataset) trigger.disabled = true
+  }
 
   open() {
     if (!this.hasContentTarget) return
