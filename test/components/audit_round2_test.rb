@@ -44,6 +44,16 @@ class AuditRound2Test < Minitest::Test
     assert_includes custom, %(aria-label="Verification code")
   end
 
+  def test_tooltip_wires_controller_and_optional_trigger_tab_stop
+    html = render(PhlexKit::Tooltip.new { "x" })
+    assert_includes html, %(data-controller="phlex-kit--tooltip")
+
+    focusable = render(PhlexKit::TooltipTrigger.new { "x" })
+    assert_includes focusable, %(tabindex="0")
+    wrapping_a_button = render(PhlexKit::TooltipTrigger.new(focusable: false) { "x" })
+    refute_includes wrapping_a_button, "tabindex"
+  end
+
   def test_selection_summary_is_a_live_status_region
     html = render(PhlexKit::DataTableSelectionSummary.new(total_on_page: 5))
     assert_includes html, %(role="status")

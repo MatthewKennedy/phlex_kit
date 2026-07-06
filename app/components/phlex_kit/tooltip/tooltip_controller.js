@@ -1,0 +1,32 @@
+import { Controller } from "@hotwired/stimulus"
+
+// The tooltip stays CSS-revealed (:hover/:focus-within, tooltip.css) — this
+// controller only adds what CSS can't: aria-describedby wiring from trigger
+// to bubble, and WCAG 1.4.13 Escape-dismiss (data-pk-dismissed suppresses the
+// bubble until the pointer/focus leaves the wrapper).
+// Connects to data-controller="phlex-kit--tooltip"
+export default class extends Controller {
+  connect() {
+    const content = this.element.querySelector(".pk-tooltip-content")
+    const trigger = this.element.querySelector(".pk-tooltip-trigger")
+    if (content && trigger) {
+      if (!content.id) content.id = `pk-tooltip-${Math.random().toString(36).slice(2, 8)}`
+      if (!trigger.hasAttribute("aria-describedby")) trigger.setAttribute("aria-describedby", content.id)
+    }
+
+    this._onKeydown = (e) => {
+      if (e.key !== "Escape") return
+      if (this.element.matches(":hover, :focus-within")) this.element.dataset.pkDismissed = ""
+    }
+    this._reset = () => delete this.element.dataset.pkDismissed
+    window.addEventListener("keydown", this._onKeydown)
+    this.element.addEventListener("pointerleave", this._reset)
+    this.element.addEventListener("focusout", this._reset)
+  }
+
+  disconnect() {
+    window.removeEventListener("keydown", this._onKeydown)
+    this.element.removeEventListener("pointerleave", this._reset)
+    this.element.removeEventListener("focusout", this._reset)
+  }
+}
