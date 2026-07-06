@@ -8,8 +8,7 @@ module Examples
     class SettingsForm < BasePage
       SECTIONS = [
         [ "general", "General", true ], [ "payments", "Payments", false ],
-        [ "shipping", "Shipping", false ], [ "notifications", "Notifications", false ],
-        [ "team", "Team", false ]
+        [ "notifications", "Notifications", false ], [ "team", "Team", false ]
       ].freeze
 
       private
@@ -43,12 +42,48 @@ module Examples
             end
             div(class: "adm-save-bar") do
               span(class: "adm-muted") { "Unsaved changes" }
-              render PhlexKit::Button.new(variant: :ghost, size: :sm) { "Discard" }
-              render PhlexKit::Button.new(size: :sm) { "Save changes" }
+              render PhlexKit::Button.new(
+                variant: :ghost, size: :sm,
+                onclick: safe("PhlexKit.toast.info('Changes discarded', { description: 'Settings reverted to the last save.' })")
+              ) { "Discard" }
+              render PhlexKit::Button.new(
+                size: :sm,
+                onclick: safe("PhlexKit.toast.success('Settings saved', { description: 'Changes apply to all Harbor channels.' })")
+              ) { "Save changes" }
             end
           end
 
           harbor_footer "Changes apply to all Harbor channels · Harbor v2.4"
+          scroll_spy_script
+        end
+      end
+
+      # Highlights the rail link for the section nearest the top of the
+      # viewport — page chrome, not a kit behavior.
+      def scroll_spy_script
+        script do
+          safe(<<~JS)
+            (() => {
+              const links = [...document.querySelectorAll(".adm-rail-nav-inner a[href^='#']")];
+              const byId = Object.fromEntries(links.map(l => [l.getAttribute("href").slice(1), l]));
+              const spied = links.map(l => document.getElementById(l.getAttribute("href").slice(1))).filter(Boolean);
+              const activate = (el) => {
+                links.forEach(l => l.classList.remove("active"));
+                byId[el.id]?.classList.add("active");
+              };
+              const atBottom = () => window.innerHeight + window.scrollY >= document.body.scrollHeight - 4;
+              const visible = new Set();
+              const spy = new IntersectionObserver((entries) => {
+                entries.forEach(e => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target));
+                if (atBottom()) return activate(spied[spied.length - 1]);
+                const top = [...visible].sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top)[0];
+                if (top) activate(top);
+              }, { rootMargin: "-15% 0px -55% 0px" });
+              spied.forEach(el => spy.observe(el));
+              /* the last section can never reach the band at max scroll */
+              addEventListener("scroll", () => { if (atBottom()) activate(spied[spied.length - 1]); }, { passive: true });
+            })();
+          JS
         end
       end
 
@@ -159,7 +194,7 @@ module Examples
       def local_css
         <<~CSS
           .adm-settings { width: min(46rem, 100%); padding-bottom: 0; }
-          .adm-settings .pk-field-legend { scroll-margin-top: 4rem; }
+          .adm-settings .pk-field-set { scroll-margin-top: 4rem; }
           .adm-field-control { max-width: 20rem; }
           .adm-team-row { display: flex; align-items: center; gap: .75rem; }
           .adm-save-bar { position: sticky; bottom: 0; display: flex; align-items: center; gap: .5rem;

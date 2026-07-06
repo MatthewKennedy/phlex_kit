@@ -88,6 +88,9 @@ module Examples
         end
         render PhlexKit::SidebarContent.new do
           render PhlexKit::SidebarGroup.new do
+            render PhlexKit::SidebarGroupContent.new { harbor_command }
+          end
+          render PhlexKit::SidebarGroup.new do
             render PhlexKit::SidebarGroupLabel.new { "Store" }
             render PhlexKit::SidebarGroupContent.new do
               render PhlexKit::SidebarMenu.new do
@@ -128,6 +131,7 @@ module Examples
         else
           div(class: "adm-topbar-spacer")
         end
+        harbor_command
         render PhlexKit::ThemeToggle.new { "🌓" }
         render PhlexKit::Avatar.new(size: :sm) { render PhlexKit::AvatarFallback.new { "MK" } }
       end
@@ -135,6 +139,69 @@ module Examples
 
     def harbor_footer(note)
       footer(class: "adm-footer") { note }
+    end
+
+    # Slim inset header for the sidebar-shell pages: the mobile drawer trigger
+    # plus a breadcrumb; callers append extras (search, user menu) via block.
+    def harbor_inset_header(current, &block)
+      header(class: "adm-inset-header") do
+        render PhlexKit::SidebarTrigger.new
+        render PhlexKit::Separator.new(orientation: :vertical, class: "adm-header-sep")
+        render PhlexKit::Breadcrumb.new do
+          render PhlexKit::BreadcrumbList.new do
+            render PhlexKit::BreadcrumbItem.new do
+              render PhlexKit::BreadcrumbLink.new(href: "/examples/dashboard-cards") { "Harbor" }
+            end
+            render PhlexKit::BreadcrumbSeparator.new
+            render PhlexKit::BreadcrumbItem.new do
+              render PhlexKit::BreadcrumbPage.new { current }
+            end
+          end
+        end
+        div(class: "adm-topbar-spacer")
+        yield if block
+      end
+    end
+
+    # ⌘K — search across Harbor's screens and the shared order book.
+    def harbor_command
+      render PhlexKit::CommandDialog.new do
+        render PhlexKit::CommandDialogTrigger.new do
+          button(type: "button", class: "adm-search", aria: { label: "Search Harbor" }) do
+            icon(:search, size: 14)
+            span(class: "adm-search-hint") { "Search…" }
+            render PhlexKit::KbdGroup.new do
+              render PhlexKit::Kbd.new { "⌘" }
+              render PhlexKit::Kbd.new { "K" }
+            end
+          end
+        end
+        render PhlexKit::CommandDialogContent.new do
+          render PhlexKit::Command.new do
+            render PhlexKit::CommandInput.new(placeholder: "Search orders, customers, pages…")
+            render PhlexKit::CommandList.new do
+              render PhlexKit::CommandGroup.new(title: "Go to") do
+                NAV.each do |_icon, label, slug|
+                  render PhlexKit::CommandItem.new(value: label.downcase, href: "/examples/#{slug}") { label }
+                end
+              end
+              render PhlexKit::CommandGroup.new(title: "Orders") do
+                ORDERS.first(5).each do |id, customer, status, _items, total, _date|
+                  render PhlexKit::CommandItem.new(value: "#{id} #{customer}".downcase, href: "/examples/master-detail") do
+                    plain "#{id} — #{customer} · #{total} (#{status})"
+                  end
+                end
+              end
+              render PhlexKit::CommandGroup.new(title: "Customers") do
+                [ "Ada Thornton", "Priya Nair", "Marcus Webb" ].each do |name|
+                  render PhlexKit::CommandItem.new(value: name.downcase, href: "/examples/holy-grail") { name }
+                end
+              end
+            end
+            render PhlexKit::CommandEmpty.new { "Nothing in Harbor matches." }
+          end
+        end
+      end
     end
 
     # Page frames ported from grid-layout/admin-ui (grid-layout-base.css);
@@ -168,7 +235,15 @@ module Examples
         .adm-topbar-spacer { flex: 1; }
         .adm-footer { padding: .875rem 1.5rem; border-top: 1px solid var(--pk-border);
                       color: var(--pk-muted); font-size: .75rem; }
-        .adm-sidebar { height: 100dvh; position: sticky; top: 0; }
+        /* Desktop: pin the rail. The collapsible modes set position:relative
+           on .pk-sidebar (slide animation) at higher specificity than a bare
+           .adm-sidebar rule, so match it — but only ≥768px, where the kit's
+           mobile drawer (position:fixed) must keep winning. */
+        @media (min-width: 768px) {
+          .pk-sidebar-wrapper .pk-sidebar.adm-sidebar {
+            position: sticky; top: 0; height: 100dvh; overflow-y: auto;
+          }
+        }
         .adm-user { display: flex; align-items: center; gap: .5rem; padding: .25rem; }
         .adm-user-meta { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
         .adm-user-name { font-size: .8125rem; font-weight: 500; }
@@ -176,6 +251,17 @@ module Examples
         .adm-footer-link { display: block; padding: .25rem; color: var(--pk-muted);
                            font-size: .75rem; text-decoration: none; }
         .adm-footer-link:hover { color: var(--pk-text); }
+        .adm-inset-header { display: flex; align-items: center; gap: .75rem; padding: .5rem 1.25rem;
+                            border-bottom: 1px solid var(--pk-border); position: sticky; top: 0;
+                            background: var(--pk-bg); z-index: 40; }
+        .adm-header-sep { height: 1rem; }
+        .adm-search { display: flex; align-items: center; gap: .5rem; width: 100%;
+                      padding: .375rem .5rem; border: 1px solid var(--pk-input);
+                      border-radius: calc(var(--pk-radius) - 2px); background: transparent;
+                      color: var(--pk-muted); font: inherit; font-size: .8125rem; cursor: pointer; }
+        .adm-search:hover { background: var(--pk-accent); }
+        .adm-search-hint { margin-right: auto; }
+        .adm-topbar .adm-search { width: 200px; }
 
         /* Content rhythm */
         .adm-main { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; min-width: 0; }

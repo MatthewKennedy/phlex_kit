@@ -89,6 +89,13 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
 - Gallery JS errors surface in an on-page red banner (screenshot-reviewable);
   the dummy app vendors Stimulus and Chart.js under
   `test/dummy/vendor/javascript/`.
+- **The kit's border-box reset is `pk-*`-scoped by design** — page-level
+  chrome (docs `.docs-*`, examples `.adm-*`) needs its own scoped
+  `box-sizing: border-box` rule or `width: 100%` + padding overflows at
+  narrow widths (bit the Harbor settings page at 700px).
+- **Flex children of a height-constrained scroll pane need `flex: none`**
+  or they silently squash instead of overflowing into scroll (bit the
+  inbox detail pane — cards shrank to their headers).
 - **Custom-property cascade trap**: a `--pk-*` token set only in the dark
   `:root` block leaks into light mode — `var()` fallbacks apply to *unset*
   properties only, and `:root` values cascade into `:root[data-theme="light"]`.
