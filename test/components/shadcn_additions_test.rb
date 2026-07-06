@@ -179,6 +179,9 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes radio, %(role="menuitemradio")
     assert_includes render(PhlexKit::DropdownMenuSubTrigger.new { "More" }), %(aria-haspopup="menu")
     assert_includes render(PhlexKit::DropdownMenuSubContent.new { "x" }), "pk-dropdown-menu-viewport"
+    assert_includes render(PhlexKit::DropdownMenuContent.new(side: :right) { "x" }), "pk-dropdown-menu-content-right"
+    assert_includes render(PhlexKit::DropdownMenuContent.new(side: :left) { "x" }), "pk-dropdown-menu-content-left"
+    assert_raises(KeyError) { render(PhlexKit::DropdownMenuContent.new(side: :diagonal) { "x" }) }
   end
 
   def test_accordion_type_and_disabled
