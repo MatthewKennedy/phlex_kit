@@ -235,7 +235,7 @@ module Create
     # trigger and a right-edge indicator), preset tools, and Get Code.
     def menu_panel
       aside(class: "cr-menu") do
-        render PhlexKit::Card.new(class: "cr-customizer") do
+        render PhlexKit::Card.new(class: "cr-customizer pk-dark") do
           render PhlexKit::CardHeader.new(class: "cr-cust-head") { main_menu }
           render PhlexKit::CardContent.new(class: "cr-cust-body") do
             picker_row(label: "Style", value: "PhlexKit", param: :style,
@@ -1476,7 +1476,7 @@ module Create
     # ghost buttons at the canvas's bottom-right, swapping between the two
     # demo screens (a URL param — the other knobs survive the switch).
     def screen_pill
-      div(class: "cr-dots") do
+      div(class: "cr-dots pk-dark") do
         a(href: url_with(screen: nil), class: "cr-dot#{" active" unless @screen == "2"}") { "01" }
         a(href: url_with(screen: "2"), class: "cr-dot#{" active" if @screen == "2"}") { "02" }
       end

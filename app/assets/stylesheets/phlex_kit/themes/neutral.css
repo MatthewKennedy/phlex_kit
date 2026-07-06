@@ -19,7 +19,7 @@
    - dark text-2 has no shadcn source (every dark *-foreground is 0.985);
      chart-1's 0.87 step (neutral-300) is used, matching the kit's own dark
      text-2 weight. */
-:root {
+:root, .pk-dark {
   --pk-bg: oklch(0.145 0 0);
   --pk-surface: oklch(0.205 0 0);
   --pk-surface-2: oklch(0.269 0 0);
