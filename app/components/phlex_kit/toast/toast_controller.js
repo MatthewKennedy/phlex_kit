@@ -70,7 +70,16 @@ export default class extends Controller {
     if (this.element.dataset.state === "closing") return
     this.element.dataset.state = "closing"
     this.element.dispatchEvent(new CustomEvent(reason === "auto" ? "phlex-kit:toast:auto-close" : "phlex-kit:toast:dismiss", { bubbles: true, detail: { id: this.element.id } }))
+    this._invokeCallback(reason === "auto" ? this.onAutoCloseValue : this.onDismissValue)
     setTimeout(() => this.element.remove(), TIME_BEFORE_UNMOUNT)
+  }
+
+  // on_dismiss:/on_auto_close: name a global function (Sonner-style callback
+  // for server-rendered toasts).
+  _invokeCallback(name) {
+    if (!name) return
+    const fn = window[name]
+    if (typeof fn === "function") fn({ id: this.element.id })
   }
 
   _start() {
