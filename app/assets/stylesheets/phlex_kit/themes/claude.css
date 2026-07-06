@@ -10,7 +10,7 @@
    Anthropic's brand faces (Styrene, Tiempos/Copernicus) are licensed and
    not shipped; --pk-font-serif falls back through Georgia. A host that has
    the real fonts re-points the token. */
-:root {
+:root, .pk-dark {
   --pk-bg: #262624;
   --pk-surface: #30302e;
   --pk-surface-2: #3a3a37;

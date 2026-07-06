@@ -110,8 +110,16 @@
 
    Dark is the default; light is opt-in via <html data-theme="light"> (set it
    server-side to avoid a flash). "system" follows the OS via prefers-color-scheme.
-   Keep the two light token sets in sync. */
-:root {
+   Keep the two light token sets in sync.
+
+   .pk-dark forces a SUBTREE dark on any page theme (shadcn's .dark wrapper):
+   element-level custom properties beat the :root light overrides for every
+   descendant. Panels opened from inside the subtree (popovers, dialogs)
+   inherit it — they stay DOM children even in the top layer. Caveat:
+   component rules forked on :root[data-theme="light"] still match inside
+   the island, but they are written in tokens, so they resolve to the
+   island's dark values. */
+:root, .pk-dark {
   --pk-bg: #0a0a0a;
   --pk-surface: #171717;
   --pk-surface-2: #262626;

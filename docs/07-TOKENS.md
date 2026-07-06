@@ -150,3 +150,14 @@ tokens, five chart tokens, `--pk-radius`, and the three font stacks — in a
 `:root` (dark) block and both light blocks. The sidebar overrides and
 per-component knobs are optional. `themes/zinc.css` is the cleanest example
 to copy.
+
+## Forced-dark subtrees (`.pk-dark`)
+
+Add `class="pk-dark"` to any element to force the kit's dark token values on
+that subtree regardless of the page theme — the equivalent of shadcn's
+`.dark` wrapper (their create-page Customizer uses it; ours does too). Works
+with every bundled theme: the theme's own dark values apply inside the
+island. Popovers/dialogs opened from inside the subtree inherit it (top-layer
+elements remain DOM children). Caveat: component rules forked on
+`:root[data-theme="light"]` still match inside the island, but they are
+written in tokens and therefore resolve to the island's dark values.
