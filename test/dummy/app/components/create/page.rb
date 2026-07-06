@@ -1562,7 +1562,11 @@ module Create
            scroller is an inset, rounded, muted container sitting to the right
            of the menu — cards clip at its edge rather than scrolling under
            the menu panel. */
-        .cr-viewport { overflow-x: auto; margin: 1.5rem 1.5rem 1.5rem calc(208px + 4.5rem);
+        /* position:relative so absolutely-positioned descendants without a
+           positioned ancestor (e.g. sr-only live regions) resolve against the
+           scroller, not the document — otherwise they leak page-level
+           horizontal overflow. */
+        .cr-viewport { position: relative; overflow-x: auto; margin: 1.5rem 1.5rem 1.5rem calc(208px + 4.5rem);
                        border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) + 8px);
                        background: var(--pk-surface-2); }
         html[data-theme="dark"] .cr-viewport { background: var(--pk-bg); }
