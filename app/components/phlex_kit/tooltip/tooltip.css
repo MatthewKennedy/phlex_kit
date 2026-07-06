@@ -1,15 +1,23 @@
 /* Co-located with tooltip.rb — UI::Tooltip (+ Trigger / Content). CSS-only:
-   the bubble is absolutely positioned and revealed on the wrapper's :hover /
-   :focus-within (no JS, no @floating-ui). Matched to nova: INVERTED surface
-   (foreground bg, background text) with a rotated-square arrow, rounded-md,
-   px-3 py-1.5 text-xs, gap for inline kbd chips (kbd.css tints them). */
-.pk-tooltip { position: relative; display: inline-flex; }
-.pk-tooltip-trigger { display: inline-flex; }
+   the bubble is revealed on the wrapper's :hover / :focus-within and placed
+   with CSS anchor positioning (Baseline 2026, no JS, no @floating-ui): the
+   fixed panel escapes overflow-clipping ancestors and position-try-fallbacks
+   flips it to the opposite side at the viewport edge. Reveal stays opacity-
+   based (a native [popover] would need JS hover handlers), so it needs
+   z-index rather than the top layer. Known limitation: the ::after arrow is
+   positioned by the .top/.bottom/.left/.right class and does not follow a
+   flip fallback. Matched to nova: INVERTED surface (foreground bg,
+   background text) with a rotated-square arrow, rounded-md, px-3 py-1.5
+   text-xs, gap for inline kbd chips (kbd.css tints them). */
+.pk-tooltip { display: inline-flex; anchor-scope: --pk-tooltip; }
+.pk-tooltip-trigger { display: inline-flex; anchor-name: --pk-tooltip; }
 .pk-tooltip-content {
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
+  position: fixed;
+  position-anchor: --pk-tooltip;
+  inset: auto;
+  position-area: block-start;
+  margin: 0 0 6px;
+  position-try-fallbacks: flip-block;
   z-index: 50;
   display: inline-flex;
   align-items: center;
@@ -39,16 +47,16 @@
   left: 50%;
   transform: translate(-50%, calc(-50% - 2px)) rotate(45deg);
 }
-.pk-tooltip-content.bottom { bottom: auto; top: calc(100% + 6px); }
+.pk-tooltip-content.bottom { position-area: block-end; margin: 6px 0 0; }
 .pk-tooltip-content.bottom::after { top: 0; transform: translate(-50%, calc(-50% + 2px)) rotate(45deg); }
 .pk-tooltip-content.left {
-  bottom: auto; left: auto; right: calc(100% + 6px); top: 50%;
-  transform: translateY(-50%);
+  position-area: inline-start; margin: 0 6px 0 0;
+  position-try-fallbacks: flip-inline;
 }
 .pk-tooltip-content.left::after { top: 50%; left: 100%; transform: translate(calc(-50% - 2px), -50%) rotate(45deg); }
 .pk-tooltip-content.right {
-  bottom: auto; right: auto; left: calc(100% + 6px); top: 50%;
-  transform: translateY(-50%);
+  position-area: inline-end; margin: 0 0 0 6px;
+  position-try-fallbacks: flip-inline;
 }
 .pk-tooltip-content.right::after { top: 50%; left: 0; transform: translate(calc(-50% + 2px), -50%) rotate(45deg); }
 .pk-tooltip:hover .pk-tooltip-content,
