@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Ported from ruby_ui's phlex-kit--dropdown-menu controller. The ONE change from
-// upstream: the @floating-ui/dom dependency is removed — the panel is positioned
-// with plain CSS (.ui-dropdown-menu-content { position:absolute }), so this app
-// needs no npm/build step. Toggle, click-outside, and arrow/enter keyboard nav
-// are unchanged.
+// Ported from ruby_ui's phlex-kit--dropdown-menu controller, minus the
+// @floating-ui/dom dependency: the panel is a native [popover=manual] in the
+// top layer, anchor-positioned with viewport-edge flipping by
+// dropdown_menu.css (manual so this controller keeps owning click-outside,
+// Escape, and arrow/enter keyboard nav — all unchanged from upstream).
 export default class extends Controller {
   static targets = ["trigger", "content", "menuItem"];
   static values = { open: { type: Boolean, default: false } };
@@ -27,23 +27,20 @@ export default class extends Controller {
   }
 
   toggle() {
-    this.contentTarget.classList.contains("hidden") ? this.#open() : this.close();
+    this.contentTarget.matches(":popover-open") ? this.close() : this.#open();
   }
 
   #open() {
     this.openValue = true;
     this.#deselectAll();
     this.#addEventListeners();
-    // Lift the open menu above siblings (the container has no static z-index).
-    this.element.style.zIndex = "50";
-    this.contentTarget.classList.remove("hidden");
+    this.contentTarget.showPopover();
   }
 
   close() {
     this.openValue = false;
     this.#removeEventListeners();
-    this.element.style.zIndex = "";
-    this.contentTarget.classList.add("hidden");
+    if (this.contentTarget.matches(":popover-open")) this.contentTarget.hidePopover();
   }
 
   #handleKeydown(e) {
