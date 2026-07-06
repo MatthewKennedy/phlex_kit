@@ -235,7 +235,15 @@ module Examples
         .adm-topbar-spacer { flex: 1; }
         .adm-footer { padding: .875rem 1.5rem; border-top: 1px solid var(--pk-border);
                       color: var(--pk-muted); font-size: .75rem; }
-        .adm-sidebar { height: 100dvh; position: sticky; top: 0; }
+        /* Desktop: pin the rail. The collapsible modes set position:relative
+           on .pk-sidebar (slide animation) at higher specificity than a bare
+           .adm-sidebar rule, so match it — but only ≥768px, where the kit's
+           mobile drawer (position:fixed) must keep winning. */
+        @media (min-width: 768px) {
+          .pk-sidebar-wrapper .pk-sidebar.adm-sidebar {
+            position: sticky; top: 0; height: 100dvh; overflow-y: auto;
+          }
+        }
         .adm-user { display: flex; align-items: center; gap: .5rem; padding: .25rem; }
         .adm-user-meta { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
         .adm-user-name { font-size: .8125rem; font-weight: 500; }
