@@ -1,5 +1,6 @@
 module PhlexKit
-  # Hover/focus-triggered floating card, positioned with CSS. Ported from ruby_ui's
+  # Hover/focus-triggered floating card — native [popover] + CSS anchor
+  # positioning with viewport-edge flipping. Ported from ruby_ui's
   # RubyUI::HoverCard. Compose HoverCard > (HoverCardTrigger + HoverCardContent).
   class HoverCard < BaseComponent
     def initialize(**attrs) = (@attrs = attrs)
