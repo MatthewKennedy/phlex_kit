@@ -56,22 +56,24 @@ module PhlexKit
     end
 
     def prev_item
-      if current <= 1
-        li do
-          span(class: "pk-data-table-page-disabled") { @prev_label }
-        end
-      else
-        render PaginationItem.new(href: page_href(current - 1)) { @prev_label }
-      end
+      edge_item(disabled: current <= 1, href: page_href(current - 1),
+        label: @prev_label, name: "Go to previous page")
     end
 
     def next_item
-      if current >= total
+      edge_item(disabled: current >= total, href: page_href(current + 1),
+        label: @next_label, name: "Go to next page")
+    end
+
+    # The default labels are bare glyphs ("<"/">") — give AT a real name, and
+    # announce the disabled edge instead of rendering an anonymous span.
+    def edge_item(disabled:, href:, label:, name:)
+      if disabled
         li do
-          span(class: "pk-data-table-page-disabled") { @next_label }
+          span(class: "pk-data-table-page-disabled", aria: { disabled: "true", label: name }) { label }
         end
       else
-        render PaginationItem.new(href: page_href(current + 1)) { @next_label }
+        render PaginationItem.new(href: href, aria: { label: name }) { label }
       end
     end
 

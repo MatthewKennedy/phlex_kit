@@ -15,8 +15,12 @@ module PhlexKit
       @attrs = attrs
     end
 
+    ARIA_SORT = { "asc" => "ascending", "desc" => "descending" }.freeze
+
     def view_template
-      render TableHead.new(**mix({ class: "pk-data-table-sort-head" }, @attrs)) do
+      defaults = { class: "pk-data-table-sort-head" }
+      defaults[:aria] = { sort: ARIA_SORT.fetch(current_direction) } if current_direction
+      render TableHead.new(**mix(defaults, @attrs)) do
         a(href: sort_href, class: "pk-data-table-sort-link") do
           plain @label
           sort_icon
