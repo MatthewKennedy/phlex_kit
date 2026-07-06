@@ -6,16 +6,19 @@ module PhlexKit
   # InputOtpGroup(InputOtpSlot…) [+ InputOtpSeparator + more groups]; slot
   # count must total `length:`. `.pk-input-otp*` (input_otp.css).
   class InputOtp < BaseComponent
-    def initialize(length: 6, name: nil, value: nil, **attrs)
+    def initialize(length: 6, name: nil, value: nil, label: "One-time code", **attrs)
       @length = length
       @name = name
       @value = value
+      @label = label
       @attrs = attrs
     end
 
     def view_template(&block)
       div(**mix({
         class: "pk-input-otp",
+        role: "group",
+        aria: { label: @label },
         data: {
           controller: "phlex-kit--input-otp",
           phlex_kit__input_otp_length_value: @length
