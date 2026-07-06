@@ -3,9 +3,8 @@
 Target: parity with the full [ruby_ui](https://ruby-ui.com) catalog (53 components),
 every one ported to Phlex + co-located vanilla CSS + `--pk-*` tokens.
 
-**Status: full ruby_ui parity (53/53) PLUS the shadcn/ui-only components — 70 component
-folders, all render-tested (123 tests, 1206 assertions green). Published to
-rubygems.org (v0.2.0).** Default theme mirrors ui.shadcn.com's live token system
+**Status: full ruby_ui parity (53/53) PLUS the shadcn/ui-only components — 72 component
+folders, all render-tested. Published to rubygems.org (v0.5.x).** Default theme mirrors ui.shadcn.com's live token system
 verbatim (neutral palette, accent/input/ring tokens, derived radii, --pk-chart-1..5)
 with control geometry verified numerically against the live site. shadcn additions
 beyond ruby_ui: spinner, kbd, label, button_group, item, input_group, radio_group,
@@ -27,7 +26,7 @@ navigation_menu (shared controller), resizable, attachment, avatar_group.
 - Wave 5 (the heavy tier): toast, carousel, combobox, command, calendar, date_picker,
   data_table, chart, plus the `form` upgrade (Form shell + FormField live validation,
   with input/textarea/checkbox/radio_button/native_select/select wired as targets).
-- 33 Stimulus controllers total; every external JS dependency ruby_ui pulls in is
+- 40 Stimulus controllers total; every external JS dependency ruby_ui pulls in is
   replaced: `motion` → native Web Animations API; `@floating-ui/dom` → CSS positioning
   (popover/hover_card/context_menu/clipboard/combobox); `maska` → vanilla mask;
   `rouge` → plain codeblock; `embla-carousel` → translate-based carousel engine;

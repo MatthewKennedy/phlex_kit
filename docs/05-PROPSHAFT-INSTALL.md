@@ -59,7 +59,7 @@ bin/rails g phlex_kit:install
 
 This does three things:
 
-1. Creates `config/initializers/phlex_kit.rb` (theme/icon/alias config knobs).
+1. Creates `config/initializers/phlex_kit.rb` (reactive / icon / alias config knobs).
 2. Prepends `@import url("phlex_kit/phlex_kit.css");` to
    `app/assets/stylesheets/application.css` — an `@import` must precede every
    rule, hence the prepend.
