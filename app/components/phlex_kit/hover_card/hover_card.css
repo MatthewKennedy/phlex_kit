@@ -1,16 +1,32 @@
 /* Co-located with hover_card.rb. Matched to shadcn/ui's current hover-card
    (nova): 16rem popover panel, rounded-lg, p-2.5, text-sm, foreground-tint
-   ring. side: top/left/right flip the CSS position (bottom default).
-   Tokens from the global stylesheet. */
-.pk-hover-card { position: relative; display: inline-block; }
-.pk-hover-card-trigger { display: inline-block; }
+   ring. Tokens from the global stylesheet.
+   The panel is a native [popover=manual] in the top layer, anchor-positioned
+   to the trigger (Baseline 2026); position-try-fallbacks flips it to the
+   opposite side at the viewport edge. side: top/left/right pick the
+   position-area (bottom default). anchor-scope keeps sibling hover cards
+   from resolving to each other's anchors. */
+.pk-hover-card { display: inline-block; anchor-scope: --pk-hover-card; }
+.pk-hover-card-trigger { display: inline-block; anchor-name: --pk-hover-card; }
 .pk-hover-card-content {
-  position: absolute; z-index: 50; top: calc(100% + .25rem); left: 0; width: 16rem;
+  position: fixed;
+  position-anchor: --pk-hover-card;
+  inset: auto;
+  position-area: block-end span-inline-end;
+  margin: .25rem 0 0;
+  position-try-fallbacks: flip-block;
+  width: 16rem;
   border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
   border-radius: var(--pk-radius); background: var(--pk-surface);
   color: var(--pk-text); padding: .625rem; font-size: .875rem;
   box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
 }
-.pk-hover-card-content.top { top: auto; bottom: calc(100% + .25rem); }
-.pk-hover-card-content.left { top: 50%; left: auto; right: calc(100% + .25rem); transform: translateY(-50%); }
-.pk-hover-card-content.right { top: 50%; left: calc(100% + .25rem); transform: translateY(-50%); }
+.pk-hover-card-content.top { position-area: block-start span-inline-end; margin: 0 0 .25rem; }
+.pk-hover-card-content.left {
+  position-area: inline-start; margin: 0 .25rem 0 0;
+  position-try-fallbacks: flip-inline;
+}
+.pk-hover-card-content.right {
+  position-area: inline-end; margin: 0 0 0 .25rem;
+  position-try-fallbacks: flip-inline;
+}
