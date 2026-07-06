@@ -149,6 +149,12 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes render(PhlexKit::AlertDialogAction.new(variant: :destructive) { "Delete" }), "pk-button destructive"
   end
 
+  def test_alert_dialog_cancel_caller_data_merges_with_dismiss_action
+    html = render(PhlexKit::AlertDialogCancel.new(data: { testid: "cancel" }) { "Cancel" })
+    assert_includes html, "click->phlex-kit--alert-dialog#dismiss"
+    assert_includes html, %(data-testid="cancel")
+  end
+
   def test_attachment_states_sizes_orientation
     assert_includes render(PhlexKit::Attachment.new(state: :uploading) { "x" }), %(data-state="uploading")
     assert_includes render(PhlexKit::Attachment.new(size: :xs, orientation: :vertical) { "x" }), "pk-attachment xs vertical"

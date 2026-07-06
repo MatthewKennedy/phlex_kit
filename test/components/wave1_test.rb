@@ -21,6 +21,21 @@ class Wave1Test < Minitest::Test
     assert_includes html, %(type="checkbox")
   end
 
+  def test_switch_role_lives_on_the_checkbox_not_the_label
+    html = render(PhlexKit::Switch.new(name: "active"))
+    assert_match(/<input[^>]+role="switch"/, html)
+    refute_match(/<label[^>]+role=/, html)
+  end
+
+  def test_switch_wrapper_attrs_merge_onto_label
+    html = render(PhlexKit::Switch.new(name: "active", wrapper: { class: "extra" }))
+    assert_match(/<label[^>]+class="pk-switch extra"/, html)
+  end
+
+  def test_switch_without_name_omits_hidden_input
+    refute_includes render(PhlexKit::Switch.new), %(type="hidden")
+  end
+
   def test_radio_button
     assert_includes render(PhlexKit::RadioButton.new(name: "r", value: "1")), %(type="radio")
   end

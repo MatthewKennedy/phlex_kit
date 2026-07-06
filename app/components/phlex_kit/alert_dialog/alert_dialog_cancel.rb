@@ -7,7 +7,7 @@ module PhlexKit
     end
 
     def view_template(&block)
-      render PhlexKit::Button.new(variant: :outline, data: { action: "click->phlex-kit--alert-dialog#dismiss" }, **@attrs, &block)
+      render PhlexKit::Button.new(variant: :outline, **mix({ data: { action: "click->phlex-kit--alert-dialog#dismiss" } }, @attrs), &block)
     end
   end
 end

@@ -24,14 +24,18 @@ Gem::Specification.new do |spec|
 
   # Ship precompiled-static assets (the whole point): the .rb components, the
   # co-located .css, the token/manifest stylesheets, and the Stimulus controllers.
-  spec.files = Dir[
-    "lib/**/*",
-    "app/**/*",
-    "config/**/*",
-    "MIT-LICENSE",
-    "THIRD_PARTY_LICENSES",
-    "README.md"
-  ]
+  # Resolve the globs from the gemspec's own directory — `gem build` run from
+  # any other cwd otherwise packages an empty gem.
+  spec.files = Dir.chdir(__dir__) do
+    Dir[
+      "lib/**/*",
+      "app/**/*",
+      "config/**/*",
+      "MIT-LICENSE",
+      "THIRD_PARTY_LICENSES",
+      "README.md"
+    ]
+  end
   spec.require_paths = [ "lib" ]
 
   # HARD dependencies — the mature foundation. NOT phlex-reactive; NOT tailwind_merge.

@@ -5,18 +5,21 @@ module PhlexKit
   class Switch < BaseComponent
     SIZES = { md: nil, sm: "sm" }.freeze
 
-    def initialize(include_hidden: true, checked_value: "1", unchecked_value: "0", size: :md, **attrs)
+    def initialize(include_hidden: true, checked_value: "1", unchecked_value: "0", size: :md, wrapper: {}, **attrs)
       @include_hidden = include_hidden
       @checked_value = checked_value
       @unchecked_value = unchecked_value
       @size = size.to_sym
+      @wrapper = wrapper
       @attrs = attrs
     end
 
     def view_template
-      label(**mix({ role: "switch", class: [ "pk-switch", SIZES.fetch(@size) ].compact.join(" ") }, {})) do
-        input(type: "hidden", name: @attrs[:name], value: @unchecked_value) if @include_hidden
-        input(**mix({ class: "pk-switch-input" }, @attrs).merge(type: "checkbox", value: @checked_value))
+      label(**mix({ class: [ "pk-switch", SIZES.fetch(@size) ].compact.join(" ") }, @wrapper)) do
+        input(type: "hidden", name: @attrs[:name], value: @unchecked_value) if @include_hidden && @attrs[:name]
+        # role="switch" belongs on the focusable control: native checkedness then
+        # maps to aria-checked for AT, and the label stays a plain label.
+        input(**mix({ class: "pk-switch-input", role: "switch" }, @attrs).merge(type: "checkbox", value: @checked_value))
         span(class: "pk-switch-thumb")
       end
     end

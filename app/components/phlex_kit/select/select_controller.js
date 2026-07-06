@@ -47,7 +47,8 @@ export default class extends Controller {
     );
 
     if (currentIndex + 1 < this.itemTargets.length) {
-      this.itemTargets[currentIndex].removeAttribute("aria-current");
+      // No aria-current yet (fresh open via keyboard) → start at the first item.
+      if (currentIndex >= 0) this.itemTargets[currentIndex].removeAttribute("aria-current");
       this.setAriaCurrentAndActiveDescendant(currentIndex + 1);
     }
   }
@@ -75,15 +76,12 @@ export default class extends Controller {
       (item) => item.getAttribute("aria-selected") === "true",
     );
 
-    if (selectedItem) {
-      selectedItem.focus({ preventScroll: true });
-      selectedItem.setAttribute("aria-current", "true");
-      this.triggerTarget.setAttribute("aria-activedescendant", selectedItem.getAttribute("id"));
-    } else {
-      this.itemTarget.focus({ preventScroll: true });
-      this.itemTarget.setAttribute("aria-current", "true");
-      this.triggerTarget.setAttribute("aria-activedescendant", this.itemTarget.getAttribute("id"));
-    }
+    const focusItem = selectedItem || (this.hasItemTarget ? this.itemTarget : null);
+    if (!focusItem) return; // empty select — nothing to focus
+
+    focusItem.focus({ preventScroll: true });
+    focusItem.setAttribute("aria-current", "true");
+    this.triggerTarget.setAttribute("aria-activedescendant", focusItem.getAttribute("id"));
   }
 
   resetCurrent() {
@@ -124,7 +122,9 @@ export default class extends Controller {
     this.toogleContent();
     this.resetCurrent();
 
-    this.triggerTarget.setAttribute("aria-activedescendant", true);
+    // aria-activedescendant holds an element id; on close it must be removed,
+    // not set to the literal string "true".
+    this.triggerTarget.removeAttribute("aria-activedescendant");
     this.triggerTarget.focus({ preventScroll: true });
   }
 
