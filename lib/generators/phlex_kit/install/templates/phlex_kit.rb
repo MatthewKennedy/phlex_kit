@@ -5,6 +5,9 @@ PhlexKit.configure do |c|
   # set true to require it, false to force it off.
   c.reactive = :auto
 
+  # Default icon set for PhlexKit::Icon (:lucide, :phosphor, :tabler, :remix).
+  # c.icon_library = :lucide
+
   # Alias `UI` to `PhlexKit` so you can write `UI::Button` instead of
   # `PhlexKit::Button`. Off by default to avoid claiming a generic constant.
   c.define_ui_alias = false

@@ -6,7 +6,7 @@
 A [shadcn/ui](https://ui.shadcn.com)-grade component kit for
 [Phlex](https://phlex.fun) + Rails, styled with **vanilla CSS + design tokens
 instead of Tailwind**. The full [ruby_ui](https://ruby-ui.com) catalog plus
-shadcn's own additions — 70 component families, 38 Stimulus controllers —
+shadcn's own additions — 72 component families, 40 Stimulus controllers —
 with the default theme lifted verbatim from shadcn/ui's current token system.
 
 <picture>
@@ -21,7 +21,9 @@ switches, nav menu, command palette — at `/create` in [the docs site](#the-doc
 
 - **No build step.** Components are plain Ruby classes with co-located vanilla
   CSS, served precompiled-static through Propshaft. No Tailwind, no Node, no
-  PostCSS.
+  PostCSS. (Outside Rails there's no Zeitwerk to autoload them — after
+  `require "phlex_kit"`, require the component files you use, e.g.
+  `Dir[File.join(gem_dir, "app/components/phlex_kit/**/*.rb")].sort.each { require it }`.)
 - **The shadcn look, themeable.** Every component reads `--pk-*` custom
   properties. The default palette, radii, and control geometry match
   ui.shadcn.com; redefine `:root` and the whole kit re-themes live — dark,
@@ -119,8 +121,8 @@ PhlexKit.configure { |c| c.define_ui_alias = true }   # UI == PhlexKit
 
 The gem ships shadcn/ui's default (neutral) token set — dark by default, light
 via `<html data-theme="light">`, OS-following via `data-theme="system"`.
-Override any token in your own stylesheet; your app's CSS sorts ahead of the
-gem's, so you win:
+Override any token in your own stylesheet — the installer prepends the gem's
+`@import`, so the gem's rules come first and yours, coming later, win:
 
 ```css
 @import url("phlex_kit/phlex_kit.css");
@@ -137,8 +139,9 @@ The full token surface: `--pk-bg`, `--pk-surface`, `--pk-surface-2`,
 `--pk-brand`, `--pk-brand-ink`, `--pk-green`, `--pk-amber`, `--pk-red`,
 `--pk-chart-1..5`, `--pk-radius`, plus `--pk-font-sans` / `--pk-font-serif` /
 `--pk-font-mono` (system stacks by default — override them after an @font-face to adopt Geist
-like shadcn, as the docs site does). Want a fully custom palette? Drop the
-`_tokens.css` import and define them all yourself. The complete reference —
+like shadcn, as the docs site does). Want a fully custom palette? Override
+every token in your stylesheet (the `_tokens.css` import lives inside the
+gem's manifest, so you re-declare rather than remove). The complete reference —
 defaults, shadcn equivalents, the optional `--pk-sidebar-*` overrides, and
 every per-component knob (`--pk-card-spacing`, `--pk-cell-size`, …) — is in
 [docs/07-TOKENS.md](docs/07-TOKENS.md).
@@ -293,7 +296,8 @@ alert dialog, aspect ratio, attachment, avatar (+ group), badge, breadcrumb,
 bubble, button, button group, calendar, card, carousel, chart, checkbox,
 clipboard, codeblock, collapsible, combobox (button/input/badge-chip
 triggers), command palette, context menu, data table, date picker, dialog,
-drawer, dropdown menu, empty, form + form field, hover card, input, input
+drawer, dropdown menu, empty, field (set / group / label / description /
+error), form + form field, hover card, input, input
 group, input OTP, item, kbd, label, link, masked input, menubar, message,
 message scroller, native select, navigation menu, pagination, popover,
 marker, progress, radio button + radio group, resizable, scroll area, select,
