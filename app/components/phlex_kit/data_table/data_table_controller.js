@@ -10,7 +10,6 @@ export default class extends Controller {
     "selectAll",
     "rowCheckbox",
     "selectionSummary",
-    "selectionBar",
     "bulkActions",
   ];
 
@@ -44,6 +43,18 @@ export default class extends Controller {
   updateState() {
     const total = this.rowCheckboxTargets.length;
     const selected = this.rowCheckboxTargets.filter((cb) => cb.checked).length;
+
+    // table.css styles .pk-table-row[data-state="selected"] — set it so
+    // selected rows actually get the highlight.
+    this.rowCheckboxTargets.forEach((cb) => {
+      const row = cb.closest(".pk-table-row");
+      if (!row) return;
+      if (cb.checked) {
+        row.setAttribute("data-state", "selected");
+      } else {
+        row.removeAttribute("data-state");
+      }
+    });
 
     if (this.hasSelectAllTarget) {
       this.selectAllTarget.checked = total > 0 && selected === total;
