@@ -10,6 +10,7 @@ module PhlexKit
     def view_template
       div(**mix({
         class: "pk-data-table-selection-summary",
+        role: "status", # live region — selection changes are announced to AT
         data: { phlex_kit__data_table_target: "selectionSummary" }
       }, @attrs)) do
         plain "0 of #{@total_on_page} row(s) selected."
