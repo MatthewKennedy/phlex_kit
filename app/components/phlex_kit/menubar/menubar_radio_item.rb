@@ -13,9 +13,12 @@ module PhlexKit
     def view_template(&block)
       label(**mix({
         class: "pk-menubar-item pk-menubar-radio-item",
-        role: "menuitemradio"
+        role: "menuitemradio",
+        tabindex: "-1",
+        aria: { checked: @checked ? "true" : "false" }
       }, @attrs)) do
-        input(type: :radio, class: "pk-menubar-item-input", name: @name, value: @value, checked: @checked)
+        input(type: :radio, class: "pk-menubar-item-input", name: @name, value: @value, checked: @checked,
+              tabindex: "-1", data: { action: "change->phlex-kit--menubar#syncChecked" })
         span(class: "pk-menubar-item-indicator", aria: { hidden: "true" }) do
           # A filled selection dot is geometry, not icon-library vocabulary.
           svg(xmlns: "http://www.w3.org/2000/svg", viewbox: "0 0 24 24", fill: "currentColor") do |s|

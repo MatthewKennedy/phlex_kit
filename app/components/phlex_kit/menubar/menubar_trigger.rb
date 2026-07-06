@@ -6,6 +6,7 @@ module PhlexKit
       button(**mix({
         type: :button,
         class: "pk-menubar-trigger",
+        role: "menuitem",
         aria: { haspopup: "menu", expanded: "false" },
         data: { action: "click->phlex-kit--menubar#toggle mouseenter->phlex-kit--menubar#switch" }
       }, @attrs), &)

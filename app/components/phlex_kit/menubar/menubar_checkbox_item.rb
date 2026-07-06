@@ -13,9 +13,12 @@ module PhlexKit
     def view_template(&block)
       label(**mix({
         class: "pk-menubar-item pk-menubar-checkbox-item",
-        role: "menuitemcheckbox"
+        role: "menuitemcheckbox",
+        tabindex: "-1",
+        aria: { checked: @checked ? "true" : "false" }
       }, @attrs)) do
-        input(type: :checkbox, class: "pk-menubar-item-input", name: @name, value: @value, checked: @checked)
+        input(type: :checkbox, class: "pk-menubar-item-input", name: @name, value: @value, checked: @checked,
+              tabindex: "-1", data: { action: "change->phlex-kit--menubar#syncChecked" })
         span(class: "pk-menubar-item-indicator", aria: { hidden: "true" }) do
           render Icon.new(:check, size: nil)
         end
