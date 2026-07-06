@@ -30,6 +30,7 @@ module Examples
         render PhlexKit::SidebarWrapper.new(collapsible: :offcanvas, class: "adm-shell") do
           harbor_sidebar(active: "dashboard-cards")
           render PhlexKit::SidebarInset.new do
+            harbor_inset_header("Dashboard")
             main(class: "adm-main") do
               div(class: "adm-page-head") do
                 div do
@@ -173,7 +174,10 @@ module Examples
             end
           end
           render PhlexKit::CardFooter.new do
-            render PhlexKit::Button.new(variant: :outline, size: :sm) { "Reorder stock" }
+            render PhlexKit::Button.new(
+              variant: :outline, size: :sm,
+              onclick: safe("PhlexKit.toast.success('Reorder placed', { description: '3 products queued with your supplier.' })")
+            ) { "Reorder stock" }
           end
         end
       end

@@ -39,7 +39,7 @@ module PhlexKit
 
     def selected_values
       case @type
-      when :single then @value.nil? ? [] : [@value.to_s]
+      when :single then @value.nil? ? [] : [ @value.to_s ]
       when :multiple then Array(@value).map(&:to_s)
       end
     end
@@ -55,7 +55,7 @@ module PhlexKit
 
     def group_default_attrs
       { role: (@type == :single) ? "radiogroup" : "group",
-        class: ["pk-toggle-group", (@orientation == :vertical ? "vertical" : nil), (@spacing > 0 ? "spaced" : nil)].compact.join(" "),
+        class: [ "pk-toggle-group", (@orientation == :vertical ? "vertical" : nil), (@spacing > 0 ? "spaced" : nil) ].compact.join(" "),
         data: { controller: "phlex-kit--toggle-group",
           phlex_kit__toggle_group_type_value: @type.to_s,
           phlex_kit__toggle_group_name_value: @name.to_s,

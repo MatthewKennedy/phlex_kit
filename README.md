@@ -252,6 +252,13 @@ A one-page kitchen-sink gallery lives at /gallery, and /examples holds six
 full-page admin screens (dashboard, orders, inbox, profile, reports, settings)
 for a fictional commerce app — every visible element a kit component:
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/examples-dashboard-dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="docs/images/examples-dashboard-light.png">
+  <img alt="The /examples admin dashboard — KPI cards, a revenue chart and a live activity feed inside the kit's sidebar shell" src="docs/images/examples-dashboard-light.png">
+</picture>
+
+
 ```bash
 git clone https://github.com/MatthewKennedy/phlex_kit && cd phlex_kit
 bundle install

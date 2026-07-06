@@ -38,7 +38,10 @@ module Examples
       def list_pane
         div(class: "adm-list-pane") do
           div(class: "adm-between") do
-            h1(class: "adm-list-title") { "Inbox" }
+            div(class: "adm-row") do
+              render PhlexKit::SidebarTrigger.new
+              h1(class: "adm-list-title") { "Inbox" }
+            end
             render PhlexKit::Badge.new(variant: :secondary, size: :sm) { "41 open" }
           end
           div(class: "adm-row") do
@@ -103,8 +106,14 @@ module Examples
               end
             end
             render PhlexKit::ButtonGroup.new do
-              render PhlexKit::Button.new(variant: :outline, size: :sm) { "Fulfill" }
-              render PhlexKit::Button.new(variant: :outline, size: :sm) { "Refund" }
+              render PhlexKit::Button.new(
+                variant: :outline, size: :sm,
+                onclick: safe("PhlexKit.toast.success('Order fulfilled', { description: '#HB-1042 handed to the courier queue.' })")
+              ) { "Fulfill" }
+              render PhlexKit::Button.new(
+                variant: :outline, size: :sm,
+                onclick: safe("PhlexKit.toast.warning('Refund drafted', { description: 'Review the $182.00 refund before it sends.' })")
+              ) { "Refund" }
               render PhlexKit::DropdownMenu.new do
                 render PhlexKit::DropdownMenuTrigger.new do
                   render PhlexKit::Button.new(variant: :outline, size: :sm, icon: true, aria: { label: "More" }) do
@@ -202,7 +211,10 @@ module Examples
 
           footer(class: "adm-pin-footer") do
             render PhlexKit::Button.new(variant: :ghost, size: :sm) { "Cancel order" }
-            render PhlexKit::Button.new(size: :sm) { "Mark fulfilled" }
+            render PhlexKit::Button.new(
+              size: :sm,
+              onclick: safe("PhlexKit.toast.success('Order fulfilled', { description: '#HB-1042 handed to the courier queue.' })")
+            ) { "Mark fulfilled" }
           end
         end
       end

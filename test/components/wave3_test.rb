@@ -7,7 +7,7 @@ class Wave3Test < Minitest::Test
   include RenderHelper
 
   def test_dialog_wraps_with_controller
-    assert_includes render(PhlexKit::Dialog.new {}), "phlex-kit--dialog"
+    assert_includes render(PhlexKit::Dialog.new { }), "phlex-kit--dialog"
   end
 
   def test_dialog_content_uses_native_dialog_with_close

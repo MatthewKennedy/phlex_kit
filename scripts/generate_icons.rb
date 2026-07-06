@@ -207,10 +207,11 @@ data.each do |lib, icons|
   body << "      MODE = #{meta[:mode].inspect}\n"
   body << "      STROKE_WIDTH = #{meta[:stroke_width].inspect}\n"
   body << "      ICONS = {\n"
-  icons.each do |canonical, elements|
+  entries = icons.map do |canonical, elements|
     els = elements.map { |tag, attrs| "[ :#{tag}, { #{attrs.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')} } ]" }
-    body << "        #{canonical}: [ #{els.join(', ')} ],\n"
+    "        #{canonical}: [ #{els.join(', ')} ]"
   end
+  body << entries.join(",\n") << "\n"
   body << "      }.freeze\n    end\n  end\nend\n"
   out = File.expand_path("../lib/phlex_kit/icons/#{lib}.rb", __dir__)
   File.write(out, body)

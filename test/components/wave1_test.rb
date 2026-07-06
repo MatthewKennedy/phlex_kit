@@ -27,14 +27,14 @@ class Wave1Test < Minitest::Test
 
   def test_breadcrumb_compose
     html = render(PhlexKit::Breadcrumb.new do |b|
-      b.render PhlexKit::BreadcrumbList.new {}
+      b.render PhlexKit::BreadcrumbList.new { }
     end)
     assert_includes html, "pk-breadcrumb"
   end
 
   def test_bubble_variant_and_fail_loud
-    assert_includes render(PhlexKit::Bubble.new(variant: :destructive) {}), %(data-variant="destructive")
-    assert_raises(KeyError) { render(PhlexKit::Bubble.new(variant: :nope) {}) }
+    assert_includes render(PhlexKit::Bubble.new(variant: :destructive) { }), %(data-variant="destructive")
+    assert_raises(KeyError) { render(PhlexKit::Bubble.new(variant: :nope) { }) }
   end
 
   def test_empty_media_variant
@@ -42,6 +42,6 @@ class Wave1Test < Minitest::Test
   end
 
   def test_message_align
-    assert_includes render(PhlexKit::Message.new(align: :end) {}), %(data-align="end")
+    assert_includes render(PhlexKit::Message.new(align: :end) { }), %(data-align="end")
   end
 end

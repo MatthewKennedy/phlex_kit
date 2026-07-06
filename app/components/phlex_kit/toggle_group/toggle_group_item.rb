@@ -18,7 +18,7 @@ module PhlexKit
 
     def item_default_attrs
       a = { type: "button",
-            class: (["pk-toggle"] + self.class.modifier_classes(variant: @variant, size: @size) + ["pk-toggle-group-item"]).join(" "),
+            class: ([ "pk-toggle" ] + self.class.modifier_classes(variant: @variant, size: @size) + [ "pk-toggle-group-item" ]).join(" "),
             data: { state: @pressed ? "on" : "off", value: @item_value,
               phlex_kit__toggle_group_target: "item",
               action: "click->phlex-kit--toggle-group#select keydown->phlex-kit--toggle-group#navigate" } }
