@@ -36,6 +36,14 @@ class AuditRound2Test < Minitest::Test
     end
   end
 
+  def test_input_otp_is_a_labelled_group
+    html = render(PhlexKit::InputOtp.new(name: "code"))
+    assert_includes html, %(role="group")
+    assert_includes html, %(aria-label="One-time code")
+    custom = render(PhlexKit::InputOtp.new(name: "code", label: "Verification code"))
+    assert_includes custom, %(aria-label="Verification code")
+  end
+
   def test_selection_summary_is_a_live_status_region
     html = render(PhlexKit::DataTableSelectionSummary.new(total_on_page: 5))
     assert_includes html, %(role="status")

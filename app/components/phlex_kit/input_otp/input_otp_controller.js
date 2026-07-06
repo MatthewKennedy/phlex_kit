@@ -10,6 +10,13 @@ export default class extends Controller {
   static values = { length: Number }
 
   connect() {
+    // Slots compose without knowing their position — label them here so AT
+    // announces "Digit N of M" instead of anonymous edit fields.
+    this.slotTargets.forEach((slot, i) => {
+      if (!slot.hasAttribute("aria-label")) {
+        slot.setAttribute("aria-label", `Digit ${i + 1} of ${this.slotTargets.length}`)
+      }
+    })
     this.syncValue()
   }
 
@@ -39,7 +46,11 @@ export default class extends Controller {
 
   onPaste(e) {
     e.preventDefault()
-    const chars = (e.clipboardData?.getData("text") || "").replace(/\s/g, "").split("")
+    let text = (e.clipboardData?.getData("text") || "").replace(/\s/g, "")
+    // Numeric slots reject non-digits on typing; pasted text like
+    // "code: 123456" should distribute only the digits.
+    if (e.target.getAttribute("inputmode") === "numeric") text = text.replace(/\D/g, "")
+    const chars = text.split("")
     if (!chars.length) return
     const start = this.slotTargets.indexOf(e.target)
     this.slotTargets.slice(start).forEach((slot, i) => { if (chars[i] != null) slot.value = chars[i] })
