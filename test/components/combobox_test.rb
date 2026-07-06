@@ -27,7 +27,7 @@ class ComboboxTest < Minitest::Test
 
   def test_popover_hidden_with_keyboard_nav
     html = render(PhlexKit::ComboboxPopover.new { "x" })
-    assert_includes html, "pk-combobox-popover pk-hidden"
+    assert_includes html, %(class="pk-combobox-popover" popover="manual")
     assert_includes html, "keydown.down->phlex-kit--combobox#keyDownPressed"
     assert_includes html, "keydown.esc->phlex-kit--combobox#closePopover:prevent"
   end

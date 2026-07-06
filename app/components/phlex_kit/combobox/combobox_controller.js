@@ -1,10 +1,11 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Ported from ruby_ui's combobox controller. TWO changes from upstream: the
-// @floating-ui/dom dependency and the native Popover API are removed — the panel
-// is a CSS-positioned child of the combobox (.pk-combobox-popover, toggled with
-// .pk-hidden) with click-outside handled by a window action, so only
-// @hotwired/stimulus is needed. PhlexKit also COMPLETES upstream's unfinished
+// Ported from ruby_ui's combobox controller, minus the @floating-ui/dom
+// dependency: like upstream, the panel is a native popover (manual — this
+// controller owns open/close and click-outside via a window action), and CSS
+// anchor positioning replaces computePosition (combobox.css: trigger-width
+// floor via anchor-size(), viewport-edge flip via position-try-fallbacks),
+// so only @hotwired/stimulus is needed. PhlexKit also COMPLETES upstream's unfinished
 // input/badge trigger variants: the inputTrigger / badgeContainer / badgeInput /
 // clearButton targets, filtering from whichever field fired, chip rendering
 // with per-chip remove, backspace removal, and clearAll all had no upstream
@@ -14,7 +15,6 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static values = {
     term: String,
-    minPopoverWidth: { type: Number, default: 240 },
     autoHighlight: { type: Boolean, default: false }
   }
 
@@ -68,7 +68,7 @@ export default class extends Controller {
   }
 
   isOpen() {
-    return this.hasPopoverTarget && !this.popoverTarget.classList.contains("pk-hidden")
+    return this.hasPopoverTarget && this.popoverTarget.matches(":popover-open")
   }
 
   setExpanded(expanded) {
@@ -226,12 +226,11 @@ export default class extends Controller {
     if (event) event.preventDefault()
     if (this.isOpen()) return
 
-    this.updatePopoverWidth()
     this.setExpanded(true)
     this.selectedItemIndex = null
     this.itemTargets.forEach(item => item.ariaCurrent = "false")
     this.clearActiveDescendant()
-    this.popoverTarget.classList.remove("pk-hidden")
+    this.popoverTarget.showPopover()
 
     const field = this.filterField()
     if (field) {
@@ -247,7 +246,7 @@ export default class extends Controller {
     // aria-activedescendant holds an element id; on close it must be removed,
     // not left pointing at a hidden option.
     this.clearActiveDescendant()
-    this.popoverTarget.classList.add("pk-hidden")
+    if (this.popoverTarget.matches(":popover-open")) this.popoverTarget.hidePopover()
     this.updateTriggerContent() // reflect the selection into an input trigger
   }
 
@@ -374,8 +373,4 @@ export default class extends Controller {
     this.selectedItemIndex = ((this.selectedItemIndex % length) + length) % length
   }
 
-  updatePopoverWidth() {
-    const width = Math.max(this.triggerTarget.offsetWidth, this.minPopoverWidthValue)
-    this.popoverTarget.style.width = `${width}px`
-  }
 }
