@@ -27,6 +27,7 @@ export default class extends Controller {
   // directly when the bar declares data-hover-open (navigation menu).
   switch(e) {
     const menu = e.currentTarget.closest("[data-phlex-kit--menubar-target=\"menu\"]")
+    if (!menu) return this.close() // a link outside any menu item — just close
     if (this.element.dataset.hoverOpen !== undefined) return this.show(menu)
     if (this.openMenu && this.openMenu !== menu) this.show(menu)
   }
