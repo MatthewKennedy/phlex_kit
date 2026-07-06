@@ -49,8 +49,11 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   the central `app/javascript/phlex_kit/controllers/index.js` (imports AND
   `application.register`, both sorted); `javascript_registration_test.rb` guards
   that every co-located controller is imported + registered.
-  Show/hide toggles the `.pk-hidden` utility. No npm deps — floating-ui →
-  CSS positioning, embla → translate engine, fuse → substring/fuzzy scorer,
+  Floating panels are native `[popover]` elements with CSS anchor positioning
+  (`position-try-fallbacks` flips at viewport edges; gate `display` on
+  `:popover-open`; UA `overflow:auto` clips bridge pseudos — restate visible);
+  non-floating show/hide toggles the `.pk-hidden` utility. No npm deps —
+  floating-ui → anchor positioning, embla → translate engine, fuse → substring/fuzzy scorer,
   vaul → sheet clone machinery, chart.js → host-supplied `window.Chart`.
 - Attribution comment on each lead class (`# … ported from ruby_ui's X` /
   `# … ported from shadcn/ui's X`).

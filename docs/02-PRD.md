@@ -87,7 +87,7 @@ product so the remaining work can be completed and the whole polished.
 | Token prefix | `--pk-*` (with literal fallbacks in `var()`) |
 | Scope | **All 53 components** |
 | phlex-reactive | Optional, per-component; not a runtime dep |
-| Positioning (popover/hover_card/context_menu/combobox) | **CSS positioning**, no `@floating-ui` |
+| Positioning (popover/hover_card/context_menu/combobox) | **Native `[popover]` + CSS anchor positioning** (Baseline 2026), no `@floating-ui` |
 | codeblock highlighting | **Plain** (no `rouge`); host may add it |
 | chart | Thin wrapper; **no bundled charting lib** (host-supplied) |
 | masked_input | Small **dependency-free** mask (no `maska`) |
@@ -113,7 +113,8 @@ separator, sheet, shortcut_key, sidebar, skeleton, switch, table, tabs, textarea
 theme_toggle, toast, toggle, toggle_group, tooltip, typography. (A `stars` extra
 shipped through v0.2.x and was dropped after — not in ruby_ui or shadcn.)
 
-All §7 dependency decisions held: no `@floating-ui` (CSS positioning), no bundled
+All §7 dependency decisions held: no `@floating-ui` (native popover + CSS anchor
+positioning since the 2026-07 rollout; plain CSS positioning before that), no bundled
 charting lib (`chart` is a thin wrapper — `window.Chart` if the host ships it, else a
 `phlex-kit--chart:connect` event), no `rouge`, no `maska`; additionally
 `embla-carousel`, `fuse.js` and `mustache` were replaced with small vanilla

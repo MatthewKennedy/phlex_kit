@@ -149,11 +149,20 @@ Invariants (keep all):
 - **No non-Stimulus npm imports.** ruby_ui's external deps are replaced:
   - `motion` (accordion animation) → native **Web Animations API** (`element.animate`).
   - `@floating-ui/dom` (popover/hover_card/context_menu/clipboard/combobox placement) →
-    **CSS positioning** (absolute panels anchored to a `position:relative` root; context
-    menu positioned at the cursor via the controller).
+    **native `[popover]` + CSS anchor positioning** (Baseline 2026): panels are
+    `popover="auto"|"manual"` elements in the top layer, `anchor-name`/`position-anchor`ed
+    to their trigger with `position-try-fallbacks` flipping them at viewport edges;
+    `anchor-size()` replaces JS width-matching. Context menu is positioned at the cursor
+    via the controller (clamped to the viewport); tooltip keeps its CSS-only reveal and
+    uses anchor positioning without the popover attribute. Gotchas: gate `display` on
+    `:popover-open` (author display beats the UA's `[popover]{display:none}`), and the
+    `[popover]` UA `overflow:auto` clips out-of-box hover-bridge pseudos — restate
+    `overflow:visible` where bridges exist.
   - `maska` (masked_input) → a small dependency-free mask controller (`#`/`A`/`*`).
   - `rouge` (codeblock highlight) → omitted; plain `<pre><code>`.
-- Show/hide uses the `.pk-hidden` utility, toggled by controllers.
+- Show/hide: floating panels are native popovers (`showPopover()`/`hidePopover()`,
+  state via `:popover-open`); non-floating show/hide uses the `.pk-hidden` utility,
+  toggled by controllers.
 
 ## 8. Distribution, config, testing
 
@@ -187,7 +196,7 @@ regenerate the manifest, add a render test.
   (~5.5KB) are **Stimulus-only** → copy + rename verbatim. Author the Ruby faithfully;
   map `bg-popover`→`--pk-surface`, positions via `data-[position=…]` CSS.
 - **combobox** — searchable select. Trigger + popover list + search input + options.
-  ruby_ui uses `@floating-ui` → CSS-position the panel like the shipped `select`. Reuse
+  ruby_ui uses `@floating-ui` → anchor-position the panel like the shipped `select`. Reuse
   `select`/`dropdown_menu` patterns.
 - **command** — command palette (often in a dialog). Search + grouped items + keyboard
   nav. Compose with the shipped `dialog`. Controller Stimulus-only after positioning swap.
