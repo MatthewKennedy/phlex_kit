@@ -1529,8 +1529,10 @@ module Create
         .cr-main-menu-trigger:hover { background: var(--pk-accent); }
         .cr-cust-body { display: flex; flex-direction: column; gap: .625rem; padding: .75rem;
                         overflow-y: auto; min-height: 0; }
-        /* pk-separator is width:100%%, so bleeding needs the width extended too */
-        .cr-cust-sep { margin: .125rem -.75rem; width: calc(100%% + 1.5rem); }
+        /* full-bleed section dividers: the kit sets .pk-separator.horizontal
+           { width: 100% } (0,2,0), so the override must out-specify it,
+           and bleeding needs the width extended, not just negative margins */
+        .cr-cust-body .pk-separator.cr-cust-sep { margin: .125rem -.75rem; width: calc(100% + 1.5rem); }
         .cr-picker-row { position: relative; display: flex; flex-direction: column; align-items: flex-start;
                          gap: .125rem; width: 100%; padding: .5rem 2.25rem .5rem .625rem; text-align: left;
                          font: inherit; color: var(--pk-text); background: none; border: none; cursor: pointer;
