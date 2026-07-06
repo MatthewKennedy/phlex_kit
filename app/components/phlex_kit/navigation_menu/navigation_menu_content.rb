@@ -5,7 +5,7 @@ module PhlexKit
     def view_template(&)
       # No role="menu" here — the panel holds plain links, not menuitems
       # (Radix/shadcn ship no menu role on NavigationMenu content either).
-      div(**mix({ class: "pk-navigation-menu-content", popover: "manual" }, @attrs), &)
+      div(**mix({ class: "pk-navigation-menu-content", popover: "manual", data: { action: "mouseenter->phlex-kit--menubar#cancelClose" } }, @attrs), &)
     end
   end
 end
