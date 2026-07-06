@@ -47,6 +47,7 @@ import ToastController from "phlex_kit/controllers/toast_controller"
 import ToasterController from "phlex_kit/controllers/toaster_controller"
 import ToggleController from "phlex_kit/controllers/toggle_controller"
 import ToggleGroupController from "phlex_kit/controllers/toggle_group_controller"
+import TooltipController from "phlex_kit/controllers/tooltip_controller"
 
 export function registerPhlexKitControllers(application) {
   application.register("phlex-kit--accordion", AccordionController)
@@ -88,4 +89,5 @@ export function registerPhlexKitControllers(application) {
   application.register("phlex-kit--toaster", ToasterController)
   application.register("phlex-kit--toggle", ToggleController)
   application.register("phlex-kit--toggle-group", ToggleGroupController)
+  application.register("phlex-kit--tooltip", TooltipController)
 }
