@@ -35,7 +35,7 @@ module PhlexKit
     private
 
     def classes
-      [ "pk-alert", VARIANTS.fetch(@variant) ].compact.join(" ")
+      [ "pk-alert", fetch_option(VARIANTS, @variant, :variant) ].compact.join(" ")
     end
   end
 end

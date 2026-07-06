@@ -15,7 +15,7 @@ module PhlexKit
       template(**mix({ data: { phlex_kit__alert_dialog_target: "content" } }, @attrs)) do
         div(data: { controller: "phlex-kit--alert-dialog" }) do
           div(class: "pk-alert-dialog-overlay", "aria-hidden": "true")
-          div(role: "alertdialog", "aria-modal": "true", class: [ "pk-alert-dialog-panel", SIZES.fetch(@size) ].compact.join(" "), &block)
+          div(role: "alertdialog", "aria-modal": "true", class: [ "pk-alert-dialog-panel", fetch_option(SIZES, @size, :size) ].compact.join(" "), &block)
         end
       end
     end

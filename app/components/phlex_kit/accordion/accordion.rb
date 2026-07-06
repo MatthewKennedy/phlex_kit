@@ -13,7 +13,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({ class: "pk-accordion", data: { type: TYPES.fetch(@type) } }, @attrs), &)
+      div(**mix({ class: "pk-accordion", data: { type: fetch_option(TYPES, @type, :type) } }, @attrs), &)
     end
   end
 end

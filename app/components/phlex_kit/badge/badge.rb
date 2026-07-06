@@ -50,7 +50,7 @@ module PhlexKit
     private
 
     def classes
-      [ "pk-badge", VARIANTS.fetch(@variant), SIZES.fetch(@size) ].compact.join(" ")
+      [ "pk-badge", fetch_option(VARIANTS, @variant, :variant), fetch_option(SIZES, @size, :size) ].compact.join(" ")
     end
   end
 end

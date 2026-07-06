@@ -17,7 +17,7 @@ module PhlexKit
     end
 
     def view_template(&block)
-      cls = [ "pk-dialog", SIZES.fetch(@size) ].compact.join(" ")
+      cls = [ "pk-dialog", fetch_option(SIZES, @size, :size) ].compact.join(" ")
       aria = {}
       aria[:labelledby] = @labelledby if @labelledby
       aria[:describedby] = @describedby if @describedby

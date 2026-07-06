@@ -10,7 +10,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      classes = [ "pk-popover-content", "pk-hidden", ALIGNS.fetch(@align) ].compact.join(" ")
+      classes = [ "pk-popover-content", "pk-hidden", fetch_option(ALIGNS, @align, :align) ].compact.join(" ")
       div(**mix({ class: classes, data: { phlex_kit__popover_target: "content", state: "closed" } }, @attrs), &)
     end
   end

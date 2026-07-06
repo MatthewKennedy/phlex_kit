@@ -36,7 +36,7 @@ module PhlexKit
     private
 
     def panel_classes
-      [ "pk-command-dialog", SIZES.fetch(@size) ].compact.join(" ")
+      [ "pk-command-dialog", fetch_option(SIZES, @size, :size) ].compact.join(" ")
     end
 
     def backdrop

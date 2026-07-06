@@ -17,7 +17,7 @@ module PhlexKit
     end
 
     def view_template(&block)
-      classes = [ "pk-context-menu-item", VARIANTS.fetch(@variant) ].compact.join(" ")
+      classes = [ "pk-context-menu-item", fetch_option(VARIANTS, @variant, :variant) ].compact.join(" ")
       base = { href: @href, role: "menuitem", tabindex: "-1", class: classes,
                data: { action: ("click->phlex-kit--context-menu#close" unless @disabled),
                        phlex_kit__context_menu_target: "menuItem",

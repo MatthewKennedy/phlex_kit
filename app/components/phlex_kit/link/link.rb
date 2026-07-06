@@ -41,7 +41,7 @@ module PhlexKit
     private
 
     def classes
-      [ "pk-button", VARIANTS.fetch(@variant), SIZES.fetch(@size), ("icon" if @icon) ].compact.join(" ")
+      [ "pk-button", fetch_option(VARIANTS, @variant, :variant), fetch_option(SIZES, @size, :size), ("icon" if @icon) ].compact.join(" ")
     end
   end
 end

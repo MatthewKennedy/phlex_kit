@@ -20,7 +20,7 @@ module PhlexKit
       base = {
         role: "menuitem",
         tabindex: "-1",
-        class: [ "pk-menubar-item", VARIANTS.fetch(@variant), ("inset" if @inset) ].compact.join(" "),
+        class: [ "pk-menubar-item", fetch_option(VARIANTS, @variant, :variant), ("inset" if @inset) ].compact.join(" "),
         data: @disabled ? { disabled: "true" } : { action: "click->phlex-kit--menubar#close" }
       }
       base[:aria] = { disabled: "true" } if @disabled

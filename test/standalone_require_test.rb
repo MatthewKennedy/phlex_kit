@@ -10,8 +10,8 @@ class StandaloneRequireTest < Minitest::Test
   def test_bare_require_succeeds
     lib = File.expand_path("../lib", __dir__)
     output = IO.popen(
-      [RbConfig.ruby, "-I", lib, "-e", 'require "phlex_kit"; print PhlexKit::VERSION'],
-      err: [:child, :out], &:read
+      [ RbConfig.ruby, "-I", lib, "-e", 'require "phlex_kit"; print PhlexKit::VERSION' ],
+      err: [ :child, :out ], &:read
     )
     assert $?.success?, "bare `require \"phlex_kit\"` failed:\n#{output}"
     assert_equal PhlexKit::VERSION, output

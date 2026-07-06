@@ -12,7 +12,7 @@ module PhlexKit
     def view_template
       # A visible loader, not decoration: role=status + label, aria-hidden off.
       render Icon.new(:loader, size: nil, **mix({
-        class: [ "pk-spinner", SIZES.fetch(@size) ].compact.join(" "),
+        class: [ "pk-spinner", fetch_option(SIZES, @size, :size) ].compact.join(" "),
         role: "status",
         aria: { label: "Loading" },
         "aria-hidden": false

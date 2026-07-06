@@ -14,7 +14,7 @@ module PhlexKit
       button(**mix({
         type: :button,
         role: "combobox",
-        class: [ "pk-select-trigger", SIZES.fetch(@size) ].compact.join(" "),
+        class: [ "pk-select-trigger", fetch_option(SIZES, @size, :size) ].compact.join(" "),
         aria: { expanded: "false", haspopup: "listbox", autocomplete: "none" },
         data: { action: "phlex-kit--select#onClick", phlex_kit__select_target: "trigger" }
       }, @attrs)) do

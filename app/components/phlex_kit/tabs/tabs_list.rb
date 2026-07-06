@@ -8,7 +8,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      classes = [ "pk-tabs-list", VARIANTS.fetch(@variant) ].compact.join(" ")
+      classes = [ "pk-tabs-list", fetch_option(VARIANTS, @variant, :variant) ].compact.join(" ")
       div(**mix({ class: classes, role: "tablist", data: { phlex_kit__tabs_target: "list", action: "keydown->phlex-kit--tabs#keydown" } }, @attrs), &)
     end
   end

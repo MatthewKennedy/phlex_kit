@@ -59,7 +59,7 @@ module PhlexKit
     def collapsible? = @collapsible != :none
 
     def classes
-      [ "pk-sidebar-wrapper", COLLAPSIBLE.fetch(@collapsible) ].compact.join(" ")
+      [ "pk-sidebar-wrapper", fetch_option(COLLAPSIBLE, @collapsible, :collapsible) ].compact.join(" ")
     end
   end
 end

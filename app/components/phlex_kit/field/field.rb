@@ -26,7 +26,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      data = { slot: "field", orientation: ORIENTATIONS.fetch(@orientation) }
+      data = { slot: "field", orientation: fetch_option(ORIENTATIONS, @orientation, :orientation) }
       data[:invalid] = "true" if @invalid
       data[:disabled] = "true" if @disabled
       div(**mix({ class: "pk-field", role: "group", data: data }, @attrs), &)

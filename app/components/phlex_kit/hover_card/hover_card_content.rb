@@ -10,7 +10,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      classes = [ "pk-hover-card-content", "pk-hidden", SIDES.fetch(@side) ].compact.join(" ")
+      classes = [ "pk-hover-card-content", "pk-hidden", fetch_option(SIDES, @side, :side) ].compact.join(" ")
       div(**mix({ class: classes, data: { phlex_kit__hover_card_target: "content", state: "closed" } }, @attrs), &)
     end
   end

@@ -15,7 +15,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      classes = [ "pk-marker", VARIANTS.fetch(@variant) ].compact.join(" ")
+      classes = [ "pk-marker", fetch_option(VARIANTS, @variant, :variant) ].compact.join(" ")
       if @href
         a(**mix({ class: classes, href: @href }, @attrs), &)
       elsif @as == :button

@@ -17,7 +17,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      classes = [ "pk-item", VARIANTS.fetch(@variant), SIZES.fetch(@size) ].compact.join(" ")
+      classes = [ "pk-item", fetch_option(VARIANTS, @variant, :variant), fetch_option(SIZES, @size, :size) ].compact.join(" ")
       if @href
         a(**mix({ class: classes, href: @href }, @attrs), &)
       else

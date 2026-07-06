@@ -15,7 +15,7 @@ module PhlexKit
       base = {
         role: "menuitem",
         tabindex: "-1",
-        class: [ "pk-dropdown-menu-item", VARIANTS.fetch(@variant) ].compact.join(" "),
+        class: [ "pk-dropdown-menu-item", fetch_option(VARIANTS, @variant, :variant) ].compact.join(" "),
         data: { phlex_kit__dropdown_menu_target: "menuItem", action: "click->phlex-kit--dropdown-menu#close" }
       }
       base[:href] = @href unless @as == :div

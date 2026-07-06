@@ -8,7 +8,7 @@ module PhlexKit
       @attrs = attrs
     end
     def view_template(&)
-      div(**mix({ class: [ "pk-empty-media", VARIANTS.fetch(@variant) ].compact.join(" ") }, @attrs), &)
+      div(**mix({ class: [ "pk-empty-media", fetch_option(VARIANTS, @variant, :variant) ].compact.join(" ") }, @attrs), &)
     end
   end
 end

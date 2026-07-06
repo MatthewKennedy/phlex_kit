@@ -26,7 +26,7 @@ module PhlexKit
     private
 
     def classes
-      [ "pk-sidebar", MENUS.fetch(@menu) ].compact.join(" ")
+      [ "pk-sidebar", fetch_option(MENUS, @menu, :menu) ].compact.join(" ")
     end
   end
 end

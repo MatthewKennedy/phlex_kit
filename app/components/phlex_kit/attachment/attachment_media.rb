@@ -11,7 +11,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({ class: [ "pk-attachment-media", VARIANTS.fetch(@variant) ].compact.join(" ") }, @attrs), &)
+      div(**mix({ class: [ "pk-attachment-media", fetch_option(VARIANTS, @variant, :variant) ].compact.join(" ") }, @attrs), &)
     end
   end
 end

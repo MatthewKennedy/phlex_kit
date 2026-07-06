@@ -42,7 +42,7 @@ module PhlexKit
     private
 
     def classes
-      [ "pk-native-select-field", SIZES.fetch(@size) ].compact.join(" ")
+      [ "pk-native-select-field", fetch_option(SIZES, @size, :size) ].compact.join(" ")
     end
   end
 end

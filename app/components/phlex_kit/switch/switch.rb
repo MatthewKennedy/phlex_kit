@@ -15,7 +15,7 @@ module PhlexKit
     end
 
     def view_template
-      label(**mix({ class: [ "pk-switch", SIZES.fetch(@size) ].compact.join(" ") }, @wrapper)) do
+      label(**mix({ class: [ "pk-switch", fetch_option(SIZES, @size, :size) ].compact.join(" ") }, @wrapper)) do
         input(type: "hidden", name: @attrs[:name], value: @unchecked_value) if @include_hidden && @attrs[:name]
         # role="switch" belongs on the focusable control: native checkedness then
         # maps to aria-checked for AT, and the label stays a plain label.
