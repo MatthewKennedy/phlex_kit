@@ -60,6 +60,7 @@ module Gallery
             table_demo
             inputs_demo
             form_demo
+            field_demo
             native_select_demo
             select_demo
             combobox_demo
@@ -353,6 +354,29 @@ module Gallery
           div(class: "pk-form-actions") do
             render PhlexKit::Button.new(type: :submit, size: :sm) { "Save" }
             render PhlexKit::Button.new(type: :reset, size: :sm, variant: :ghost) { "Reset" }
+          end
+        end
+      end
+    end
+
+    def field_demo
+      demo("Field", note: "Layout family for labels, controls and help text — full catalog at /docs/field.") do
+        render PhlexKit::FieldSet.new(class: "w-md") do
+          render PhlexKit::FieldLegend.new { "Profile" }
+          render PhlexKit::FieldGroup.new do
+            render PhlexKit::Field.new do
+              render PhlexKit::FieldLabel.new(for: "gallery-field-name") { "Name" }
+              render PhlexKit::Input.new(id: "gallery-field-name", name: "name", placeholder: "Ada Lovelace")
+              render PhlexKit::FieldDescription.new { "Shown on your public profile." }
+            end
+            render PhlexKit::FieldSeparator.new
+            render PhlexKit::Field.new(orientation: :horizontal) do
+              render PhlexKit::Switch.new(name: "newsletter")
+              render PhlexKit::FieldContent.new do
+                render PhlexKit::FieldTitle.new { "Newsletter" }
+                render PhlexKit::FieldDescription.new { "Monthly release notes, no spam." }
+              end
+            end
           end
         end
       end
