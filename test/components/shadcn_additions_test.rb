@@ -97,7 +97,7 @@ class ShadcnAdditionsTest < Minitest::Test
     trigger = render(PhlexKit::MenubarTrigger.new { "File" })
     assert_includes trigger, "click->phlex-kit--menubar#toggle"
     assert_includes trigger, "mouseenter->phlex-kit--menubar#switch"
-    assert_includes render(PhlexKit::MenubarContent.new { "x" }), "pk-menubar-content pk-hidden"
+    assert_includes render(PhlexKit::MenubarContent.new { "x" }), %(class="pk-menubar-content" popover="manual")
     item = render(PhlexKit::MenubarItem.new(shortcut: "⌘T") { "New Tab" })
     assert_includes item, "pk-menubar-shortcut"
     assert_includes item, "click->phlex-kit--menubar#close"
@@ -109,7 +109,7 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes html, "data-hover-open"
     assert_includes html, "mouseleave->phlex-kit--menubar#close"
     assert_includes render(PhlexKit::NavigationMenuItem.new { "x" }), %(data-phlex-kit--menubar-target="menu")
-    assert_includes render(PhlexKit::NavigationMenuContent.new { "x" }), "pk-navigation-menu-content pk-hidden"
+    assert_includes render(PhlexKit::NavigationMenuContent.new { "x" }), %(class="pk-navigation-menu-content" popover="manual")
     assert_includes render(PhlexKit::NavigationMenuLink.new(href: "/docs") { "Docs" }), %(href="/docs")
   end
 

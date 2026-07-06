@@ -1,7 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 
-// PhlexKit's stand-in for Radix behind shadcn's Menubar and NavigationMenu:
-// click (or hover, for nav menus) opens a menu's panel; while one is open,
+// PhlexKit's stand-in for Radix behind shadcn's Menubar and NavigationMenu.
+// Panels are native [popover=manual] elements (manual: this controller owns
+// open/close), anchor-positioned per menu with viewport-edge flipping by
+// menubar.css / navigation_menu.css.
+// Click (or hover, for nav menus) opens a menu's panel; while one is open,
 // hovering a sibling trigger switches to it; Escape/outside/item click closes.
 // Keyboard (menubar mode): ArrowDown on a trigger opens its menu focusing the
 // first item; ArrowDown/ArrowUp/Home/End rove over the open menu's items
@@ -31,7 +34,7 @@ export default class extends Controller {
   show(menu, focus = false) {
     if (this.openMenu !== menu) {
       this.close()
-      this.panel(menu)?.classList.remove("pk-hidden")
+      this.panel(menu)?.showPopover()
       menu.querySelector("[aria-expanded]")?.setAttribute("aria-expanded", "true")
       this.openMenu = menu
     }
@@ -41,7 +44,8 @@ export default class extends Controller {
   close(opts = {}) {
     const menu = this.openMenu
     if (!menu) return
-    this.panel(menu)?.classList.add("pk-hidden")
+    const panel = this.panel(menu)
+    if (panel?.matches(":popover-open")) panel.hidePopover()
     const trigger = menu.querySelector("[aria-expanded]")
     trigger?.setAttribute("aria-expanded", "false")
     this.openMenu = null
