@@ -33,25 +33,81 @@ function fuzzyScore(query, value) {
 // nav, dismiss) is unchanged.
 // Connects to data-controller="phlex-kit--command"
 export default class extends Controller {
-  static targets = ["input", "group", "item", "empty", "separator"];
+  static targets = ["input", "group", "item", "empty", "separator", "list", "liveRegion"];
 
   connect() {
     this.selectedIndex = -1;
+    // Remember what had focus before the palette grabbed it (for a cloned
+    // dialog this is the element focused when the overlay was inserted), so
+    // dismiss() can hand focus back instead of dropping it on <body>.
+    this.previouslyFocused = document.activeElement;
 
     if (!this.hasInputTarget) {
       return;
     }
 
+    this.generateItemIds();
     this.inputTarget.focus();
     this.searchIndex = this.buildSearchIndex();
     this.toggleVisibility(this.emptyTargets, false);
   }
 
+  // ARIA plumbing: every result gets an id derived from the listbox id so the
+  // input can point aria-activedescendant at the keyboard highlight, and
+  // aria-controls is wired to the listbox (mirrors select_controller.js).
+  generateItemIds() {
+    const list = this.hasListTarget ? this.listTarget : this.element;
+    if (!list.id) list.id = `pk-command-list-${Math.random().toString(36).slice(2, 10)}`;
+
+    this.itemTargets.forEach((item, index) => {
+      if (!item.id) item.id = `${list.id}-${index}`;
+    });
+
+    this.inputTarget.setAttribute("aria-controls", list.id);
+  }
+
   dismiss() {
     // allow scroll on body
     document.body.style.removeProperty("overflow");
+    const previous = this.previouslyFocused;
     // remove the element
     this.element.remove();
+    // restore focus to wherever it was before the palette opened
+    if (previous instanceof HTMLElement && document.contains(previous)) {
+      previous.focus();
+    }
+  }
+
+  // Focus trap for the cloned dialog overlay: Tab / Shift+Tab cycle among the
+  // overlay's own focusable elements instead of escaping to the page beneath.
+  trapFocus(e) {
+    if (e.key !== "Tab") return;
+
+    const focusables = Array.from(
+      this.element.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ),
+    ).filter((el) => !el.closest(".pk-hidden"));
+
+    if (focusables.length === 0) {
+      e.preventDefault();
+      return;
+    }
+
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    } else if (!this.element.contains(active)) {
+      e.preventDefault();
+      first.focus();
+    }
   }
 
   focusInput() {
@@ -65,6 +121,7 @@ export default class extends Controller {
     const query = e.target.value.toLowerCase();
     if (query.length === 0) {
       this.resetVisibility();
+      this.announceResultCount(null);
       return;
     }
 
@@ -75,9 +132,22 @@ export default class extends Controller {
       this.toggleVisibility([result.item.element], true),
     );
 
+    this.announceResultCount(results.length);
     this.toggleVisibility(this.emptyTargets, results.length === 0);
     this.toggleVisibility(this.separatorTargets, false);
     this.updateGroupVisibility();
+  }
+
+  // Announce the filtered result count to screen readers (null = no query).
+  announceResultCount(count) {
+    if (!this.hasLiveRegionTarget) return;
+
+    if (count === null) {
+      this.liveRegionTarget.textContent = "";
+    } else {
+      this.liveRegionTarget.textContent =
+        count === 0 ? "No results" : `${count} result${count === 1 ? "" : "s"}`;
+    }
   }
 
   toggleVisibility(elements, isVisible) {
@@ -120,8 +190,11 @@ export default class extends Controller {
   }
 
   handleKeydown(e) {
+    // Disabled items stay visible (dimmed via [data-disabled]) but are
+    // skipped by keyboard selection.
     const visibleItems = this.itemTargets.filter(
-      (item) => !item.classList.contains("pk-hidden"),
+      (item) =>
+        !item.classList.contains("pk-hidden") && !item.dataset.disabled,
     );
     if (e.key === "ArrowDown") {
       e.preventDefault();
@@ -136,7 +209,9 @@ export default class extends Controller {
   }
 
   updateSelectedItem(visibleItems, direction) {
-    if (this.selectedIndex >= 0) {
+    if (visibleItems.length === 0) return;
+
+    if (this.selectedIndex >= 0 && visibleItems[this.selectedIndex]) {
       this.toggleAriaSelected(visibleItems[this.selectedIndex], false);
     }
 
@@ -150,6 +225,15 @@ export default class extends Controller {
     }
 
     this.toggleAriaSelected(visibleItems[this.selectedIndex], true);
+
+    // Focus stays in the input; the highlighted option is exposed via
+    // aria-activedescendant (result ids come from generateItemIds).
+    if (this.hasInputTarget) {
+      this.inputTarget.setAttribute(
+        "aria-activedescendant",
+        visibleItems[this.selectedIndex].id,
+      );
+    }
   }
 
   toggleAriaSelected(element, isSelected) {
@@ -159,5 +243,11 @@ export default class extends Controller {
   deselectAll() {
     this.itemTargets.forEach((item) => this.toggleAriaSelected(item, false));
     this.selectedIndex = -1;
+
+    // aria-activedescendant holds an element id; with nothing highlighted it
+    // must be removed, not left pointing at a stale option.
+    if (this.hasInputTarget) {
+      this.inputTarget.removeAttribute("aria-activedescendant");
+    }
   }
 }

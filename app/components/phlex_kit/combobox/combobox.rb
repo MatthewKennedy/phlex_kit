@@ -19,9 +19,10 @@ module PhlexKit
       @attrs = attrs
     end
 
-    def view_template(&)
+    def view_template
+      # role="combobox" lives on the interactive element (the trigger button /
+      # filter input), not this wrapper — see ComboboxTrigger and friends.
       div(**mix({
-        role: "combobox",
         class: "pk-combobox",
         data: {
           controller: "phlex-kit--combobox",
@@ -29,7 +30,22 @@ module PhlexKit
           phlex_kit__combobox_auto_highlight_value: (@auto_highlight ? "true" : nil),
           action: "turbo:morph@window->phlex-kit--combobox#updateTriggerContent click@window->phlex-kit--combobox#onClickOutside"
         }
-      }, @attrs), &)
+      }, @attrs)) do
+        live_region
+        yield
+      end
+    end
+
+    private
+
+    # Screen-reader announcement of the filtered result count — the controller
+    # writes "N results" / "No results" into it from applyFilter.
+    def live_region
+      div(
+        class: "pk-sr-only",
+        aria: { live: "polite" },
+        data: { phlex_kit__combobox_target: "liveRegion" }
+      )
     end
   end
 end

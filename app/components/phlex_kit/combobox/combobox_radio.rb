@@ -10,6 +10,9 @@ module PhlexKit
     def view_template
       input(**mix({
         type: :radio,
+        # The option label is the interactive surface (ARIA option); the real
+        # input must not be a second tab stop inside it.
+        tabindex: "-1",
         class: "pk-combobox-radio",
         data: {
           phlex_kit__combobox_target: "input",

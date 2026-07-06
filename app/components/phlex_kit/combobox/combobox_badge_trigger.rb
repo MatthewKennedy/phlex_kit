@@ -8,16 +8,19 @@ module PhlexKit
   # PhlexKit's completion of it. Keyboard actions live here because focus stays
   # in this field (see ComboboxInputTrigger). See combobox.rb.
   class ComboboxBadgeTrigger < BaseComponent
-    def initialize(placeholder: "", clear_button: false, **attrs)
+    def initialize(placeholder: "", clear_button: false, list_id: nil, **attrs)
       @placeholder = placeholder
       @clear_button = clear_button
+      @list_id = list_id
       @attrs = attrs
     end
 
     def view_template
+      # The ARIA combobox role sits on the field itself (the interactive
+      # element), not this wrapper. Pass `list_id:` matching the ComboboxList
+      # id to wire aria-controls statically — otherwise the controller wires it.
       div(**mix({
         class: "pk-combobox-badge-trigger",
-        aria: { haspopup: "listbox", expanded: "false" },
         data: {
           placeholder: @placeholder,
           phlex_kit__combobox_target: "trigger",
@@ -34,6 +37,8 @@ module PhlexKit
         div(class: "pk-combobox-badge-container pk-hidden", data: { phlex_kit__combobox_target: "badgeContainer" })
         input(
           type: :text,
+          role: "combobox",
+          aria: { haspopup: "listbox", expanded: "false", autocomplete: "list", controls: @list_id },
           placeholder: @placeholder,
           autocomplete: "off",
           autocorrect: "off",

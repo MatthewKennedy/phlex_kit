@@ -7,16 +7,28 @@ module PhlexKit
   class CommandDialogContent < BaseComponent
     SIZES = { xs: "xs", sm: "sm", md: nil, lg: "lg", xl: "xl", full: "full" }.freeze
 
-    def initialize(size: :md, **attrs)
+    def initialize(size: :md, aria_label: "Command palette", **attrs)
       @size = size.to_sym
+      @aria_label = aria_label
       @attrs = attrs
     end
 
     def view_template(&block)
       template(data: { phlex_kit__command_dialog_target: "content" }) do
-        div(data: { controller: "phlex-kit--command", phlex_kit__command_dialog_instance: true }) do
+        # The keydown action is the focus trap: Tab cycles within the cloned
+        # overlay instead of escaping to the page underneath.
+        div(data: {
+          controller: "phlex-kit--command",
+          phlex_kit__command_dialog_instance: true,
+          action: "keydown->phlex-kit--command#trapFocus"
+        }) do
           backdrop
-          div(**mix({ class: panel_classes, data: { state: "open" } }, @attrs), &block)
+          div(**mix({
+            class: panel_classes,
+            role: "dialog",
+            aria: { modal: "true", label: @aria_label },
+            data: { state: "open" }
+          }, @attrs), &block)
         end
       end
     end
