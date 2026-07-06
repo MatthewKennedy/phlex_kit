@@ -24,6 +24,9 @@ module PhlexKit
         directory file_name, "app/components/phlex_kit/#{file_name}"
       end
 
+      # Belt-and-braces: the gem manifest's relative import already resolves to
+      # the host copy once app/components is ahead on the asset path, but hosts
+      # that skipped/trimmed the manifest still need an explicit import.
       def wire_import
         css = "app/assets/stylesheets/application.css"
         line = %(@import url("phlex_kit/#{file_name}/#{file_name}.css");\n)
@@ -67,6 +70,31 @@ module PhlexKit
 
       def confirm
         say_status :phlex_kit, "ejected phlex_kit/#{file_name} — your copy now shadows the gem (Ruby, CSS, JS)", :green
+        foreign_behavior_owners.each do |owner|
+          say_status :note,
+            "#{file_name}'s behavior lives in the #{owner} component's controller " \
+            "(still gem-owned) — `rails g phlex_kit:component #{owner}` to own it too",
+            :yellow
+        end
+      end
+
+      private
+
+      # Folders (other than the ejected one) whose Stimulus controllers this
+      # component's .rb files reference — e.g. date_picker rides calendar's,
+      # drawer rides sheet's. Editing the ejected copy won't change that
+      # behavior, so tell the user instead of overstating ownership.
+      def foreign_behavior_owners
+        root = self.class.source_root
+        identifiers = Dir.glob(File.join(root, file_name, "*.rb"))
+          .flat_map { |f| File.read(f).scan(/phlex-kit--([a-z0-9-]+)/) }
+          .flatten.uniq
+        identifiers.filter_map { |id|
+          controller = Dir.glob(File.join(root, "*", "#{id.tr("-", "_")}_controller.js")).first
+          next unless controller
+          owner = File.basename(File.dirname(controller))
+          owner == file_name ? nil : owner
+        }.uniq.sort
       end
     end
   end
