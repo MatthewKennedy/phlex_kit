@@ -1,5 +1,6 @@
 module PhlexKit
-  # Click-triggered floating panel, positioned with CSS (no @floating-ui). Ported
+  # Click-triggered floating panel — native [popover] + CSS anchor
+  # positioning with viewport-edge flipping (no @floating-ui). Ported
   # from ruby_ui's RubyUI::Popover. Compose Popover > (PopoverTrigger +
   # PopoverContent). phlex-kit--popover.
   class Popover < BaseComponent

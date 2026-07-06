@@ -28,8 +28,8 @@ class Wave3Test < Minitest::Test
   end
 
   def test_popover_toggle_wiring
-    assert_includes render(PhlexKit::PopoverTrigger.new { "t" }), "click->phlex-kit--popover#toggle"
-    assert_includes render(PhlexKit::PopoverContent.new { "c" }), "pk-hidden"
+    assert_includes render(PhlexKit::PopoverTrigger.new { "t" }), "pointerdown->phlex-kit--popover#armToggle click->phlex-kit--popover#toggle"
+    assert_includes render(PhlexKit::PopoverContent.new { "c" }), 'popover="auto"'
   end
 
   def test_hover_card_hover_actions

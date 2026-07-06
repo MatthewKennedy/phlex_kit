@@ -1,12 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Connects to data-controller="phlex-kit--popover". Click to toggle; click
-// outside to close. CSS positions the panel under the trigger.
+// Connects to data-controller="phlex-kit--popover". The panel is a native
+// [popover=auto] — the browser owns light dismiss + Escape; CSS anchor
+// positioning places it (popover.css). Light dismiss fires on pointerdown
+// outside the panel, so a click on the trigger would close-then-reopen:
+// armToggle records the open state at pointerdown and toggle skips the
+// reopen.
 export default class extends Controller {
   static targets = ["trigger", "content"]
-  connect() { this.onDoc = (e) => { if (!this.element.contains(e.target)) this.hide() } }
-  disconnect() { document.removeEventListener("click", this.onDoc) }
-  toggle(e) { e?.preventDefault(); this.contentTarget.classList.contains("pk-hidden") ? this.show() : this.hide() }
-  show() { this.contentTarget.classList.remove("pk-hidden"); this.contentTarget.dataset.state = "open"; document.addEventListener("click", this.onDoc) }
-  hide() { this.contentTarget.classList.add("pk-hidden"); this.contentTarget.dataset.state = "closed"; document.removeEventListener("click", this.onDoc) }
+  armToggle() { this.wasOpen = this.contentTarget.matches(":popover-open") }
+  toggle(e) { e?.preventDefault(); if (this.wasOpen) return; this.contentTarget.showPopover() }
+  contentTargetConnected(el) {
+    el.addEventListener("toggle", (e) => { el.dataset.state = e.newState === "open" ? "open" : "closed" })
+  }
 }
