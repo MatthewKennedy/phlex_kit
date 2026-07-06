@@ -12,7 +12,7 @@ export default class extends Controller {
     const root = this.element.closest('[data-controller~="phlex-kit--data-table"]');
     if (!root) return;
     root
-      .querySelectorAll(`[data-column="${key}"]`)
+      .querySelectorAll(`[data-column="${CSS.escape(key)}"]`)
       .forEach((el) => el.classList.toggle("pk-hidden", !visible));
   }
 }
