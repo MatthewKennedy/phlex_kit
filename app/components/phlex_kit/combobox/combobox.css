@@ -1,10 +1,13 @@
 /* Co-located with combobox.rb — UI::Combobox. ruby_ui's structure + Stimulus
-   kept; the @floating-ui/native-popover positioning replaced with plain CSS
-   (panel below the trigger), and Tailwind with vanilla CSS on the palette
-   tokens. Geometry from ruby_ui (h-9 trigger, rounded-lg panel, p-1 list,
-   px-2 py-1 label rows, group labels via ::before content(attr(label))).
+   kept; like upstream the panel is a native [popover] (manual), and CSS
+   anchor positioning replaces @floating-ui (Baseline 2026): the panel anchors
+   to the combobox wrapper (all three trigger layouts fill it), gets the
+   trigger width as a floor via anchor-size(), and flips above at the
+   viewport bottom via position-try-fallbacks. Tailwind → vanilla CSS on the
+   palette tokens. Geometry from ruby_ui (h-9 trigger, rounded-lg panel, p-1
+   list, px-2 py-1 label rows, group labels via ::before content(attr(label))).
    Theme tokens come from the global stylesheet. */
-.pk-combobox { position: relative; width: 100%; }
+.pk-combobox { width: 100%; anchor-name: --pk-combobox; anchor-scope: --pk-combobox; }
 
 /* Closed-state trigger (mirrors .pk-select-trigger geometry). */
 .pk-combobox-trigger {
@@ -40,14 +43,17 @@
 .pk-combobox-trigger-content { overflow: hidden; text-overflow: ellipsis; }
 .pk-combobox-trigger-icon { flex: none; width: 1rem; height: 1rem; margin-left: .5rem; opacity: .5; }
 
-/* Dropdown panel — opens below the trigger (no floating-ui); the controller
-   toggles .pk-hidden and matches its width to the trigger. */
+/* Dropdown panel — anchored below the combobox, flips above at the viewport
+   bottom. Width: trigger width with a 15rem floor (was JS
+   updatePopoverWidth, now pure CSS). */
 .pk-combobox-popover {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 50;
-  margin-top: .25rem;
+  position: fixed;
+  position-anchor: --pk-combobox;
+  inset: auto;
+  position-area: block-end span-inline-end;
+  margin: .25rem 0 0;
+  position-try-fallbacks: flip-block;
+  width: max(anchor-size(width), 15rem);
   border: 1px solid var(--pk-border);
   border-radius: var(--pk-radius);
   background: var(--pk-surface);
