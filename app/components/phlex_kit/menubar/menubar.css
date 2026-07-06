@@ -13,7 +13,7 @@
   background: var(--pk-surface);
   padding: 3px;
 }
-.pk-menubar-menu { position: relative; }
+.pk-menubar-menu { anchor-name: --pk-menubar-menu; anchor-scope: --pk-menubar-menu; }
 .pk-menubar-trigger {
   display: flex;
   align-items: center;
@@ -31,12 +31,16 @@
 .pk-menubar-trigger:hover,
 .pk-menubar-trigger[aria-expanded="true"] { background: var(--pk-surface-2); }
 .pk-menubar-content {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 50;
+  position: fixed;
+  position-anchor: --pk-menubar-menu;
+  inset: auto;
+  position-area: block-end span-inline-end;
+  position-try-fallbacks: flip-block;
+  /* the [popover] UA style sets overflow:auto, which would clip the
+     negative-offset ::before/::after bridges below */
+  overflow: visible;
   min-width: 9rem;
-  margin-top: .5rem;
+  margin: .5rem 0 0;
   border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
   border-radius: var(--pk-radius);
   background: var(--pk-surface);
@@ -44,11 +48,20 @@
   padding: .25rem;
   box-shadow: 0 8px 24px rgb(0 0 0 / .3);
 }
-/* Hover bridge over the trigger→panel gap. */
+/* Hover bridge over the trigger→panel gap — both sides, since a flip
+   fallback puts the gap below the panel instead of above. */
 .pk-menubar-content::before {
   content: "";
   position: absolute;
   top: calc(-.5rem - 1px);
+  left: 0;
+  right: 0;
+  height: calc(.5rem + 1px);
+}
+.pk-menubar-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
   left: 0;
   right: 0;
   height: calc(.5rem + 1px);
@@ -110,16 +123,22 @@
   box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 
-/* Submenu: trigger row + side panel, revealed on hover/focus — pure CSS. */
-.pk-menubar-sub { position: relative; }
+/* Submenu: trigger row + side panel, revealed on hover/focus — pure CSS.
+   The row is its own scoped anchor; the panel flips to the other side at
+   the viewport right edge. */
+.pk-menubar-sub { anchor-name: --pk-menubar-sub; anchor-scope: --pk-menubar-sub; }
 .pk-menubar-sub-chevron { margin-left: auto; width: 1rem; height: 1rem; }
 .pk-menubar-sub-content {
-  position: absolute;
-  top: -0.25rem;
-  left: 100%;
-  z-index: 60;
+  position: fixed;
+  position-anchor: --pk-menubar-sub;
+  inset: auto;
+  position-area: inline-end span-block-end;
+  margin-top: -0.25rem;
+  position-try-fallbacks: flip-inline;
   min-width: 9rem;
-  padding-left: .25rem; /* hover bridge over the gap */
+  /* hover bridge over the gap — symmetric because flip tactics flip
+     margins/insets but not padding, so the flipped side needs one too */
+  padding: 0 .25rem;
   display: none;
 }
 .pk-menubar-sub-viewport {
