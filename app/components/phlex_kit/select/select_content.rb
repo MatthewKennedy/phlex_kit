@@ -1,7 +1,8 @@
 module PhlexKit
-  # The dropdown panel for PhlexKit::Select — hidden until the trigger opens it (the
-  # controller toggles the `hidden` class). Outer div is the positioned/targeted
-  # layer; the inner `.pk-select-viewport` is the bordered, scrollable box.
+  # The dropdown panel for PhlexKit::Select — a native [popover=manual] the
+  # controller toggles, anchor-positioned to the trigger with viewport-edge
+  # flipping (select.css). Outer div is the positioned/targeted layer; the
+  # inner `.pk-select-viewport` is the bordered, scrollable box.
   # Holds SelectGroup / SelectLabel / SelectItem children. See select.rb.
   class SelectContent < BaseComponent
     def initialize(**attrs)
@@ -14,7 +15,8 @@ module PhlexKit
         id: @id,
         role: "listbox",
         tabindex: "-1",
-        class: "pk-select-content hidden",
+        class: "pk-select-content",
+        popover: "manual",
         data: { phlex_kit__select_target: "content" }
       }, @attrs)) do
         div(class: "pk-select-viewport", &block)
