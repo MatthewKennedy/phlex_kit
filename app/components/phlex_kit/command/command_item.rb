@@ -1,12 +1,15 @@
 module PhlexKit
   # One palette result — an <a> (pass `href:`) filtered by `value:`, activated
   # by click or enter. aria-selected is toggled by keyboard navigation.
-  # See command.rb.
+  # `disabled: true` renders the [data-disabled] styling + aria-disabled and
+  # the controller skips it during keyboard navigation (matches
+  # ContextMenuItem's pattern). See command.rb.
   class CommandItem < BaseComponent
-    def initialize(value:, text: "", href: "#", **attrs)
+    def initialize(value:, text: "", href: "#", disabled: false, **attrs)
       @value = value
       @text = text
       @href = href
+      @disabled = disabled
       @attrs = attrs
     end
 
@@ -15,7 +18,13 @@ module PhlexKit
         class: "pk-command-item",
         href: @href,
         role: "option",
-        data: { phlex_kit__command_target: "item", value: @value, text: @text }
+        aria: { disabled: (@disabled ? "true" : nil) },
+        data: {
+          phlex_kit__command_target: "item",
+          value: @value,
+          text: @text,
+          disabled: (@disabled ? "true" : nil)
+        }
       }, @attrs), &)
     end
   end

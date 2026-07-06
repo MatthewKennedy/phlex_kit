@@ -1,10 +1,14 @@
 module PhlexKit
   # Filter input at the top of a PhlexKit::ComboboxPopover (magnifier icon +
   # borderless search field). Filtering happens client-side against each item's
-  # text (or data-text). See combobox.rb.
+  # text (or data-text). The field carries the ARIA combobox role (keyboard nav
+  # highlights options via aria-activedescendant while focus stays here); pass
+  # `list_id:` matching the ComboboxList id to wire aria-controls statically —
+  # otherwise the controller wires it on connect. See combobox.rb.
   class ComboboxSearchInput < BaseComponent
-    def initialize(placeholder:, **attrs)
+    def initialize(placeholder:, list_id: nil, **attrs)
       @placeholder = placeholder
+      @list_id = list_id
       @attrs = attrs
     end
 
@@ -13,7 +17,8 @@ module PhlexKit
         icon
         input(**mix({
           type: :search,
-          role: "searchbox",
+          role: "combobox",
+          aria: { autocomplete: "list", expanded: "false", controls: @list_id },
           autocorrect: "off",
           autocomplete: "off",
           spellcheck: "false",

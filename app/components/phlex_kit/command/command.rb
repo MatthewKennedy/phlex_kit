@@ -11,8 +11,23 @@ module PhlexKit
       @attrs = attrs
     end
 
-    def view_template(&)
-      div(**mix({ class: "pk-command" }, @attrs), &)
+    def view_template
+      div(**mix({ class: "pk-command" }, @attrs)) do
+        live_region
+        yield
+      end
+    end
+
+    private
+
+    # Screen-reader announcement of the filtered result count — the controller
+    # writes "N results" / "No results" into it from filter().
+    def live_region
+      div(
+        class: "pk-sr-only",
+        aria: { live: "polite" },
+        data: { phlex_kit__command_target: "liveRegion" }
+      )
     end
   end
 end

@@ -30,13 +30,59 @@ export default class extends Controller {
     "inputTrigger",
     "badgeContainer",
     "badgeInput",
-    "clearButton"
+    "clearButton",
+    "list",
+    "liveRegion"
   ]
 
   selectedItemIndex = null
 
   connect() {
+    this.generateItemIds()
     this.updateTriggerContent()
+  }
+
+  // ARIA plumbing: every option gets an id derived from the listbox id so the
+  // combobox element can point aria-activedescendant at the keyboard highlight,
+  // and aria-controls is wired to the listbox (mirrors select_controller.js).
+  generateItemIds() {
+    const list = this.hasListTarget ? this.listTarget : (this.hasPopoverTarget ? this.popoverTarget : this.element)
+    if (!list.id) list.id = `pk-combobox-list-${Math.random().toString(36).slice(2, 10)}`
+
+    this.itemTargets.forEach((item, index) => {
+      if (!item.id) item.id = `${list.id}-${index}`
+    })
+
+    this.ariaExpandedElements().forEach((el) => el.setAttribute("aria-controls", list.id))
+  }
+
+  // The elements carrying the open/closed combobox state: the trigger button
+  // (button layout) and/or whichever filter field the layout has.
+  ariaExpandedElements() {
+    const els = []
+    if (this.hasInputTriggerTarget) els.push(this.inputTriggerTarget)
+    if (this.hasBadgeInputTarget) els.push(this.badgeInputTarget)
+    if (els.length === 0 && this.hasTriggerTarget) els.push(this.triggerTarget)
+    if (this.hasSearchInputTarget) els.push(this.searchInputTarget)
+    return els
+  }
+
+  isOpen() {
+    return this.hasPopoverTarget && !this.popoverTarget.classList.contains("pk-hidden")
+  }
+
+  setExpanded(expanded) {
+    this.ariaExpandedElements().forEach((el) => el.setAttribute("aria-expanded", expanded ? "true" : "false"))
+  }
+
+  setActiveDescendant(id) {
+    const field = this.filterField()
+    if (field) field.setAttribute("aria-activedescendant", id)
+  }
+
+  clearActiveDescendant() {
+    const field = this.filterField()
+    if (field) field.removeAttribute("aria-activedescendant")
   }
 
   inputChanged(e) {
@@ -81,13 +127,15 @@ export default class extends Controller {
   updateTriggerContent() {
     const checked = this.checkedInputs()
 
+    this.syncAriaSelected()
+
     if (this.hasTriggerContentTarget) {
       this.triggerContentTarget.innerText = this.selectionLabel(checked) || this.triggerTarget.dataset.placeholder
     }
 
     // Input trigger: the field is also the filter, so only reflect the
     // selection while the popover is closed — never stomp a query mid-typing.
-    if (this.hasInputTriggerTarget && this.triggerTarget.ariaExpanded !== "true") {
+    if (this.hasInputTriggerTarget && !this.isOpen()) {
       this.inputTriggerTarget.value = this.selectionLabel(checked)
     }
 
@@ -98,6 +146,14 @@ export default class extends Controller {
     if (this.hasClearButtonTarget) {
       this.clearButtonTarget.classList.toggle("pk-hidden", checked.length === 0)
     }
+  }
+
+  // The chosen option(s) carry aria-selected; the option label is the ARIA
+  // option, its inner input holds the real checked state.
+  syncAriaSelected() {
+    this.inputTargets.forEach((input) => {
+      input.parentElement.setAttribute("aria-selected", input.checked ? "true" : "false")
+    })
   }
 
   renderBadges(checked) {
@@ -159,7 +215,7 @@ export default class extends Controller {
   togglePopover(event) {
     event.preventDefault()
 
-    if (this.triggerTarget.ariaExpanded === "true") {
+    if (this.isOpen()) {
       this.closePopover()
     } else {
       this.openPopover(event)
@@ -168,12 +224,13 @@ export default class extends Controller {
 
   openPopover(event) {
     if (event) event.preventDefault()
-    if (this.triggerTarget.ariaExpanded === "true") return
+    if (this.isOpen()) return
 
     this.updatePopoverWidth()
-    this.triggerTarget.ariaExpanded = "true"
+    this.setExpanded(true)
     this.selectedItemIndex = null
     this.itemTargets.forEach(item => item.ariaCurrent = "false")
+    this.clearActiveDescendant()
     this.popoverTarget.classList.remove("pk-hidden")
 
     const field = this.filterField()
@@ -186,13 +243,16 @@ export default class extends Controller {
   }
 
   closePopover() {
-    this.triggerTarget.ariaExpanded = "false"
+    this.setExpanded(false)
+    // aria-activedescendant holds an element id; on close it must be removed,
+    // not left pointing at a hidden option.
+    this.clearActiveDescendant()
     this.popoverTarget.classList.add("pk-hidden")
     this.updateTriggerContent() // reflect the selection into an input trigger
   }
 
   onClickOutside(event) {
-    if (this.triggerTarget.ariaExpanded !== "true") return
+    if (!this.isOpen()) return
     if (this.element.contains(event.target)) return
 
     this.closePopover()
@@ -227,6 +287,7 @@ export default class extends Controller {
     let resultCount = 0
 
     this.selectedItemIndex = null
+    this.clearActiveDescendant()
 
     this.inputTargets.forEach((input) => {
       const text = this.inputContent(input).toLowerCase()
@@ -241,6 +302,12 @@ export default class extends Controller {
 
     if (this.hasEmptyStateTarget) {
       this.emptyStateTarget.classList.toggle("pk-hidden", resultCount !== 0)
+    }
+
+    // Announce the filtered result count to screen readers.
+    if (this.hasLiveRegionTarget) {
+      this.liveRegionTarget.textContent =
+        resultCount === 0 ? "No results" : `${resultCount} result${resultCount === 1 ? "" : "s"}`
     }
 
     // autoHighlight: keep the first visible option marked while typing so
@@ -284,6 +351,9 @@ export default class extends Controller {
     visibleInputs.forEach((input, index) => {
       if (index == this.selectedItemIndex) {
         input.parentElement.ariaCurrent = "true"
+        // Focus stays in the filter field; the highlighted option is exposed
+        // via aria-activedescendant (option ids come from generateItemIds).
+        this.setActiveDescendant(input.parentElement.id)
         input.parentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' })
       } else {
         input.parentElement.ariaCurrent = "false"

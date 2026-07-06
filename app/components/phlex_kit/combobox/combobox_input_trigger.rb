@@ -9,15 +9,20 @@ module PhlexKit
   # popover's own bindings only fire for the button+search layout.
   # See combobox.rb.
   class ComboboxInputTrigger < BaseComponent
-    def initialize(placeholder: "", disabled: false, invalid: false, **attrs)
+    def initialize(placeholder: "", disabled: false, invalid: false, list_id: nil, **attrs)
       @placeholder = placeholder
       @disabled = disabled
       @invalid = invalid
+      @list_id = list_id
       @attrs = attrs
     end
 
     def view_template
-      wrapper_aria = { haspopup: "listbox", expanded: "false" }
+      # The ARIA combobox role sits on the field itself (the interactive
+      # element); the wrapper keeps aria-invalid only because the invalid
+      # styling targets it. Pass `list_id:` matching the ComboboxList id to
+      # wire aria-controls statically — otherwise the controller wires it.
+      wrapper_aria = {}
       wrapper_aria[:invalid] = "true" if @invalid
       div(**mix({
         class: "pk-combobox-input-trigger",
@@ -35,8 +40,12 @@ module PhlexKit
           ].join(" ")
         }
       }, @attrs)) do
+        field_aria = { haspopup: "listbox", expanded: "false", autocomplete: "list", controls: @list_id }
+        field_aria[:invalid] = "true" if @invalid
         input(
           type: :text,
+          role: "combobox",
+          aria: field_aria,
           placeholder: @placeholder,
           disabled: @disabled,
           autocomplete: "off",

@@ -3,9 +3,14 @@ module PhlexKit
   # type, arrows/enter drive selection, esc dismisses. Renders as shadcn's
   # current bordered pill inside the padded palette (input-wrapper >
   # input-group). See command.rb.
+  # Pass `list_id:` matching the CommandList id to wire aria-controls
+  # statically — otherwise the controller wires it on connect. aria-expanded
+  # stays "true" because the list is always visible (filtering hides items,
+  # never the listbox itself).
   class CommandInput < BaseComponent
-    def initialize(placeholder: "Type a command or search...", **attrs)
+    def initialize(placeholder: "Type a command or search...", list_id: nil, **attrs)
       @placeholder = placeholder
+      @list_id = list_id
       @attrs = attrs
     end
 
@@ -23,7 +28,7 @@ module PhlexKit
             autofocus: true,
             role: "combobox",
             value: "",
-            aria: { autocomplete: "list", expanded: "true" },
+            aria: { autocomplete: "list", expanded: "true", controls: @list_id },
             data: {
               phlex_kit__command_target: "input",
               action: [

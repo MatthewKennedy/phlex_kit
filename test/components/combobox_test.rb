@@ -12,7 +12,9 @@ class ComboboxTest < Minitest::Test
     assert_includes html, "phlex-kit--combobox"
     assert_includes html, %(data-phlex-kit--combobox-term-value="tags")
     assert_includes html, "click@window->phlex-kit--combobox#onClickOutside"
-    assert_includes html, %(role="combobox")
+    # role="combobox" lives on the interactive element (trigger/filter input),
+    # not the wrapper — see a11y_combobox_command_test.rb.
+    refute_includes html, %(role="combobox")
   end
 
   def test_trigger_carries_placeholder_and_content_target
@@ -32,7 +34,7 @@ class ComboboxTest < Minitest::Test
 
   def test_search_input_filters
     html = render(PhlexKit::ComboboxSearchInput.new(placeholder: "Search…"))
-    assert_includes html, %(role="searchbox")
+    assert_includes html, %(role="combobox")
     assert_includes html, "keyup->phlex-kit--combobox#filterItems"
   end
 
