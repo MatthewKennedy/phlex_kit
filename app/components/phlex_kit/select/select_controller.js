@@ -89,21 +89,30 @@ export default class extends Controller {
   }
 
   clickOutside(event) {
-    if (!this.openValue) return;
+    if (!this.contentTarget.matches(":popover-open")) return;
     if (this.element.contains(event.target)) return;
 
     event.preventDefault();
-    this.toogleContent();
+    this.#hide();
   }
 
+  // Open/close derive from the live :popover-open state, never a stored
+  // flag — a stale flag is how a close on an already-closed panel becomes
+  // an open (bit the popover's keyboard toggle).
   toogleContent() {
-    this.openValue = !this.openValue;
-    if (this.openValue) {
-      this.contentTarget.showPopover();
-    } else if (this.contentTarget.matches(":popover-open")) {
-      this.contentTarget.hidePopover();
-    }
-    this.triggerTarget.setAttribute("aria-expanded", this.openValue);
+    this.contentTarget.matches(":popover-open") ? this.#hide() : this.#show();
+  }
+
+  #show() {
+    this.openValue = true;
+    this.contentTarget.showPopover();
+    this.triggerTarget.setAttribute("aria-expanded", "true");
+  }
+
+  #hide() {
+    this.openValue = false;
+    if (this.contentTarget.matches(":popover-open")) this.contentTarget.hidePopover();
+    this.triggerTarget.setAttribute("aria-expanded", "false");
   }
 
   generateItemsIds() {
@@ -123,7 +132,7 @@ export default class extends Controller {
   }
 
   closeContent() {
-    this.toogleContent();
+    this.#hide();
     this.resetCurrent();
 
     // aria-activedescendant holds an element id; on close it must be removed,
