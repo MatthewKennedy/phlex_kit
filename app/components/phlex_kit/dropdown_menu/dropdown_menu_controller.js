@@ -19,7 +19,9 @@ export default class extends Controller {
   }
 
   onClickOutside(event) {
-    if (!this.openValue) return;
+    // Gate on the live :popover-open state, not the stored flag — a stale
+    // flag is how a close on an already-closed panel becomes an open.
+    if (!this.contentTarget.matches(":popover-open")) return;
     if (this.element.contains(event.target)) return;
 
     event.preventDefault();
