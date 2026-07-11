@@ -3,8 +3,8 @@
    (title + muted description) stacks at gap-0.5. `align: :end` flips the
    panel to the trigger's end edge. Tokens global.
    The panel is a native [popover] in the top layer, anchor-positioned to
-   the trigger (Baseline 2026); position-try-fallbacks flips it above the
-   trigger when it would overflow the viewport bottom. anchor-scope keeps
+   the trigger (Baseline 2026); position-try-fallbacks flips it on either
+   axis (or both) when it would overflow a viewport edge. anchor-scope keeps
    sibling popovers from resolving to each other's anchors. */
 .pk-popover { display: inline-block; anchor-scope: --pk-popover; }
 .pk-popover-trigger { display: inline-block; anchor-name: --pk-popover; }
@@ -14,7 +14,7 @@
   inset: auto;
   position-area: block-end span-inline-end;
   margin: .25rem 0 0;
-  position-try-fallbacks: flip-block;
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
   flex-direction: column; gap: .625rem;
   width: 18rem;
   border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
