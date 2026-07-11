@@ -28,7 +28,11 @@ class Wave3Test < Minitest::Test
   end
 
   def test_popover_toggle_wiring
-    assert_includes render(PhlexKit::PopoverTrigger.new { "t" }), "pointerdown->phlex-kit--popover#armToggle click->phlex-kit--popover#toggle"
+    # Toggling is native: the controller wires the trigger's button to the
+    # panel via popoverTargetElement, so the trigger carries no actions.
+    trigger = render(PhlexKit::PopoverTrigger.new { "t" })
+    assert_includes trigger, 'data-phlex-kit--popover-target="trigger"'
+    refute_includes trigger, "data-action"
     assert_includes render(PhlexKit::PopoverContent.new { "c" }), 'popover="auto"'
   end
 
