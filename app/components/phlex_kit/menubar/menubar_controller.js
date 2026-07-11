@@ -14,8 +14,11 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["menu"]
 
-  initialize() {
-    this.openMenu = null
+  // Which menu is open derives from the live :popover-open state, never a
+  // stored field — a stale field would make toggle() call showPopover() on
+  // an already-open panel (InvalidStateError) or strand an open one.
+  get openMenu() {
+    return this.menuTargets.find((menu) => this.panel(menu)?.matches(":popover-open")) ?? null
   }
 
   disconnect() {
@@ -57,7 +60,6 @@ export default class extends Controller {
       this.close()
       this.panel(menu)?.showPopover()
       menu.querySelector("[aria-expanded]")?.setAttribute("aria-expanded", "true")
-      this.openMenu = menu
     }
     if (focus) this.items(menu)[0]?.focus()
   }
@@ -70,7 +72,6 @@ export default class extends Controller {
     if (panel?.matches(":popover-open")) panel.hidePopover()
     const trigger = menu.querySelector("[aria-expanded]")
     trigger?.setAttribute("aria-expanded", "false")
-    this.openMenu = null
     if (opts.refocus === true) trigger?.focus()
   }
 
