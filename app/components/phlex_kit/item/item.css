@@ -60,7 +60,7 @@ a.pk-item:hover { background: var(--pk-surface-2); }
   color: var(--pk-muted);
   font-size: .875rem;
   line-height: 1.5;
-  text-align: left;
+  text-align: start;
   overflow: hidden;
   text-overflow: ellipsis;
 }

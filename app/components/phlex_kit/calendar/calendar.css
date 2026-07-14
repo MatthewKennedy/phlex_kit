@@ -53,8 +53,8 @@
   opacity: .5;
   transition: background-color .15s ease, opacity .15s ease;
 }
-.pk-calendar-prev { left: .25rem; }
-.pk-calendar-next { right: .25rem; }
+.pk-calendar-prev { inset-inline-start: .25rem; }
+.pk-calendar-next { inset-inline-end: .25rem; }
 .pk-calendar-prev:hover, .pk-calendar-next:hover { background: var(--pk-accent); opacity: 1; }
 .pk-calendar-prev:focus-visible, .pk-calendar-next:focus-visible {
   outline: none;

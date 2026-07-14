@@ -4,15 +4,15 @@
    75%-wide capped at 24rem. Overlay at the kit-unified black/10 + blur-xs
    (see dialog.css). Theme tokens from the global stylesheet. */
 .pk-sheet-trigger { display: inline-block; }
-.pk-sheet-backdrop { position: fixed; inset: 0; z-index: 50; background: rgb(0 0 0 / .1); backdrop-filter: blur(4px); }
+.pk-sheet-backdrop { position: fixed; inset: 0; z-index: 50; background: color-mix(in srgb, var(--pk-overlay) 10%, transparent); backdrop-filter: blur(4px); }
 @supports not (backdrop-filter: blur(1px)) {
-  .pk-sheet-backdrop { background: rgb(0 0 0 / .5); }
+  .pk-sheet-backdrop { background: color-mix(in srgb, var(--pk-overlay) 50%, transparent); }
 }
 .pk-sheet-content {
   position: fixed; z-index: 50; display: flex; flex-direction: column; gap: 1rem;
   background: var(--pk-surface); color: var(--pk-text); padding: 0;
   font-size: .875rem;
-  box-shadow: 0 10px 30px rgb(0 0 0 / .35); overflow: auto;
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--pk-shadow-color) 35%, transparent); overflow: auto;
 }
 .pk-sheet-content.right { inset-block: 0; right: 0; height: 100%; width: 75%; max-width: 24rem; border-left: 1px solid var(--pk-border); }
 .pk-sheet-content.left  { inset-block: 0; left: 0;  height: 100%; width: 75%; max-width: 24rem; border-right: 1px solid var(--pk-border); }

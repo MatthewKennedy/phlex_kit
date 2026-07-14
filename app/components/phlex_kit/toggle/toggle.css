@@ -25,7 +25,7 @@
 .pk-toggle svg { pointer-events: none; flex-shrink: 0; }
 .pk-toggle svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
 .pk-toggle.sm svg:not([class*="size-"]) { width: .875rem; height: .875rem; }
-.pk-toggle:has(> [data-icon="inline-start"]) { padding-left: .5rem; }
-.pk-toggle:has(> [data-icon="inline-end"]) { padding-right: .5rem; }
-.pk-toggle.sm:has(> [data-icon="inline-start"]) { padding-left: .375rem; }
-.pk-toggle.sm:has(> [data-icon="inline-end"]) { padding-right: .375rem; }
+.pk-toggle:has(> [data-icon="inline-start"]) { padding-inline-start: .5rem; }
+.pk-toggle:has(> [data-icon="inline-end"]) { padding-inline-end: .5rem; }
+.pk-toggle.sm:has(> [data-icon="inline-start"]) { padding-inline-start: .375rem; }
+.pk-toggle.sm:has(> [data-icon="inline-end"]) { padding-inline-end: .375rem; }

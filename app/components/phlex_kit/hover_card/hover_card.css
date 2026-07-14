@@ -19,7 +19,7 @@
   border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
   border-radius: var(--pk-radius); background: var(--pk-surface);
   color: var(--pk-text); padding: .625rem; font-size: .875rem;
-  box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--pk-shadow-color) 30%, transparent); outline: none;
 }
 .pk-hover-card-content.top { position-area: block-start span-inline-end; margin: 0 0 .25rem; }
 .pk-hover-card-content.left {

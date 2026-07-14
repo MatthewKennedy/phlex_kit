@@ -18,7 +18,7 @@
   padding: .5rem .75rem; font-size: .875rem; line-height: 1.625;
 }
 .pk-bubble[data-align="end"] > .pk-bubble-content { align-self: flex-end; }
-button.pk-bubble-content { text-align: left; font: inherit; }
+button.pk-bubble-content { text-align: start; font: inherit; }
 a.pk-bubble-content { color: inherit; text-decoration: none; }
 button.pk-bubble-content, a.pk-bubble-content {
   cursor: pointer; outline: none;
@@ -69,5 +69,5 @@ button.pk-bubble-content, a.pk-bubble-content {
 .pk-bubble-reactions:has(button) { padding: 0; }
 .pk-bubble-reactions[data-side="bottom"] { bottom: 0; transform: translateY(75%); }
 .pk-bubble-reactions[data-side="top"] { top: 0; transform: translateY(-75%); }
-.pk-bubble-reactions[data-align="end"] { right: .75rem; }
-.pk-bubble-reactions[data-align="start"] { left: .75rem; }
+.pk-bubble-reactions[data-align="end"] { inset-inline-end: .75rem; }
+.pk-bubble-reactions[data-align="start"] { inset-inline-start: .75rem; }

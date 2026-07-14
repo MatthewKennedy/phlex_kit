@@ -26,8 +26,8 @@
 }
 /* shadcn forces glyphs to size-3 with `!` — override Spinner's own sizing. */
 .pk-badge > svg { width: .75rem !important; height: .75rem !important; pointer-events: none; }
-.pk-badge:has(> [data-icon="inline-start"]) { padding-left: .375rem; }
-.pk-badge:has(> [data-icon="inline-end"]) { padding-right: .375rem; }
+.pk-badge:has(> [data-icon="inline-start"]) { padding-inline-start: .375rem; }
+.pk-badge:has(> [data-icon="inline-end"]) { padding-inline-end: .375rem; }
 .pk-badge:focus-visible {
   outline: none;
   border-color: var(--pk-ring);
@@ -36,8 +36,8 @@
 
 /* Sizes (md is the base above) — kit extras. */
 .pk-badge.sm { height: 1rem; padding: 0 .375rem; font-size: .7rem; }
-.pk-badge.sm:has(> [data-icon="inline-start"]) { padding-left: .25rem; }
-.pk-badge.sm:has(> [data-icon="inline-end"]) { padding-right: .25rem; }
+.pk-badge.sm:has(> [data-icon="inline-start"]) { padding-inline-start: .25rem; }
+.pk-badge.sm:has(> [data-icon="inline-end"]) { padding-inline-end: .25rem; }
 .pk-badge.lg { height: 1.5rem; padding: .125rem .75rem; font-size: .875rem; }
 
 .pk-badge.primary { background: var(--pk-brand); color: var(--pk-brand-ink); }

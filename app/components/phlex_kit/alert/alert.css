@@ -14,13 +14,13 @@
   padding: .5rem .625rem;
   font-size: .875rem;
   line-height: 1.25rem;
-  text-align: left;
+  text-align: start;
   background: var(--pk-surface);
   color: var(--pk-text);
 }
 .pk-alert:has(> .pk-alert-action) {
   position: relative;
-  padding-right: 4.5rem;
+  padding-inline-end: 4.5rem;
 }
 .pk-alert:has(> svg) {
   grid-template-columns: auto 1fr;
@@ -66,5 +66,5 @@
 .pk-alert-action {
   position: absolute;
   top: .5rem;
-  right: .5rem;
+  inset-inline-end: .5rem;
 }

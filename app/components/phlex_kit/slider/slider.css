@@ -26,7 +26,7 @@
   border-radius: 9999px;
   border: 1px solid var(--pk-ring);
   background: var(--pk-bg);
-  box-shadow: 0 1px 2px rgb(0 0 0 / .25);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--pk-shadow-color) 25%, transparent);
   transition: box-shadow .15s ease;
 }
 .pk-slider:hover::-webkit-slider-thumb,

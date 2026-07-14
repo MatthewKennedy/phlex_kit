@@ -21,7 +21,7 @@
   border-radius: var(--pk-radius);
   background: var(--pk-surface); color: var(--pk-text); padding: .625rem;
   font-size: .875rem;
-  box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--pk-shadow-color) 30%, transparent); outline: none;
 }
 /* display must be gated on :popover-open — an unconditional author
    `display: flex` would beat the UA's [popover] { display: none }. */

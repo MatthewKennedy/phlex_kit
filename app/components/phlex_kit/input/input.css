@@ -30,7 +30,7 @@
   font: inherit;
   font-size: .875rem;
   font-weight: 500;
-  margin-right: .5rem;
+  margin-inline-end: .5rem;
 }
 .pk-input:focus-visible {
   outline: none;

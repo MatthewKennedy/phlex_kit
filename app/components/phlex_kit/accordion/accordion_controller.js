@@ -83,13 +83,19 @@ export default class extends Controller {
     if (this.hasIconTarget) this.rotate()
   }
 
+  // Honor prefers-reduced-motion: collapse the grow/shrink to a jump-cut
+  // (duration 0 keeps the finished-promise bookkeeping intact).
+  get effectiveDuration() {
+    return matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : this.animationDurationValue
+  }
+
   reveal() {
     const c = this.contentTarget
     c.removeAttribute("hidden")
     c.dataset.state = "open"
     const h = c.scrollHeight
     const a = c.animate([{ height: c.style.height || "0px" }, { height: `${h}px` }],
-      { duration: this.animationDurationValue, easing: "ease-in-out" })
+      { duration: this.effectiveDuration, easing: "ease-in-out" })
     c.style.height = `${h}px`
     // Settle at auto, not the frozen pixel height — with overflow hidden a
     // later content growth (or a resize that rewraps text) silently clipped.
@@ -101,7 +107,7 @@ export default class extends Controller {
     c.dataset.state = "closed"
     const from = c.scrollHeight
     const a = c.animate([{ height: `${from}px` }, { height: "0px" }],
-      { duration: this.animationDurationValue, easing: "ease-in-out" })
+      { duration: this.effectiveDuration, easing: "ease-in-out" })
     c.style.height = "0px"
     a.finished.then(() => { if (c.dataset.state === "closed") c.setAttribute("hidden", "") }).catch(() => {})
   }

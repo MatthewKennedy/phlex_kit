@@ -140,6 +140,13 @@
   --pk-chart-3: #2563eb;
   --pk-chart-4: #1d4ed8;
   --pk-chart-5: #1e40af;
+  /* Shadow/overlay base colors — bare colors; each rule applies its own alpha
+     via color-mix(in srgb, var(--pk-*) N%, transparent). shadcn/ui keeps
+     shadows black in both modes (tailwind's default shadow color), so these
+     are identical in every theme block; restated in the light blocks per the
+     cascade-trap convention anyway. */
+  --pk-shadow-color: #000000;
+  --pk-overlay: #000000;
   --pk-radius: 0.625rem;
   --pk-font-sans: ui-sans-serif, system-ui, -apple-system, sans-serif;
   --pk-font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
@@ -163,6 +170,8 @@
   --pk-green: #16a34a;
   --pk-amber: #d97706;
   --pk-red: #e40014;
+  --pk-shadow-color: #000000;
+  --pk-overlay: #000000;
   color-scheme: light;
 }
 
@@ -183,6 +192,8 @@
     --pk-green: #16a34a;
     --pk-amber: #d97706;
     --pk-red: #e40014;
+    --pk-shadow-color: #000000;
+    --pk-overlay: #000000;
     color-scheme: light;
   }
 }

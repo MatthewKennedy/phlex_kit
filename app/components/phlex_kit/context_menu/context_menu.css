@@ -9,7 +9,7 @@
 .pk-context-menu-content {
   position: fixed; inset: auto; margin: 0; min-width: 8rem; overflow: visible;
   border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px); background: var(--pk-surface);
-  color: var(--pk-text); padding: .25rem; box-shadow: 0 8px 24px rgb(0 0 0 / .3); outline: none;
+  color: var(--pk-text); padding: .25rem; box-shadow: 0 8px 24px color-mix(in srgb, var(--pk-shadow-color) 30%, transparent); outline: none;
 }
 .pk-context-menu-item {
   position: relative; display: flex; align-items: center; gap: .5rem;
@@ -20,15 +20,15 @@
 .pk-context-menu-item > svg { flex: none; width: 1rem; height: 1rem; color: var(--pk-muted); }
 .pk-context-menu-item:hover, .pk-context-menu-item:focus { background: var(--pk-accent); color: var(--pk-text); }
 .pk-context-menu-item[data-disabled="true"] { pointer-events: none; opacity: .5; }
-.pk-context-menu-item.inset { padding-left: 2rem; }
+.pk-context-menu-item.inset { padding-inline-start: 2rem; }
 .pk-context-menu-check {
   display: inline-flex; align-items: center; justify-content: center;
   flex: none; width: 1rem; height: 1rem;
 }
 .pk-context-menu-check svg { width: .875rem; height: .875rem; }
-.pk-context-menu-shortcut { margin-left: auto; font-size: .75rem; letter-spacing: .1em; color: var(--pk-muted); }
+.pk-context-menu-shortcut { margin-inline-start: auto; font-size: .75rem; letter-spacing: .1em; color: var(--pk-muted); }
 .pk-context-menu-label { padding: .375rem .5rem; font-size: .875rem; font-weight: 600; color: var(--pk-text); }
-.pk-context-menu-label.inset { padding-left: 2rem; }
+.pk-context-menu-label.inset { padding-inline-start: 2rem; }
 .pk-context-menu-separator { height: 1px; margin: .25rem -.25rem; background: var(--pk-border); }
 .pk-context-menu-group { display: contents; }
 
@@ -71,7 +71,7 @@
    The row is its own scoped anchor; the panel flips to the other side at
    the viewport right edge. */
 .pk-context-menu-sub { anchor-name: --pk-context-menu-sub; anchor-scope: --pk-context-menu-sub; }
-.pk-context-menu-sub-chevron { margin-left: auto; width: 1rem; height: 1rem; }
+.pk-context-menu-sub-chevron { margin-inline-start: auto; width: 1rem; height: 1rem; }
 .pk-context-menu-sub-content {
   position: fixed;
   position-anchor: --pk-context-menu-sub;
@@ -92,7 +92,7 @@
   background: var(--pk-surface);
   color: var(--pk-text);
   padding: .25rem;
-  box-shadow: 0 8px 24px rgb(0 0 0 / .3);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--pk-shadow-color) 30%, transparent);
 }
 .pk-context-menu-sub:hover > .pk-context-menu-sub-content,
 .pk-context-menu-sub:focus-within > .pk-context-menu-sub-content { display: block; }

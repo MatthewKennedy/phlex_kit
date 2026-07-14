@@ -22,7 +22,7 @@
 
 /* "Columns" dropdown rows. */
 .pk-data-table-column-toggle { position: relative; }
-.pk-data-table-column-toggle-icon { width: 1rem; height: 1rem; margin-left: .25rem; }
+.pk-data-table-column-toggle-icon { width: 1rem; height: 1rem; margin-inline-start: .25rem; }
 .pk-data-table-column-option {
   display: flex;
   align-items: center;

@@ -61,7 +61,7 @@
 .pk-native-select-icon {
   position: absolute;
   top: 50%;
-  right: .625rem;
+  inset-inline-end: .625rem;
   transform: translateY(-50%);
   display: flex;
   pointer-events: none;

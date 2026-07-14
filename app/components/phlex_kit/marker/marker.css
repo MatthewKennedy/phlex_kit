@@ -10,7 +10,7 @@
   min-height: 1rem;
   color: var(--pk-muted);
   font-size: .875rem;
-  text-align: left;
+  text-align: start;
 }
 a.pk-marker, button.pk-marker {
   cursor: pointer;

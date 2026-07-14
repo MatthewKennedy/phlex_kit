@@ -14,7 +14,7 @@
 .pk-button-group:not(.vertical) > :not(:first-child) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  border-left: 0;
+  border-inline-start: 0;
 }
 .pk-button-group:not(.vertical) > :not(:last-child) {
   border-top-right-radius: 0;
@@ -47,7 +47,7 @@
 .pk-button-group:not(.vertical) > :not(:first-child) > :is(.pk-select-trigger, .pk-combobox-trigger) {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-  border-left: 0;
+  border-inline-start: 0;
 }
 .pk-button-group:not(.vertical) > :not(:last-child) > :is(.pk-dropdown-menu-trigger, .pk-popover-trigger, .pk-hover-card-trigger, .pk-tooltip-trigger) > .pk-button,
 .pk-button-group:not(.vertical) > :not(:last-child) > :is(.pk-select-trigger, .pk-combobox-trigger) {

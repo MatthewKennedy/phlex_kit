@@ -19,7 +19,7 @@
   inset: 0;
   z-index: 50;
   pointer-events: auto;
-  background: rgb(0 0 0 / .1);
+  background: color-mix(in srgb, var(--pk-overlay) 10%, transparent);
   backdrop-filter: blur(4px);
 }
 
@@ -37,7 +37,7 @@
   border-radius: .75rem;
   background: var(--pk-surface);
   color: var(--pk-text);
-  box-shadow: 0 10px 30px rgb(0 0 0 / .35);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--pk-shadow-color) 35%, transparent);
 }
 .pk-command-dialog.xs { max-width: 24rem; }
 .pk-command-dialog.sm { max-width: 28rem; }
@@ -121,7 +121,7 @@
 .pk-command-item[data-disabled] { pointer-events: none; opacity: .5; }
 
 .pk-command-shortcut {
-  margin-left: auto;
+  margin-inline-start: auto;
   font-size: .75rem;
   letter-spacing: .1em;
   color: var(--pk-muted);
@@ -136,5 +136,5 @@
   font-size: .875rem;
 }
 @supports not (backdrop-filter: blur(1px)) {
-  .pk-command-overlay { background: rgb(0 0 0 / .5); }
+  .pk-command-overlay { background: color-mix(in srgb, var(--pk-overlay) 50%, transparent); }
 }

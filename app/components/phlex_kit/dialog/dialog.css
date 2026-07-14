@@ -17,12 +17,12 @@
   border-radius: .75rem; background: var(--pk-surface); color: var(--pk-text);
   padding: var(--pk-dialog-spacing);
   font-size: .875rem;
-  box-shadow: 0 10px 30px rgb(0 0 0 / .35);
+  box-shadow: 0 10px 30px color-mix(in srgb, var(--pk-shadow-color) 35%, transparent);
 }
 .pk-dialog[open] { display: flex; flex-direction: column; }
-.pk-dialog::backdrop { background: rgb(0 0 0 / .1); backdrop-filter: blur(4px); }
+.pk-dialog::backdrop { background: color-mix(in srgb, var(--pk-overlay) 10%, transparent); backdrop-filter: blur(4px); }
 @supports not (backdrop-filter: blur(1px)) {
-  .pk-dialog::backdrop { background: rgb(0 0 0 / .5); }
+  .pk-dialog::backdrop { background: color-mix(in srgb, var(--pk-overlay) 50%, transparent); }
 }
 .pk-dialog.xs { max-width: min(16rem, calc(100% - 2rem)); }
 .pk-dialog.sm { max-width: min(20rem, calc(100% - 2rem)); }
@@ -51,6 +51,6 @@
 }
 .pk-overlay-close:hover { opacity: 1; }
 @media (min-width: 640px) {
-  .pk-dialog-header { text-align: left; }
+  .pk-dialog-header { text-align: start; }
   .pk-dialog-footer { flex-direction: row; justify-content: flex-end; }
 }

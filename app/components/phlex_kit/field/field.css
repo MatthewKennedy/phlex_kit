@@ -110,7 +110,7 @@
   font-size: .875rem;
   font-weight: 400;
   line-height: 1.5;
-  text-align: left;
+  text-align: start;
 }
 .pk-field-description a { text-decoration: underline; text-underline-offset: 4px; color: inherit; }
 .pk-field-description a:hover { color: var(--pk-brand); }

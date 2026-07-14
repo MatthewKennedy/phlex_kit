@@ -5,8 +5,8 @@
 .pk-accordion-heading { margin: 0; display: flex; font-size: inherit; font-weight: inherit; line-height: inherit; }
 .pk-accordion-trigger {
   width: 100%; display: flex; flex: 1; align-items: center; justify-content: space-between;
-  padding-block: 1rem; font-size: .875rem; font-weight: 500; text-align: left;
-  background: none; border: 0; cursor: pointer; color: inherit; transition: all .15s ease;
+  padding-block: 1rem; font-size: .875rem; font-weight: 500; text-align: start;
+  background: none; border: 0; cursor: pointer; color: inherit; transition: color .15s ease, background-color .15s ease, text-decoration-color .15s ease;
 }
 .pk-accordion-trigger:hover { text-decoration: underline; }
 .pk-accordion-trigger-label { flex: 1; }
