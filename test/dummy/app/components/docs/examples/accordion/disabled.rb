@@ -9,7 +9,7 @@ module Docs
             render PhlexKit::Accordion.new do
               render PhlexKit::AccordionItem.new(open: true) do
                 render PhlexKit::AccordionDefaultTrigger.new { "Can I access my account history?" }
-                render PhlexKit::AccordionContent.new do
+                render PhlexKit::AccordionContent.new(open: true) do
                   render PhlexKit::AccordionDefaultContent.new { "Yes — the full history lives under Settings → Activity." }
                 end
               end

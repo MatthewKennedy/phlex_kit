@@ -6,7 +6,7 @@ module PhlexKit
       button(**mix({
         type: :button,
         class: "pk-navigation-menu-trigger",
-        aria: { haspopup: "menu", expanded: "false" },
+        aria: { expanded: "false" }, # no haspopup="menu": the panel deliberately has no menu role (matching Radix/shadcn)
         data: { action: "click->phlex-kit--menubar#toggle mouseenter->phlex-kit--menubar#switch" }
       }, @attrs)) do
         block&.call

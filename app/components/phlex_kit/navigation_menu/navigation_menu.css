@@ -39,7 +39,10 @@
   position-anchor: --pk-nav-item;
   inset: auto;
   position-area: block-end span-inline-end;
-  position-try-fallbacks: flip-block;
+  /* flip-inline too: a 16rem panel on an item near the right viewport edge
+     otherwise clips (same bug class popover fixed in #38). The hover
+     bridges span the block-axis gap, which flip-inline doesn't change. */
+  position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
   /* the [popover] UA style sets overflow:auto, which would clip the
      negative-offset ::before bridge below */
   overflow: visible;

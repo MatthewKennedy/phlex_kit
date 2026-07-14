@@ -10,8 +10,11 @@ module PhlexKit
     end
 
     def view_template(&block)
+      # role="alert": the controller swaps this text live on invalid/input —
+      # without a live region the announcement never reaches screen readers.
       p(**mix({
         class: "pk-form-field-error",
+        role: "alert",
         data: { phlex_kit__form_field_target: "error" }
       }, @attrs), &block)
     end

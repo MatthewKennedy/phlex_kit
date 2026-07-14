@@ -7,7 +7,9 @@ module PhlexKit
     SIZES = { sm: "sm", default: nil, lg: "lg" }.freeze
 
     def self.modifier_classes(variant:, size:)
-      [ VARIANTS.fetch(variant, nil), SIZES.fetch(size, nil) ].compact
+      # Plain fetch — an unknown variant/size raises KeyError (kit-wide
+      # fail-loud rule); the nil-default form silently rendered unstyled.
+      [ VARIANTS.fetch(variant), SIZES.fetch(size) ].compact
     end
 
     def initialize(pressed: false, name: nil, value: "1", unpressed_value: nil,

@@ -517,7 +517,7 @@ module Gallery
         render PhlexKit::Accordion.new(class: "w-lg") do
           render PhlexKit::AccordionItem.new(open: true) do
             render PhlexKit::AccordionDefaultTrigger.new { "Is it accessible?" }
-            render PhlexKit::AccordionContent.new do
+            render PhlexKit::AccordionContent.new(open: true) do
               render PhlexKit::AccordionDefaultContent.new { "Yes — it keeps ruby_ui's ARIA structure." }
             end
           end

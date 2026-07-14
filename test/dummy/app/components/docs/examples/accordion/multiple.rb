@@ -17,7 +17,7 @@ module Docs
               SECTIONS.each do |title, body, open|
                 render PhlexKit::AccordionItem.new(open: open) do
                   render PhlexKit::AccordionDefaultTrigger.new { title }
-                  render PhlexKit::AccordionContent.new do
+                  render PhlexKit::AccordionContent.new(open: open) do
                     render PhlexKit::AccordionDefaultContent.new { body }
                   end
                 end

@@ -59,8 +59,12 @@ export default class extends Controller {
   defaultThemeColor(index) {
     const color = this.seriesColor(index)
     const translucentFill = ["line", "radar"].includes(this.optionsValue.type)
+    // color-mix, not hex + "33": the token may be any CSS color — the shipped
+    // zinc/neutral themes use oklch(...), and appending an alpha suffix to
+    // those produced invalid colors (fills silently broke).
+    const translucent = `color-mix(in oklab, ${color} 20%, transparent)`
     return {
-      backgroundColor: this.isCircular() ? undefined : (translucentFill ? color + "33" : color),
+      backgroundColor: this.isCircular() ? undefined : (translucentFill ? translucent : color),
       hoverBackgroundColor: color,
       borderColor: color,
       borderWidth: 2,

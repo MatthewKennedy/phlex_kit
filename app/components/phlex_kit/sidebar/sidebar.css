@@ -169,14 +169,23 @@
 .pk-sidebar-wrapper.collapsible-offcanvas .pk-sidebar,
 .pk-sidebar-wrapper.collapsible-icon .pk-sidebar {
   position: relative;
-  transition: margin-left .2s ease, transform .2s ease, width .2s ease;
+  /* visibility rides the transition: it stays visible while sliding out and
+     flips hidden at the end — hidden also drops the off-screen links from
+     the tab order (they stayed focusable while invisible before). */
+  transition: margin-left .2s ease, transform .2s ease, width .2s ease, visibility .2s;
 }
-.pk-sidebar-wrapper.collapsible-offcanvas[data-collapsed] .pk-sidebar { margin-left: -16rem; }
+.pk-sidebar-wrapper.collapsible-offcanvas[data-collapsed] .pk-sidebar { margin-left: -16rem; visibility: hidden; }
 
 /* Icon mode: the rail shrinks to a 3rem strip — labels and text hide, menu
    buttons become centered icon squares, hover shows a data-tooltip bubble. */
 .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar { width: 3rem; }
-.pk-sidebar-wrapper.collapsible-icon[data-collapsed] :is(.pk-sidebar-group-label, .pk-sidebar-group-action, .pk-sidebar-menu-badge, .pk-sidebar-menu-action, .pk-sidebar-menu-sub, .pk-sidebar-input, .pk-sidebar-separator) { display: none; }
+/* Desktop-only: at mobile widths icon mode becomes the full drawer, and the
+   labels/subs must keep their AUTHOR display values (flex). The old approach
+   un-hid them with `display: revert`, but revert rolls back to the USER-AGENT
+   origin — group labels lost their flex centering, sub lists their gap. */
+@media (min-width: 768px) {
+  .pk-sidebar-wrapper.collapsible-icon[data-collapsed] :is(.pk-sidebar-group-label, .pk-sidebar-group-action, .pk-sidebar-menu-badge, .pk-sidebar-menu-action, .pk-sidebar-menu-sub, .pk-sidebar-input, .pk-sidebar-separator) { display: none; }
+}
 .pk-sidebar-wrapper.collapsible-icon[data-collapsed] :is(.pk-sidebar-header, .pk-sidebar-content, .pk-sidebar-footer) {
   padding-inline: .5rem;
   align-items: center;
@@ -187,7 +196,9 @@
   padding: .5rem;
   justify-content: center;
 }
-.pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button > :not(svg) { display: none; }
+@media (min-width: 768px) {
+  .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button > :not(svg) { display: none; }
+}
 .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button[data-tooltip] { position: relative; }
 .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button[data-tooltip]:hover::after {
   content: attr(data-tooltip);
@@ -252,9 +263,8 @@
 @media (max-width: 767px) {
   /* Below the cutoff both collapsible modes become the overlay drawer. */
   .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar { width: 16rem; }
-  .pk-sidebar-wrapper.collapsible-icon[data-collapsed] :is(.pk-sidebar-group-label, .pk-sidebar-group-action, .pk-sidebar-menu-badge, .pk-sidebar-menu-action, .pk-sidebar-menu-sub, .pk-sidebar-input, .pk-sidebar-separator) { display: revert; }
+  /* No un-hiding needed: the icon-mode hide rules are scoped to >=768px. */
   .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button { width: 100%; height: auto; padding: .5rem; justify-content: flex-start; }
-  .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button > :not(svg) { display: revert; }
   .pk-sidebar-wrapper.collapsible-icon .pk-sidebar-rail { display: none; }
   .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon) .pk-sidebar {
     position: fixed;
@@ -264,9 +274,11 @@
     height: 100dvh;
     margin-left: 0;
     transform: translateX(-100%);
+    /* closed drawer: invisible AND out of the tab order */
+    visibility: hidden;
     box-shadow: 0 8px 30px rgb(0 0 0 / .35);
   }
-  .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon)[data-open] .pk-sidebar { transform: none; }
+  .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon)[data-open] .pk-sidebar { transform: none; visibility: visible; }
   .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon)[data-open] .pk-sidebar-scrim {
     display: block;
     position: fixed;

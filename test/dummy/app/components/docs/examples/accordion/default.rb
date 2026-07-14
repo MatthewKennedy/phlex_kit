@@ -17,7 +17,7 @@ module Docs
               FAQS.each do |question, answer, open|
                 render PhlexKit::AccordionItem.new(open: open) do
                   render PhlexKit::AccordionDefaultTrigger.new { question }
-                  render PhlexKit::AccordionContent.new do
+                  render PhlexKit::AccordionContent.new(open: open) do
                     render PhlexKit::AccordionDefaultContent.new { answer }
                   end
                 end

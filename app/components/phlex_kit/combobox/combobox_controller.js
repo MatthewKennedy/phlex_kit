@@ -120,7 +120,13 @@ export default class extends Controller {
 
   toggleAllItems() {
     const isChecked = this.toggleAllTarget.checked
-    this.inputTargets.forEach(input => input.checked = isChecked)
+    this.inputTargets.forEach(input => {
+      if (input.checked === isChecked) return
+      input.checked = isChecked
+      // Programmatic .checked flips fire no event — host listeners and the
+      // form-field validation must still hear select-all (uncheck() does this).
+      input.dispatchEvent(new Event("change", { bubbles: true }))
+    })
     this.updateTriggerContent()
   }
 
@@ -207,7 +213,11 @@ export default class extends Controller {
       e.preventDefault()
       e.stopPropagation() // the button sits inside the trigger's click-to-open area
     }
-    this.inputTargets.forEach(input => input.checked = false)
+    this.inputTargets.forEach(input => {
+      if (!input.checked) return
+      input.checked = false
+      input.dispatchEvent(new Event("change", { bubbles: true })) // see toggleAllItems
+    })
     if (this.hasToggleAllTarget) this.toggleAllTarget.checked = false
     this.updateTriggerContent()
   }
@@ -287,6 +297,9 @@ export default class extends Controller {
 
     this.selectedItemIndex = null
     this.clearActiveDescendant()
+    // Also drop the highlight itself: a filtered-out option that kept
+    // aria-current="true" stayed the Enter target while invisible.
+    this.itemTargets.forEach(item => item.ariaCurrent = "false")
 
     this.inputTargets.forEach((input) => {
       const text = this.inputContent(input).toLowerCase()

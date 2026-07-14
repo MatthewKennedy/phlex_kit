@@ -14,7 +14,7 @@ module Docs
               render PhlexKit::Accordion.new do
                 render PhlexKit::AccordionItem.new(open: true) do
                   render PhlexKit::AccordionDefaultTrigger.new { "What subscription plans do you offer?" }
-                  render PhlexKit::AccordionContent.new do
+                  render PhlexKit::AccordionContent.new(open: true) do
                     render PhlexKit::AccordionDefaultContent.new { "Starter ($9/month), Professional ($29/month), and Enterprise ($99/month)." }
                   end
                 end
