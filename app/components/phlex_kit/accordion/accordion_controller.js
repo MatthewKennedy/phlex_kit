@@ -15,8 +15,11 @@ export default class extends Controller {
 
   connect() {
     this.wireAria()
+    // Apply the initial state without animating (the initial valueChanged
+    // callback is skipped — it fires before connect()).
     const d = this.animationDurationValue
     this.animationDurationValue = 0
+    if (this.hasTriggerTarget) this.triggerTarget.setAttribute("aria-expanded", this.openValue ? "true" : "false")
     this.openValue ? this.open() : this.close()
     this.animationDurationValue = d
   }
@@ -34,11 +37,18 @@ export default class extends Controller {
     if (!root || root.dataset.type !== "single") return
     root.querySelectorAll('[data-controller~="phlex-kit--accordion"]').forEach((el) => {
       if (el === this.element) return
+      // Skip items of a NESTED accordion — querySelectorAll descends into
+      // item content, and opening an outer item collapsed inner ones too.
+      if (el.closest(".pk-accordion") !== root) return
       const ctrl = this.application.getControllerForElementAndIdentifier(el, "phlex-kit--accordion")
       if (ctrl && ctrl.openValue) ctrl.openValue = false
     })
   }
-  openValueChanged(isOpen) {
+  openValueChanged(isOpen, wasOpen) {
+    // Stimulus fires the initial value callback BEFORE connect() — before
+    // connect zeroes the duration — so a server-rendered open item visibly
+    // animated open on every page load. connect() applies the initial state.
+    if (wasOpen === undefined) return
     if (this.hasTriggerTarget) this.triggerTarget.setAttribute("aria-expanded", isOpen ? "true" : "false")
     isOpen ? this.open() : this.close()
   }
@@ -78,9 +88,12 @@ export default class extends Controller {
     c.removeAttribute("hidden")
     c.dataset.state = "open"
     const h = c.scrollHeight
-    c.animate([{ height: c.style.height || "0px" }, { height: `${h}px` }],
+    const a = c.animate([{ height: c.style.height || "0px" }, { height: `${h}px` }],
       { duration: this.animationDurationValue, easing: "ease-in-out" })
     c.style.height = `${h}px`
+    // Settle at auto, not the frozen pixel height — with overflow hidden a
+    // later content growth (or a resize that rewraps text) silently clipped.
+    a.finished.then(() => { if (c.dataset.state === "open") c.style.height = "auto" }).catch(() => {})
   }
 
   hide() {

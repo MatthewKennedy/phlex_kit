@@ -23,6 +23,11 @@ export default class extends Controller {
   }
 
   onInvalid(error) {
+    // Only suppress the native validation bubble when we can show our own
+    // message — a FormField without a FormFieldError previously ate the
+    // bubble AND crashed on the missing target, so a required-but-empty
+    // form gave zero feedback and never submitted.
+    if (!this.hasErrorTarget) return;
     error.preventDefault();
 
     this.shouldValidateValue = true;
@@ -38,12 +43,20 @@ export default class extends Controller {
   }
 
   #setErrorMessage() {
-    if (!this.shouldValidateValue) return;
+    if (!this.shouldValidateValue || !this.hasErrorTarget) return;
 
+    // aria-invalid drives the red ring for LIVE validation too (input.css
+    // only matched server-rendered attrs); aria-describedby ties the message
+    // to the control for AT.
+    if (this.errorTarget.id) {
+      this.inputTarget.setAttribute("aria-describedby", this.errorTarget.id);
+    }
     if (this.inputTarget.validity.valid) {
+      this.inputTarget.removeAttribute("aria-invalid");
       this.errorTarget.textContent = "";
       this.errorTarget.classList.add("pk-hidden");
     } else {
+      this.inputTarget.setAttribute("aria-invalid", "true");
       this.errorTarget.textContent = this.#getValidationMessage();
       this.errorTarget.classList.remove("pk-hidden");
     }
