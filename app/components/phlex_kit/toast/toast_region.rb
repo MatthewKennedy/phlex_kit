@@ -68,7 +68,9 @@ module PhlexKit
       @flash.each do |key, message|
         next if message.nil? || message.to_s.empty?
         variant = Toast.flash_variant(key)
-        render ToastItem.new(variant: variant, id: "flash-#{key}") do
+        # Stamp the region's duration — without it the toast controller's
+        # 4000ms default wins and ToastRegion(duration:) is dead config.
+        render ToastItem.new(variant: variant, id: "flash-#{key}", duration: @duration) do
           render ToastIcon.new(variant: variant)
           render ToastTitle.new { message.to_s }
         end
@@ -77,7 +79,9 @@ module PhlexKit
 
     def skeleton(variant)
       template(data: { phlex_kit__toaster_target: "skeleton", variant: variant.to_s }) do
-        render ToastItem.new(variant: variant) do
+        # Region duration baked into the skeleton; _spawn overrides it only
+        # when the caller passes a per-toast duration.
+        render ToastItem.new(variant: variant, duration: @duration) do
           render ToastIcon.new(variant: variant)
           div(class: "pk-toast-body") do
             render ToastTitle.new

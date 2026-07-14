@@ -2,6 +2,17 @@ module PhlexKit
   # Light/dark theme switch built on Toggle. Ported from ruby_ui's RubyUI::
   # ThemeToggle. The sibling phlex-kit--theme-toggle controller listens for the
   # toggle's change event and flips :root[data-theme] (matching the token system).
+  # Only an actual user toggle is persisted to localStorage — with no stored
+  # choice the OS preference is followed live on every load.
+  #
+  # The controller applies the stored theme at Stimulus connect, which is late
+  # enough to flash light-mode for returning dark-theme users. To avoid the
+  # FOUC, inline this in <head> before any stylesheets:
+  #
+  #   <script>
+  #     const t = localStorage.theme;
+  #     if (t === "dark" || t === "light") document.documentElement.dataset.theme = t;
+  #   </script>
   class ThemeToggle < BaseComponent
     def initialize(wrapper: {}, aria: {}, **attrs)
       @wrapper = wrapper

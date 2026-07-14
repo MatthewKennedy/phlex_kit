@@ -8,7 +8,6 @@ import { Controller } from "@hotwired/stimulus";
 export default class extends Controller {
   static targets = ["trigger", "content", "input", "value", "item"];
   static values = { open: Boolean };
-  static outlets = ["phlex-kit--select-item"];
 
   connect() {
     this.generateItemsIds();
@@ -17,13 +16,20 @@ export default class extends Controller {
   selectItem(event) {
     event.preventDefault();
 
-    this.phlexKitSelectItemOutlets.forEach((item) => item.handleSelectItem(event));
+    // currentTarget, not target: the click may land on a child of the item
+    // (target.dataset.value would be undefined). itemTargets, not a
+    // document-scoped outlet: outlets match `.pk-select-item` page-wide and
+    // clobbered every other Select's aria-selected.
+    const item = event.currentTarget;
+    this.itemTargets.forEach((el) => {
+      el.setAttribute("aria-selected", el === item ? "true" : "false");
+    });
 
     const oldValue = this.inputTarget.value;
-    const newValue = event.target.dataset.value;
+    const newValue = item.dataset.value;
 
     this.inputTarget.value = newValue;
-    this.valueTarget.innerText = event.target.innerText;
+    this.valueTarget.innerText = item.innerText;
 
     this.dispatchOnChange(oldValue, newValue);
     this.closeContent();

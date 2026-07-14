@@ -119,6 +119,7 @@ export default class extends Controller {
     }
     this.selectedDatesValue = current;
     this.updateCalendar();
+    this.pushToOutlets();
     this.dispatchChange();
   }
 
@@ -192,7 +193,66 @@ export default class extends Controller {
       this.titleTarget.textContent = this.monthAndYear();
     }
     this.syncDropdowns();
+    // innerHTML replacement drops focus — remember the focused day so
+    // keyboard selection/month hops don't strand focus on <body>.
+    const focusedDay = this.calendarTarget.contains(document.activeElement)
+      ? document.activeElement.dataset?.day
+      : null;
     this.calendarTarget.innerHTML = this.calendarHTML();
+    this.ensureGridTabStop(focusedDay);
+  }
+
+  // Roving tabindex: exactly one day button is tabbable — the previously
+  // focused day (refocused across re-renders), else the selected day (its
+  // template ships tabindex="0"), else today, else the first enabled day of
+  // the current month. Without this, a calendar with no selection has no
+  // keyboard entry point at all.
+  ensureGridTabStop(focusedDay) {
+    const days = [...this.calendarTarget.querySelectorAll(".pk-calendar-day:not([disabled])")];
+    if (!days.length) return;
+    const focused = focusedDay ? days.find((d) => d.dataset.day === focusedDay) : null;
+    const stop =
+      focused ||
+      days.find((d) => d.getAttribute("tabindex") === "0") ||
+      days.find((d) => d.classList.contains("today")) ||
+      days.find((d) => !d.classList.contains("other")) ||
+      days[0];
+    days.forEach((d) => d.setAttribute("tabindex", d === stop ? "0" : "-1"));
+    if (focused) stop.focus({ preventScroll: true });
+  }
+
+  // Arrow keys move by day/week, Home/End jump within the rendered week row;
+  // crossing a month boundary re-renders the grid on the target month.
+  // Enter/Space activate natively (the days are real <button>s).
+  onKeydown(e) {
+    const STEPS = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+    const day = e.target.closest?.("[data-day]");
+    if (!day) return;
+
+    let target;
+    if (e.key in STEPS) {
+      target = this.parseDate(day.dataset.day);
+      target.setDate(target.getDate() + STEPS[e.key]);
+    } else if (e.key === "Home" || e.key === "End") {
+      const rowDays = [...day.closest("tr").querySelectorAll("[data-day]")];
+      target = this.parseDate(rowDays[e.key === "Home" ? 0 : rowDays.length - 1].dataset.day);
+    } else {
+      return;
+    }
+    e.preventDefault();
+
+    const iso = this.isoDate(target);
+    if (this.isDateDisabled(iso)) return; // min/max/booked boundary: stay put
+
+    if (target.getMonth() !== this.viewDate().getMonth() || target.getFullYear() !== this.viewDate().getFullYear()) {
+      this.viewDateValue = iso; // re-renders the grid on the target month
+    }
+    const next = this.calendarTarget.querySelector(`[data-day="${iso}"]:not([disabled])`);
+    if (!next) return;
+    this.calendarTarget.querySelectorAll(".pk-calendar-day").forEach((d) => {
+      d.setAttribute("tabindex", d === next ? "0" : "-1");
+    });
+    next.focus({ preventScroll: true });
   }
 
   syncDropdowns() {
@@ -404,8 +464,10 @@ export default class extends Controller {
       PPPP: `${dayOfWeek}, ${monthName} ${day}${daySuffix}, ${year}`,
     };
 
+    // Longest tokens first: MMMM must precede MM or the alternation eats
+    // "MMMM" as two "MM"s and renders the month number twice.
     const formattedDate = format.replace(
-      /yyyy|MM|dd|HH|mm|ss|EEEE|MMMM|do|PPPP/g,
+      /yyyy|MMMM|MM|dd|HH|mm|ss|EEEE|PPPP|do/g,
       (matched) => map[matched],
     );
     return formattedDate;

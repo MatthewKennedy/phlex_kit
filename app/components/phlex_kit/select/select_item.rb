@@ -21,7 +21,6 @@ module PhlexKit
         "aria-selected": (@selected ? "true" : "false"),
         data: {
           value: @value,
-          controller: "phlex-kit--select-item",
           action: "click->phlex-kit--select#selectItem keydown.enter->phlex-kit--select#selectItem " \
                   "keydown.down->phlex-kit--select#handleKeyDown keydown.up->phlex-kit--select#handleKeyUp " \
                   "keydown.esc->phlex-kit--select#handleEsc",

@@ -189,7 +189,10 @@ export default class extends Controller {
     if (!this._listEl) return
     const isBottom = this.positionValue.startsWith("bottom")
     const items = this.toastTargets
-    const order = isBottom ? items.slice().reverse() : items.slice()
+    // Newest toast fronts the stack at BOTH edges (index 0 = front); only
+    // the offset direction flips with the position. Using DOM order at
+    // top-* put the oldest toast in front and stacked new ones behind it.
+    const order = items.slice().reverse()
     const heights = order.map(el => this._heights.get(el) || el.offsetHeight || 64)
     const gap = this.gapValue
     const peekOffset = 16
@@ -237,9 +240,10 @@ export default class extends Controller {
 
   _enforceMax(items) {
     if (items.length <= this.maxValue) return
-    const isBottom = this.positionValue.startsWith("bottom")
     const dropping = items.length - this.maxValue
-    const candidates = isBottom ? items.slice(0, dropping) : items.slice(-dropping)
+    // Evict the OLDEST toasts (DOM order = append order) regardless of edge;
+    // slicing from the tail at top-* dropped the newest ones instead.
+    const candidates = items.slice(0, dropping)
     candidates.forEach(el => {
       if (el.dataset.state !== "closing") {
         el.dispatchEvent(new CustomEvent("phlex-kit:toast:force-dismiss", { bubbles: true }))
