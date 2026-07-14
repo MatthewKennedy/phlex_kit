@@ -13,9 +13,12 @@ module PhlexKit
 
     def view_template(&block)
       template(**mix({ data: { phlex_kit__alert_dialog_target: "content" } }, @attrs)) do
-        div(data: { controller: "phlex-kit--alert-dialog" }) do
+        # keydown on the clone root: focus is trapped inside the panel, so
+        # Escape/Tab always bubble here; tabindex="-1" on the panel is the
+        # focus fallback when the dialog has no focusable children.
+        div(data: { controller: "phlex-kit--alert-dialog", action: "keydown->phlex-kit--alert-dialog#keydown" }) do
           div(class: "pk-alert-dialog-overlay", "aria-hidden": "true")
-          div(role: "alertdialog", "aria-modal": "true", class: [ "pk-alert-dialog-panel", fetch_option(SIZES, @size, :size) ].compact.join(" "), &block)
+          div(role: "alertdialog", "aria-modal": "true", tabindex: "-1", class: [ "pk-alert-dialog-panel", fetch_option(SIZES, @size, :size) ].compact.join(" "), &block)
         end
       end
     end

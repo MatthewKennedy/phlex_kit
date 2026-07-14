@@ -14,9 +14,13 @@ module PhlexKit
     def view_template(&block)
       label(**mix({
         class: "pk-context-menu-item pk-context-menu-checkbox-item",
-        role: "menuitemcheckbox"
+        role: "menuitemcheckbox",
+        tabindex: "-1",
+        aria: { checked: @checked ? "true" : "false" },
+        data: { phlex_kit__context_menu_target: "menuItem" }
       }, @attrs)) do
-        input(type: :checkbox, class: "pk-context-menu-item-input", name: @name, value: @value, checked: @checked)
+        input(type: :checkbox, class: "pk-context-menu-item-input", name: @name, value: @value, checked: @checked,
+              tabindex: "-1", data: { action: "change->phlex-kit--context-menu#syncChecked" })
         span(class: "pk-context-menu-item-indicator", aria: { hidden: "true" }) do
           render Icon.new(:check, size: nil)
         end

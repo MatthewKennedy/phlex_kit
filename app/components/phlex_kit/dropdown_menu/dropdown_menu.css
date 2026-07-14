@@ -54,9 +54,10 @@
   text-decoration: none; /* href items render as <a> — no UA underline at rest */
   outline: none;
 }
+/* Keyboard nav moves real focus — :focus is the highlight (no aria-selected:
+   that attribute is unsupported on menuitems and AT ignores it). */
 .pk-dropdown-menu-item:hover,
-.pk-dropdown-menu-item:focus,
-.pk-dropdown-menu-item[aria-selected="true"] { background: var(--pk-accent); text-decoration: none; }
+.pk-dropdown-menu-item:focus { background: var(--pk-accent); text-decoration: none; }
 
 .pk-dropdown-menu-label { margin: 0; padding: .375rem .5rem; font-size: .875rem; font-weight: 600; }
 .pk-dropdown-menu-separator { height: 1px; margin: .25rem -.25rem; background: var(--pk-border); }
