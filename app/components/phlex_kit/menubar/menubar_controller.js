@@ -84,11 +84,18 @@ export default class extends Controller {
   // cleanup): roving focus while a menu is open, ArrowDown-opens while closed.
   onKeydown(e) {
     if (!this.openMenu) {
-      if (e.key !== "ArrowDown") return
       const menu = e.target.closest("[data-phlex-kit--menubar-target=\"menu\"]")
       if (!menu) return
-      e.preventDefault()
-      this.show(menu, true)
+      if (e.key === "ArrowDown") {
+        e.preventDefault()
+        this.show(menu, true)
+      } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        // Closed bar: left/right move focus between the triggers (APG).
+        e.preventDefault()
+        const menus = this.menuTargets
+        const next = menus[(menus.indexOf(menu) + (e.key === "ArrowRight" ? 1 : -1) + menus.length) % menus.length]
+        next?.querySelector("[aria-expanded], a, button, [tabindex]")?.focus()
+      }
       return
     }
     const items = this.items(this.openMenu)
@@ -114,15 +121,49 @@ export default class extends Controller {
         e.preventDefault()
         items[items.length - 1]?.focus()
         break
+      case "Enter":
+      case " ":
+        // Explicit click so label rows (checkbox/radio) activate — labels
+        // have no native keyboard activation (and this gives links Space).
+        if (index >= 0) {
+          e.preventDefault()
+          items[index].click()
+        }
+        break
       case "ArrowRight":
         e.preventDefault()
-        this.shift(1)
+        // On a sub trigger, enter the submenu (focus reveals it via
+        // :focus-within) instead of jumping to the next top-level menu.
+        if (document.activeElement?.matches(".pk-menubar-sub-trigger")) {
+          this.enterSub(document.activeElement)
+        } else {
+          this.shift(1)
+        }
         break
-      case "ArrowLeft":
+      case "ArrowLeft": {
         e.preventDefault()
-        this.shift(-1)
+        // Inside a submenu, step back to its trigger instead of switching menus.
+        const sub = document.activeElement?.closest(".pk-menubar-sub-content")
+        if (sub) {
+          sub.closest(".pk-menubar-sub")?.querySelector(".pk-menubar-sub-trigger")?.focus()
+        } else {
+          this.shift(-1)
+        }
         break
+      }
     }
+  }
+
+  // Focus the first row of a sub trigger's panel. The panel opens on
+  // :focus-within, so focus the trigger first, then hop into the revealed
+  // panel's first visible item.
+  enterSub(trigger) {
+    trigger.focus()
+    const panel = trigger.closest(".pk-menubar-sub")?.querySelector(".pk-menubar-sub-content")
+    if (!panel) return
+    const first = [...panel.querySelectorAll("[role^=\"menuitem\"]")]
+      .find((el) => !el.closest("[data-disabled]") && el.getClientRects().length > 0)
+    first?.focus()
   }
 
   // Mirrors a checkbox/radio item's native input state onto the item's
@@ -148,7 +189,10 @@ export default class extends Controller {
   items(menu) {
     const panel = this.panel(menu)
     if (!panel) return []
+    // getClientRects also skips rows inside a CLOSED sub panel (its
+    // display:none comes from the hover/focus-within CSS, not .pk-hidden) —
+    // focus() on those silently fails and the roving nav jams there.
     return [...panel.querySelectorAll("[role^=\"menuitem\"]")]
-      .filter((el) => !el.closest("[data-disabled]") && !el.closest(".pk-hidden"))
+      .filter((el) => !el.closest("[data-disabled]") && el.getClientRects().length > 0)
   }
 }

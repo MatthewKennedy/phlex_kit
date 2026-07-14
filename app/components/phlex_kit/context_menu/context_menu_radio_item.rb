@@ -13,9 +13,13 @@ module PhlexKit
     def view_template(&block)
       label(**mix({
         class: "pk-context-menu-item pk-context-menu-radio-item",
-        role: "menuitemradio"
+        role: "menuitemradio",
+        tabindex: "-1",
+        aria: { checked: @checked ? "true" : "false" },
+        data: { phlex_kit__context_menu_target: "menuItem" }
       }, @attrs)) do
-        input(type: :radio, class: "pk-context-menu-item-input", name: @name, value: @value, checked: @checked)
+        input(type: :radio, class: "pk-context-menu-item-input", name: @name, value: @value, checked: @checked,
+              tabindex: "-1", data: { action: "change->phlex-kit--context-menu#syncChecked" })
         span(class: "pk-context-menu-item-indicator", aria: { hidden: "true" }) do
           # A filled selection dot is geometry, not icon-library vocabulary —
           # identical across icon_library settings (matches the dropdown).

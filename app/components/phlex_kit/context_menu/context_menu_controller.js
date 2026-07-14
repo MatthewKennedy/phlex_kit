@@ -74,7 +74,52 @@ export default class extends Controller {
         e.preventDefault()
         items[items.length - 1]?.focus()
         break
+      case "Enter":
+      case " ":
+        // Explicit click so label rows (checkbox/radio) activate — labels
+        // have no native keyboard activation (and this gives links Space).
+        if (index >= 0) {
+          e.preventDefault()
+          items[index].click()
+        }
+        break
+      case "ArrowRight":
+        // On a sub trigger, enter the submenu (focus reveals it via
+        // :focus-within, making its rows visible to the roving nav).
+        if (document.activeElement?.matches(".pk-context-menu-sub-trigger")) {
+          e.preventDefault()
+          this.enterSub(document.activeElement)
+        }
+        break
+      case "ArrowLeft": {
+        // Inside a submenu, step back to its trigger (closes it on focus-out).
+        const sub = document.activeElement?.closest(".pk-context-menu-sub-content")
+        if (sub) {
+          e.preventDefault()
+          sub.closest(".pk-context-menu-sub")?.querySelector(".pk-context-menu-sub-trigger")?.focus()
+        }
+        break
+      }
     }
+  }
+
+  enterSub(trigger) {
+    trigger.focus()
+    const panel = trigger.closest(".pk-context-menu-sub")?.querySelector(".pk-context-menu-sub-content")
+    if (!panel) return
+    const first = [...panel.querySelectorAll("[role^=\"menuitem\"]")]
+      .find((el) => !el.closest("[data-disabled]") && el.getClientRects().length > 0)
+    first?.focus()
+  }
+
+  // Mirrors a checkbox/radio row's native input state onto the row's
+  // aria-checked (radios also reset their group's siblings).
+  syncChecked(e) {
+    const input = e.target
+    const group = input.name
+      ? this.element.querySelectorAll(`input[name="${CSS.escape(input.name)}"]`)
+      : [input]
+    group.forEach((i) => i.closest("[role^=\"menuitem\"]")?.setAttribute("aria-checked", i.checked))
   }
 
   anchor() {
@@ -82,6 +127,11 @@ export default class extends Controller {
   }
 
   items() {
-    return this.menuItemTargets.filter((el) => !el.closest("[data-disabled]") && !el.closest(".pk-hidden"))
+    // getClientRects also skips rows inside a CLOSED sub panel (its
+    // display:none comes from the hover/focus-within CSS, not .pk-hidden) —
+    // focus() on those silently fails and the roving nav jams there.
+    return this.menuItemTargets.filter(
+      (el) => !el.closest("[data-disabled]") && el.getClientRects().length > 0
+    )
   }
 }

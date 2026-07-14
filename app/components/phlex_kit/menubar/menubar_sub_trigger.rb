@@ -6,7 +6,9 @@ module PhlexKit
       div(**mix({
         class: "pk-menubar-item pk-menubar-sub-trigger",
         role: "menuitem",
-        tabindex: "0",
+        # -1: the roving focus reaches it via arrows (focus-within opens the
+        # sub); tabindex 0 made it a stray tab stop inside the open panel.
+        tabindex: "-1",
         aria: { haspopup: "menu" }
       }, @attrs)) do
         block&.call

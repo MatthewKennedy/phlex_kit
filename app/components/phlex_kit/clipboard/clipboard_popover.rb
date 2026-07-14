@@ -6,7 +6,9 @@ module PhlexKit
       @attrs = attrs
     end
     def view_template(&block)
-      div(class: "pk-clipboard-popover pk-hidden", data: { phlex_kit__clipboard_target: fetch_option(TARGETS, @type, :target) }) do
+      # role="status": the shown/hidden confirmation is a live region, so
+      # screen readers announce "Copied!" instead of a silent visual flash.
+      div(class: "pk-clipboard-popover pk-hidden", role: "status", data: { phlex_kit__clipboard_target: fetch_option(TARGETS, @type, :target) }) do
         div(**mix({ class: "pk-clipboard-popover-inner" }, @attrs), &block)
       end
     end
