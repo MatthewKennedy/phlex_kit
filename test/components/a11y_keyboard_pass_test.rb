@@ -73,7 +73,10 @@ class A11yKeyboardPassTest < Minitest::Test
 
   def test_alert_dialog_clone_carries_the_modal_keyboard_contract
     html = render(PhlexKit::AlertDialogContent.new { "body" })
-    assert_includes html, "keydown->phlex-kit--alert-dialog#keydown"
+    # Escape/Tab are handled by a document-level keydown listener the clone's
+    # controller installs while open (an element action dies once focus escapes
+    # to <body>); the overlay's mousedown guard keeps focus inside the trap.
+    assert_includes html, "mousedown->phlex-kit--alert-dialog#overlayMousedown"
     assert_includes html, %(tabindex="-1") # panel focus fallback
     assert_includes html, %(role="alertdialog")
   end

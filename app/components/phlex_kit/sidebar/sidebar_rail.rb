@@ -1,21 +1,30 @@
 module PhlexKit
   # Invisible grab strip along the sidebar's trailing edge — clicking it
   # toggles the collapse, like shadcn/ui's SidebarRail. Place it as the last
-  # child of a Sidebar inside a collapsible wrapper. See sidebar.rb.
+  # child of a Sidebar inside a collapsible wrapper. `expanded:` renders the
+  # initial aria-expanded (pass false when the wrapper starts
+  # default_collapsed); the phlex-kit--sidebar controller keeps it in sync on
+  # toggle. `controls:` renders aria-controls pointing at the Sidebar's id —
+  # when omitted, the controller wires it on connect. See sidebar.rb.
   class SidebarRail < BaseComponent
-    def initialize(**attrs)
+    def initialize(expanded: true, controls: nil, **attrs)
+      @expanded = expanded
+      @controls = controls
       @attrs = attrs
     end
 
     def view_template
-      button(**mix({
+      base = {
         type: :button,
         class: "pk-sidebar-rail",
         aria_label: "Toggle sidebar",
+        "aria-expanded": @expanded ? "true" : "false",
         tabindex: "-1",
         title: "Toggle sidebar",
         data: { action: "click->phlex-kit--sidebar#toggle" }
-      }, @attrs))
+      }
+      base["aria-controls"] = @controls if @controls
+      button(**mix(base, @attrs))
     end
   end
 end

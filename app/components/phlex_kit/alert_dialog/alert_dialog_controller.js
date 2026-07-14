@@ -6,10 +6,14 @@ import { Controller } from "@hotwired/stimulus";
 // clone's lifetime (mirroring sheet_content_controller): scroll lock, initial
 // focus (the Cancel action when present — APG wants the least destructive
 // control), Tab focus trap, Escape-to-dismiss, focus restore to the opener,
-// and aria-labelledby/-describedby wiring to Title/Description. connect and
-// disconnect exactly bracket the clone, so removal by any path restores state.
+// background inert, and aria-labelledby/-describedby wiring to
+// Title/Description. Escape/Tab are handled by a document-level keydown
+// listener (an element-scoped one dies the moment focus escapes to <body>);
+// the overlay's mousedown guard keeps focus from leaving the trap. connect and
+// disconnect exactly bracket the clone, so removal by any path (Cancel,
+// Escape, turbo:before-cache) restores state.
 const FOCUSABLE =
-  'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 export default class extends Controller {
   static targets = ["content"];
@@ -24,6 +28,11 @@ export default class extends Controller {
     this.opener = document.activeElement;
     this.previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    this.onKeydown = (event) => this.keydown(event);
+    this.beforeCache = () => this.element.remove();
+    document.addEventListener("keydown", this.onKeydown);
+    document.addEventListener("turbo:before-cache", this.beforeCache);
+    this.#inertOthers();
     this.#wireAria();
     const focusables = this.#focusables();
     const cancel = focusables.find((el) => (el.dataset.action || "").includes("#dismiss"));
@@ -32,6 +41,9 @@ export default class extends Controller {
 
   disconnect() {
     if (this.hasContentTarget) return;
+    document.removeEventListener("keydown", this.onKeydown);
+    document.removeEventListener("turbo:before-cache", this.beforeCache);
+    this.#restoreInert();
     document.body.style.overflow = this.previousOverflow;
     if (this.opener?.isConnected) this.opener.focus();
   }
@@ -48,6 +60,13 @@ export default class extends Controller {
     this.element.remove();
   }
 
+  // Overlay mousedown would move focus to <body>, killing an element-scoped
+  // trap; prevented here so focus stays inside the panel (the overlay is
+  // deliberately NOT a dismiss surface on an alert dialog).
+  overlayMousedown(event) {
+    event.preventDefault();
+  }
+
   keydown(event) {
     if (event.key === "Escape") {
       event.preventDefault();
@@ -59,6 +78,12 @@ export default class extends Controller {
     if (focusables.length === 0) {
       event.preventDefault();
       this.#panel()?.focus();
+      return;
+    }
+    // Focus somehow left the dialog (e.g. programmatically): pull it back in.
+    if (!this.element.contains(document.activeElement)) {
+      event.preventDefault();
+      focusables[0].focus();
       return;
     }
     const first = focusables[0];
@@ -80,6 +105,24 @@ export default class extends Controller {
     const panel = this.#panel();
     if (!panel) return [];
     return [...panel.querySelectorAll(FOCUSABLE)].filter((el) => el.getClientRects().length > 0);
+  }
+
+  // Make everything behind the modal inert (the clone is <body>'s last child,
+  // so its siblings are the whole page). Prior inert state is saved per
+  // element and restored on disconnect.
+  #inertOthers() {
+    this.inerted = [];
+    for (const el of document.body.children) {
+      if (el === this.element) continue;
+      if (["SCRIPT", "STYLE", "LINK", "TEMPLATE"].includes(el.tagName)) continue;
+      this.inerted.push([el, el.inert]);
+      el.inert = true;
+    }
+  }
+
+  #restoreInert() {
+    for (const [el, wasInert] of this.inerted || []) el.inert = wasInert;
+    this.inerted = null;
   }
 
   #wireAria() {

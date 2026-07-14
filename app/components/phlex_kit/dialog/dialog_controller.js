@@ -24,10 +24,26 @@ export default class extends Controller {
   }
   disconnect() {
     this.dialogTarget.removeEventListener("close", this.handleClose)
-    document.body.style.removeProperty("overflow")
+    if (this.dialogTarget.open) this.handleClose()
   }
-  open(e) { e?.preventDefault(); this.dialogTarget.showModal(); document.body.style.overflow = "hidden" }
+  open(e) {
+    e?.preventDefault()
+    this.dialogTarget.showModal()
+    // Save/restore rather than removeProperty: a host page (or another
+    // component) may have set body overflow itself.
+    this.previousOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+  }
   dismiss() { this.dialogTarget.close() }
-  backdropClick(e) { if (e.target === this.dialogTarget) this.dismiss() }
-  handleClose = () => { document.body.style.removeProperty("overflow") }
+  // Only a click on the ::backdrop dismisses. e.target is the <dialog> for
+  // backdrop clicks, but ALSO for clicks on the dialog's own padding/flex
+  // gaps — disambiguate by testing the click point against the dialog's box.
+  backdropClick(e) {
+    if (e.target !== this.dialogTarget) return
+    if (e.detail === 0) return // synthetic/keyboard click — no coordinates
+    const r = this.dialogTarget.getBoundingClientRect()
+    const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom
+    if (!inside) this.dismiss()
+  }
+  handleClose = () => { document.body.style.overflow = this.previousOverflow ?? "" }
 }
