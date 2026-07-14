@@ -32,6 +32,13 @@ export default class extends Controller {
     this.timer = setTimeout(() => this.element.requestSubmit(), this.delayValue);
   }
 
+  // Immediate, undebounced submit — used by change-driven controls like the
+  // per-page select (CSP-safe replacement for an inline onchange handler).
+  submitNow() {
+    clearTimeout(this.timer);
+    this.element.requestSubmit();
+  }
+
   captureBeforeRender() {
     const input = this.input();
     if (!input || document.activeElement !== input) return;
@@ -62,6 +69,11 @@ export default class extends Controller {
   }
 
   key() {
-    return this.element.action || "_";
+    // The key must survive the Turbo Frame swap (the form element is replaced),
+    // so it's derived from stable markup: the form id when the caller set one,
+    // else action URL + search-input name — two same-path forms (e.g. search
+    // alongside the per-page select) must not share a focus-restore slot.
+    if (this.element.id) return `#${this.element.id}`;
+    return `${this.element.action || "_"}::${this.input()?.name ?? ""}`;
   }
 }

@@ -11,11 +11,19 @@ export default class extends Controller {
   connect() {
     this._onScroll = () => this.update()
     this.element.addEventListener("scroll", this._onScroll, { passive: true })
+    // Content changes (items added/removed, images sizing in) and container
+    // resizes shift the overflow edges — without these the masks go stale.
+    this._resizeObserver = new ResizeObserver(() => this.update())
+    this._resizeObserver.observe(this.element)
+    this._mutationObserver = new MutationObserver(() => this.update())
+    this._mutationObserver.observe(this.element, { childList: true, subtree: true })
     this.update()
   }
 
   disconnect() {
     this.element.removeEventListener("scroll", this._onScroll)
+    this._resizeObserver?.disconnect()
+    this._mutationObserver?.disconnect()
   }
 
   update() {

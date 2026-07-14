@@ -7,8 +7,11 @@ import { Controller } from "@hotwired/stimulus";
 // Connects to data-controller="phlex-kit--data-table-column-visibility"
 export default class extends Controller {
   toggle(event) {
-    const key = event.target.dataset.columnKey;
+    // The change event originates on the checkbox, but data-column-key lives
+    // on the menu row (DropdownMenuCheckboxItem) — look up through ancestors.
+    const key = event.target.closest("[data-column-key]")?.dataset.columnKey;
     const visible = event.target.checked;
+    if (!key) return;
     const root = this.element.closest('[data-controller~="phlex-kit--data-table"]');
     if (!root) return;
     root

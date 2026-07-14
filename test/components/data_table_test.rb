@@ -84,7 +84,7 @@ class DataTableTest < Minitest::Test
 
   def test_per_page_select_self_submits
     html = render(PhlexKit::DataTablePerPageSelect.new(path: "/r", value: 25, frame_id: "reviews"))
-    assert_includes html, "this.form.requestSubmit()"
+    assert_includes html, "change->phlex-kit--data-table-search#submitNow"
     assert_includes html, %(<option value="25" selected)
     assert_includes html, %(data-turbo-frame="reviews")
   end

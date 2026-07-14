@@ -22,18 +22,17 @@ module PhlexKit
           end
           render DropdownMenuContent.new do
             @columns.each do |col|
-              label(class: "pk-data-table-column-option") do
-                input(
-                  type: :checkbox,
-                  checked: true,
-                  class: "pk-checkbox",
-                  data: {
-                    column_key: col[:key].to_s,
-                    action: "change->phlex-kit--data-table-column-visibility#toggle"
-                  }
-                )
-                span { plain col[:label] }
-              end
+              # A real menu row (role="menuitemcheckbox" + aria-checked, arrow-
+              # navigable) — plain <label>s directly inside role="menu" are
+              # invalid ARIA. The change event bubbles from the hidden checkbox
+              # to this row, where our toggle action picks it up.
+              render DropdownMenuCheckboxItem.new(
+                checked: true,
+                data: {
+                  column_key: col[:key].to_s,
+                  action: "change->phlex-kit--data-table-column-visibility#toggle"
+                }
+              ) { plain col[:label] }
             end
           end
         end

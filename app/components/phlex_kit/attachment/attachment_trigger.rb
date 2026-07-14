@@ -10,12 +10,12 @@ module PhlexKit
       @attrs = attrs
     end
 
-    def view_template
+    def view_template(&block)
       base = { class: "pk-attachment-trigger" }
       if @as == :a
-        a(**mix(base.merge(href: @href), @attrs))
+        a(**mix(base.merge(href: @href), @attrs), &block)
       else
-        button(**mix(base.merge(type: :button), @attrs))
+        button(**mix(base.merge(type: :button), @attrs), &block)
       end
     end
   end

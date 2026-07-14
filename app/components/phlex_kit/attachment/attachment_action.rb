@@ -1,8 +1,12 @@
 module PhlexKit
-  # Small ghost icon button in an Attachment (remove/download). Give it an
-  # aria-label; block content is the icon (defaults to ×). See attachment.rb.
+  # Small ghost icon button in an Attachment (remove/download). Block content
+  # is the icon (defaults to ×). `label:` renders a pk-sr-only span so the
+  # icon-only button always has an accessible name (default "Remove") —
+  # override it per action, or pass `label: nil` when supplying your own
+  # aria-label. See attachment.rb.
   class AttachmentAction < BaseComponent
-    def initialize(**attrs)
+    def initialize(label: "Remove", **attrs)
+      @label = label
       @attrs = attrs
     end
 
@@ -13,6 +17,7 @@ module PhlexKit
         else
           render Icon.new(:x, size: nil)
         end
+        span(class: "pk-sr-only") { @label } if @label
       end
     end
   end

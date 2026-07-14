@@ -12,6 +12,7 @@ module PhlexKit
 
     def total_count = @pagy.count
 
-    def per_page = @pagy.items
+    # Pagy 9 renamed #items to #limit (and removed #items) — support both.
+    def per_page = @pagy.respond_to?(:limit) ? @pagy.limit : @pagy.items
   end
 end

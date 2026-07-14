@@ -65,8 +65,19 @@ export default class extends Controller {
       });
     }
 
+    // The MutationObserver only sees DOM changes — late image loads and
+    // viewport resizes also move the live edge, so keep the pin through both.
+    this.onContentGrowth = this.onContentGrowth.bind(this);
+    this.resizeObserver = new ResizeObserver(this.onContentGrowth);
+    if (this.hasContentTarget) this.resizeObserver.observe(this.contentTarget);
+    if (this.hasViewportTarget) {
+      this.resizeObserver.observe(this.viewportTarget);
+      // load doesn't bubble — capture catches images/media inside messages.
+      this.viewportTarget.addEventListener("load", this.onContentGrowth, true);
+    }
+
     // Apply the opening position after layout settles.
-    requestAnimationFrame(() => {
+    this.initialFrame = requestAnimationFrame(() => {
       this.applyDefaultPosition();
       this.updateButton();
     });
@@ -78,9 +89,22 @@ export default class extends Controller {
       this.viewportTarget.removeEventListener("wheel", this.onWheel);
       this.viewportTarget.removeEventListener("touchstart", this.onTouchStart);
       this.viewportTarget.removeEventListener("keydown", this.onKeydown);
+      this.viewportTarget.removeEventListener("load", this.onContentGrowth, true);
     }
     this.observer?.disconnect();
+    this.resizeObserver?.disconnect();
     if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+    if (this.initialFrame) cancelAnimationFrame(this.initialFrame);
+  }
+
+  // Content/viewport geometry changed (image decoded, panel resized, …):
+  // re-pin to the live edge when following, otherwise just refresh the button.
+  onContentGrowth() {
+    if (this.programmatic) return;
+    if (this.autoScrollValue && this.following && !this.isAtEnd()) {
+      this.scrollToEnd("auto");
+    }
+    this.updateButton();
   }
 
   // --- Reader intent -------------------------------------------------------
@@ -91,15 +115,35 @@ export default class extends Controller {
     this.updateButton();
   }
 
-  // Any upward wheel is a deliberate move away from the live edge.
+  // Any upward wheel is a deliberate move away from the live edge. Any wheel
+  // during a programmatic scroll hands control straight back to the reader.
   onWheel(event) {
+    if (this.programmatic) {
+      this.interrupt();
+      return;
+    }
     if (event.deltaY < 0) this.release();
   }
 
   onTouchStart() {
     // A touch that turns into an upward drag surfaces through onScroll; this
     // just makes the release feel immediate when the reader grabs the list.
+    if (this.programmatic) {
+      this.interrupt();
+      return;
+    }
     if (!this.isAtEnd()) this.release();
+  }
+
+  // Cancel an in-flight programmatic scroll and release the pin — the
+  // reader's wheel/touch always wins over our 300ms animation.
+  interrupt() {
+    if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
+    this.programmatic = false;
+    this.element.removeAttribute("data-autoscrolling");
+    this.viewportTarget?.removeAttribute("data-autoscrolling");
+    this.following = false;
+    this.updateButton();
   }
 
   onKeydown(event) {

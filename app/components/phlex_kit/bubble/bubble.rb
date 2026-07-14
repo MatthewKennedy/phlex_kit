@@ -4,10 +4,12 @@ module PhlexKit
   # trailing edge. Compose Bubble > BubbleContent (+ BubbleReactions).
   class Bubble < BaseComponent
     VARIANTS = %i[default secondary muted tinted outline ghost destructive].freeze
+    ALIGNS = %i[start end].freeze
     def initialize(variant: :default, align: :start, **attrs)
       @variant = variant.to_sym
       raise KeyError, "unknown Bubble variant #{@variant}" unless VARIANTS.include?(@variant)
       @align = align.to_sym
+      raise KeyError, "unknown Bubble align #{@align}" unless ALIGNS.include?(@align)
       @attrs = attrs
     end
     def view_template(&)

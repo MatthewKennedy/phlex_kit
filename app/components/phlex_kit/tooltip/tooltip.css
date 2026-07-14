@@ -34,9 +34,14 @@
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity .12s ease;
+  /* Zero delay here = hover-out hides immediately; the hover-in rule below
+     re-declares the delays for the open direction only. */
+  transition: opacity .12s ease 0s, visibility 0s linear 0s;
 }
-.pk-tooltip-content:has(kbd) { padding-right: .375rem; }
+@media (prefers-reduced-motion: reduce) {
+  .pk-tooltip-content { transition-duration: 0s, 0s; }
+}
+.pk-tooltip-content:has(kbd) { padding-inline-end: .375rem; }
 /* The notch. The arrow is position:fixed so both anchors are acceptable
    (an absolute pseudo's containing block is the bubble, which doesn't
    contain the trigger — anchor() wouldn't resolve). Its center chases the
@@ -66,8 +71,25 @@
   position-area: inline-end; margin: 0 0 0 6px;
   position-try-fallbacks: flip-inline;
 }
-.pk-tooltip:hover .pk-tooltip-content,
-.pk-tooltip:focus-within .pk-tooltip-content { opacity: 1; visibility: visible; }
-/* Escape-dismissed (WCAG 1.4.13): suppressed until pointer/focus leaves. */
+/* Hover reveal only on devices that actually hover (a touch tap must not
+   stick the bubble open), with an open delay so tooltips don't flash while
+   the cursor sweeps across dense UI. Visibility gets the same delay so the
+   bubble doesn't occupy hit-testing space during the wait. */
+@media (hover: hover) {
+  .pk-tooltip:hover .pk-tooltip-content {
+    opacity: 1;
+    visibility: visible;
+    transition-delay: .4s, .4s;
+  }
+}
+/* Keyboard focus reveals instantly (:focus-visible, so pointer/touch clicks
+   that focus the trigger don't stick the bubble open). */
+.pk-tooltip:has(:focus-visible) .pk-tooltip-content {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s, 0s;
+}
+/* Escape-dismissed (WCAG 1.4.13): suppressed until pointer/focus leaves.
+   transition: none so the hide is immediate regardless of hover-in delays. */
 .pk-tooltip[data-pk-dismissed]:hover .pk-tooltip-content,
-.pk-tooltip[data-pk-dismissed]:focus-within .pk-tooltip-content { opacity: 0; visibility: hidden; }
+.pk-tooltip[data-pk-dismissed]:focus-within .pk-tooltip-content { opacity: 0; visibility: hidden; transition: none; }
