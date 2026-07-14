@@ -66,4 +66,19 @@ class ToastTest < Minitest::Test
     assert_equal :info, PhlexKit::Toast.flash_variant(:notice)
     assert_equal :default, PhlexKit::Toast.flash_variant(:whatever)
   end
+
+  # ToastRegion(duration:) must reach the toasts: flash items and the cloned
+  # skeletons both fall back to the toast controller's 4000ms default unless
+  # the region's duration is stamped on them at render time.
+  def test_region_duration_reaches_flash_toasts
+    html = render(PhlexKit::ToastRegion.new(duration: 10_000, flash: { notice: "Saved" }))
+    assert_includes html, %(id="flash-notice")
+    assert_includes html, %(data-phlex-kit--toast-duration-value="10000")
+  end
+
+  def test_region_duration_reaches_skeleton_templates
+    html = render(PhlexKit::ToastRegion.new(duration: 10_000))
+    assert_equal PhlexKit::ToastRegion::SKELETON_VARIANTS.length,
+                 html.scan(%(data-phlex-kit--toast-duration-value="10000")).length
+  end
 end

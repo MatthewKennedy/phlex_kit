@@ -2,11 +2,13 @@ module PhlexKit
   # Custom dropdown select, ported from ruby_ui's RubyUI::Select — the styled
   # popover (Image #2), NOT the native <select> (that's PhlexKit::NativeSelect). Unlike
   # the rest of the kit this component IS JS-driven: it keeps ruby_ui's Stimulus
-  # wiring (`phlex-kit--select` / `phlex-kit--select-item`, in
-  # app/javascript/controllers/ruby_ui/), since the open/close, selection, and
-  # keyboard nav are the point. The one change from upstream: the controller drops
-  # the `@floating-ui/dom` dependency and positions the panel with plain CSS
-  # (opens directly below the trigger). Tailwind → vanilla `.pk-select-*` (select.css).
+  # wiring (`phlex-kit--select`), since the open/close, selection, and keyboard
+  # nav are the point. Two changes from upstream: the controller drops the
+  # `@floating-ui/dom` dependency and positions the panel with plain CSS (opens
+  # directly below the trigger), and selection flips aria-selected via the
+  # instance-scoped itemTargets rather than upstream's document-scoped
+  # `.pk-select-item` outlet (which clobbered every other Select on the page).
+  # Tailwind → vanilla `.pk-select-*` (select.css).
   #
   # Multi-part. The hidden SelectInput carries the form value/name; SelectTrigger +
   # SelectValue are the closed-state button; SelectContent > SelectGroup >
@@ -34,8 +36,7 @@ module PhlexKit
         data: {
           controller: "phlex-kit--select",
           phlex_kit__select_open_value: "false",
-          action: "click@window->phlex-kit--select#clickOutside",
-          phlex_kit__select_phlex_kit__select_item_outlet: ".pk-select-item"
+          action: "click@window->phlex-kit--select#clickOutside"
         }
       }, @attrs), &block)
     end

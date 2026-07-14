@@ -85,4 +85,12 @@ class CalendarTest < Minitest::Test
     assert_includes html, "pk-calendar-day selected {{state}}"
     assert_includes html, "pk-calendar-day disabled {{state}}"
   end
+
+  # Keyboard access: the grid delegates arrow-key navigation to the
+  # controller — without it, no day is reachable by keyboard unless one is
+  # preselected (only the selected template carries tabindex="0").
+  def test_calendar_body_wires_keyboard_navigation
+    html = render(PhlexKit::CalendarBody.new)
+    assert_includes html, "keydown->phlex-kit--calendar#onKeydown"
+  end
 end
