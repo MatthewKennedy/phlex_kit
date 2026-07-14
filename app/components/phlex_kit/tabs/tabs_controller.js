@@ -33,7 +33,9 @@ export default class extends Controller {
     const index = triggers.indexOf(document.activeElement)
     let target
     if (nextKeys.includes(event.key)) target = triggers[(index + 1) % triggers.length]
-    else if (prevKeys.includes(event.key)) target = triggers[(index - 1 + triggers.length) % triggers.length]
+    // index is -1 when focus isn't on a trigger — treat prev as "last"
+    // (the modulo would land on n-2 otherwise).
+    else if (prevKeys.includes(event.key)) target = triggers[index === -1 ? triggers.length - 1 : (index - 1 + triggers.length) % triggers.length]
     else if (event.key === "Home") target = triggers[0]
     else if (event.key === "End") target = triggers[triggers.length - 1]
     if (!target) return

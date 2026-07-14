@@ -10,6 +10,12 @@ export default class extends Controller {
   static values = { length: Number }
 
   connect() {
+    // Slots compose without knowing their position, so `length:` can drift
+    // from the actual slot count — flag the mismatch instead of silently
+    // truncating/underfilling codes.
+    if (this.hasLengthValue && this.lengthValue !== this.slotTargets.length) {
+      console.warn(`phlex-kit--input-otp: length is ${this.lengthValue} but ${this.slotTargets.length} slots rendered`, this.element)
+    }
     // Slots compose without knowing their position — label them here so AT
     // announces "Digit N of M" instead of anonymous edit fields.
     this.slotTargets.forEach((slot, i) => {
@@ -17,6 +23,13 @@ export default class extends Controller {
         slot.setAttribute("aria-label", `Digit ${i + 1} of ${this.slotTargets.length}`)
       }
     })
+    // A server-provided value renders on the hidden input only — distribute
+    // it into the empty slots BEFORE syncing, or syncValue would join the
+    // empty slots and wipe the value with a spurious change event.
+    if (this.hasValueTarget && this.valueTarget.value && this.slotTargets.every((slot) => !slot.value)) {
+      const chars = this.valueTarget.value.split("")
+      this.slotTargets.forEach((slot, i) => { if (chars[i] != null) slot.value = chars[i] })
+    }
     this.syncValue()
   }
 

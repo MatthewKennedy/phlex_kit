@@ -24,7 +24,9 @@
   flex-direction: column;
   align-items: stretch;
 }
-.pk-input-group:focus-within {
+/* Ring only when the CONTROL is focused (shadcn gates on the control's
+   focus-visible) — :focus-within would also light it for addon buttons. */
+.pk-input-group:has(.pk-input:focus-visible, .pk-textarea:focus-visible) {
   border-color: var(--pk-ring);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
@@ -48,8 +50,8 @@
 .pk-input-group .pk-input:disabled,
 .pk-input-group .pk-textarea:disabled { background: transparent; }
 /* Tighten the control's near-side padding beside an inline addon. */
-.pk-input-group:has(> .pk-input-group-addon.start) > .pk-input { padding-left: .375rem; }
-.pk-input-group:has(> .pk-input-group-addon.end) > .pk-input { padding-right: .375rem; }
+.pk-input-group:has(> .pk-input-group-addon.start) > .pk-input { padding-inline-start: .375rem; }
+.pk-input-group:has(> .pk-input-group-addon.end) > .pk-input { padding-inline-end: .375rem; }
 
 .pk-input-group-addon {
   display: flex;
@@ -64,8 +66,8 @@
   font-size: .875rem;
   font-weight: 500;
 }
-.pk-input-group-addon.start { order: -1; padding-left: .5rem; }
-.pk-input-group-addon.end { order: 99; padding-right: .5rem; }
+.pk-input-group-addon.start { order: -1; padding-inline-start: .5rem; }
+.pk-input-group-addon.end { order: 99; padding-inline-end: .5rem; }
 .pk-input-group-addon.block-start,
 .pk-input-group-addon.block-end {
   width: 100%;
@@ -78,8 +80,8 @@
 .pk-input-group-addon.block-end.bordered { border-top: 1px solid var(--pk-border); padding-top: .5rem; }
 .pk-input-group-addon svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
 .pk-input-group-addon > kbd { border-radius: calc(var(--pk-radius) - 5px); }
-.pk-input-group-addon.start:has(> .pk-button) { margin-left: -0.3rem; }
-.pk-input-group-addon.end:has(> .pk-button) { margin-right: -0.3rem; }
+.pk-input-group-addon.start:has(> .pk-button) { margin-inline-start: -0.3rem; }
+.pk-input-group-addon.end:has(> .pk-button) { margin-inline-end: -0.3rem; }
 
 .pk-button.pk-input-group-button {
   gap: .25rem;

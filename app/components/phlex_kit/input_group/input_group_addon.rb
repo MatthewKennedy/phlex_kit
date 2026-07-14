@@ -17,7 +17,11 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({ class: "pk-input-group-addon #{fetch_option(ALIGNS, @align, :align)}", role: "group" }, @attrs), &)
+      # No role: shadcn puts role="group" on its addon, but an unnamed group
+      # nested inside the InputGroup's own group is noise for AT — a text or
+      # icon addon needs no role, and interactive addon children (buttons)
+      # carry their own semantics.
+      div(**mix({ class: "pk-input-group-addon #{fetch_option(ALIGNS, @align, :align)}" }, @attrs), &)
     end
   end
 end

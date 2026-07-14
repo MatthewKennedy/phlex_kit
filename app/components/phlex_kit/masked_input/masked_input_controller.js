@@ -12,6 +12,8 @@ export default class extends Controller {
     // Skip IME composition updates — masking mid-composition mangles the text.
     this.onInput = (e) => { if (!e.isComposing) this.apply() }
     this.element.addEventListener("input", this.onInput)
+    // A server-prefilled value renders unmasked — format it once up front.
+    if (this.element.value) this.apply()
   }
   disconnect() { if (this.onInput) this.element.removeEventListener("input", this.onInput) }
   apply() {
@@ -26,10 +28,14 @@ export default class extends Controller {
     let out = "", i = 0
     for (const t of this.mask) {
       if (i >= raw.length) break
-      if (t === "#") { if (/\d/.test(raw[i])) out += raw[i++]; else break }
-      else if (t === "A") { if (/[A-Za-z]/.test(raw[i])) out += raw[i++]; else break }
-      else if (t === "*") { out += raw[i++] }
-      else { out += t; if (raw[i] === t) i++ }
+      if (t === "#" || t === "A" || t === "*") {
+        // Skip wrong-class characters instead of aborting the fill —
+        // "12a34" against ##/## must yield "12/34", not "12".
+        const re = t === "#" ? /\d/ : t === "A" ? /[A-Za-z]/ : /[0-9A-Za-z]/
+        while (i < raw.length && !re.test(raw[i])) i++
+        if (i >= raw.length) break
+        out += raw[i++]
+      } else { out += t; if (raw[i] === t) i++ }
     }
     el.value = out
 

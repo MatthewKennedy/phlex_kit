@@ -14,7 +14,7 @@ export default class extends Controller {
 
   connect() {
     if (this.hasErrorTarget) {
-      if (this.errorTarget.textContent) {
+      if (this.errorTarget.textContent.trim()) {
         this.shouldValidateValue = true;
       } else {
         this.errorTarget.classList.add("pk-hidden");
@@ -31,41 +31,60 @@ export default class extends Controller {
     error.preventDefault();
 
     this.shouldValidateValue = true;
-    this.#setErrorMessage();
+    this.#setErrorMessage(error);
   }
 
-  onInput() {
-    this.#setErrorMessage();
+  onInput(event) {
+    this.#setErrorMessage(event);
   }
 
-  onChange() {
-    this.#setErrorMessage();
+  onChange(event) {
+    this.#setErrorMessage(event);
   }
 
-  #setErrorMessage() {
+  // The event's own control, when it's one of ours — radio/checkbox groups
+  // register several input targets and validity/aria-invalid must land on
+  // the control that fired, not always the first.
+  #inputFor(event) {
+    if (event && this.inputTargets.includes(event.target)) return event.target;
+    return this.inputTarget;
+  }
+
+  #setErrorMessage(event) {
     if (!this.shouldValidateValue || !this.hasErrorTarget) return;
 
+    const input = this.#inputFor(event);
     // aria-invalid drives the red ring for LIVE validation too (input.css
     // only matched server-rendered attrs); aria-describedby ties the message
     // to the control for AT.
-    if (this.errorTarget.id) {
-      this.inputTarget.setAttribute("aria-describedby", this.errorTarget.id);
-    }
-    if (this.inputTarget.validity.valid) {
-      this.inputTarget.removeAttribute("aria-invalid");
+    if (input.validity.valid) {
+      input.removeAttribute("aria-invalid");
+      this.#describeBy(input, false);
       this.errorTarget.textContent = "";
       this.errorTarget.classList.add("pk-hidden");
     } else {
-      this.inputTarget.setAttribute("aria-invalid", "true");
-      this.errorTarget.textContent = this.#getValidationMessage();
+      input.setAttribute("aria-invalid", "true");
+      this.#describeBy(input, true);
+      this.errorTarget.textContent = this.#getValidationMessage(input);
       this.errorTarget.classList.remove("pk-hidden");
     }
   }
 
-  #getValidationMessage() {
+  // Append/remove the error's id on the control's aria-describedby without
+  // clobbering pre-existing tokens (e.g. a hint's id).
+  #describeBy(input, present) {
+    const id = this.errorTarget.id;
+    if (!id) return;
+    const tokens = (input.getAttribute("aria-describedby") || "").split(/\s+/).filter((t) => t && t !== id);
+    if (present) tokens.push(id);
+    if (tokens.length) input.setAttribute("aria-describedby", tokens.join(" "));
+    else input.removeAttribute("aria-describedby");
+  }
+
+  #getValidationMessage(input) {
     let errorMessage;
 
-    const { validity, dataset, validationMessage } = this.inputTarget;
+    const { validity, dataset, validationMessage } = input;
 
     if (validity.tooLong) errorMessage = dataset.tooLong;
     if (validity.tooShort) errorMessage = dataset.tooShort;
