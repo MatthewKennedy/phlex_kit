@@ -10,8 +10,8 @@ module PhlexKit
   # FOUC, inline this in <head> before any stylesheets:
   #
   #   <script>
-  #     const t = localStorage.theme;
-  #     if (t === "dark" || t === "light") document.documentElement.dataset.theme = t;
+  #     let t; try { t = localStorage.theme } catch {}
+  #     document.documentElement.dataset.theme = (t === "dark" || t === "light") ? t : "system";
   #   </script>
   class ThemeToggle < BaseComponent
     def initialize(wrapper: {}, aria: {}, **attrs)

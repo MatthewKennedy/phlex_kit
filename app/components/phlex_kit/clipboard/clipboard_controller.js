@@ -5,6 +5,13 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["trigger", "source", "successPopover", "errorPopover"]
 
+  disconnect() {
+    // Don't leave the 1.5s hide timer running into a dead/recycled element
+    // (Turbo can detach and re-attach this subtree mid-flash).
+    clearTimeout(this.timer)
+    this.hideAll()
+  }
+
   copy() {
     const el = this.sourceTarget.children[0]
     if (!el) { this.show(this.errorPopoverTarget); return }

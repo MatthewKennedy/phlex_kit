@@ -80,15 +80,22 @@ export default class extends Controller {
 
   setDefaultColorsForChart() {
     const Chart = this.chartLibrary()
-    Chart.defaults.color = this.getThemeColor("pk-muted") // font color
-    Chart.defaults.borderColor = this.getThemeColor("pk-border") // border color
-    Chart.defaults.backgroundColor = this.getThemeColor("pk-bg") // background color
+    // One computed-style resolve for all nine tokens (this runs on every
+    // connect; assigning identical values to Chart.defaults is free — charts
+    // read defaults at construction — so the style resolves are the only cost
+    // worth trimming).
+    const styles = getComputedStyle(document.documentElement)
+    const token = (name) => styles.getPropertyValue(`--${name}`).trim()
+
+    Chart.defaults.color = token("pk-muted") // font color
+    Chart.defaults.borderColor = token("pk-border") // border color
+    Chart.defaults.backgroundColor = token("pk-bg") // background color
 
     // tooltip colors
-    Chart.defaults.plugins.tooltip.backgroundColor = this.getThemeColor("pk-surface")
-    Chart.defaults.plugins.tooltip.borderColor = this.getThemeColor("pk-border")
-    Chart.defaults.plugins.tooltip.titleColor = this.getThemeColor("pk-text")
-    Chart.defaults.plugins.tooltip.bodyColor = this.getThemeColor("pk-muted")
+    Chart.defaults.plugins.tooltip.backgroundColor = token("pk-surface")
+    Chart.defaults.plugins.tooltip.borderColor = token("pk-border")
+    Chart.defaults.plugins.tooltip.titleColor = token("pk-text")
+    Chart.defaults.plugins.tooltip.bodyColor = token("pk-muted")
     Chart.defaults.plugins.tooltip.borderWidth = 1
 
     // legend
@@ -99,7 +106,7 @@ export default class extends Controller {
     Chart.defaults.plugins.legend.labels.borderRadius = 2
 
     // shadcn look: hairline grid, no axis borders, muted ticks
-    Chart.defaults.scale.grid = { ...Chart.defaults.scale.grid, color: this.getThemeColor("pk-border"), drawTicks: false }
+    Chart.defaults.scale.grid = { ...Chart.defaults.scale.grid, color: token("pk-border"), drawTicks: false }
     Chart.defaults.scale.border = { ...Chart.defaults.scale.border, display: false }
   }
 
@@ -108,12 +115,28 @@ export default class extends Controller {
     this.initChart()
   }
 
-  // The kit themes via <html data-theme="...">, not a class — watch that.
+  // The kit themes via <html data-theme="...">, not a class — but a class can
+  // re-theme too (.pk-dark, custom theme classes), so watch both. ANY root
+  // class mutation fires the observer though, so only rebuild when the
+  // resolved token values actually changed — rebuilding every chart on an
+  // unrelated class flip is the expensive path.
   initThemeObserver() {
+    this._themeKey = this.currentThemeKey()
     this.themeObserver = new MutationObserver(() => {
+      const key = this.currentThemeKey()
+      if (key === this._themeKey) return
+      this._themeKey = key
       this.refreshChart()
     })
     this.themeObserver.observe(document.documentElement, { attributeFilter: ["data-theme", "class"] })
+  }
+
+  // Cheap fingerprint of the resolved theme: two tokens that differ between
+  // every light/dark pair. One style resolve per mutation vs a full chart
+  // rebuild.
+  currentThemeKey() {
+    const styles = getComputedStyle(document.documentElement)
+    return `${styles.getPropertyValue("--pk-bg")}|${styles.getPropertyValue("--pk-text")}`
   }
 
   mergeOptionsWithDefaults() {

@@ -1,8 +1,11 @@
 import { Controller } from "@hotwired/stimulus";
 
-// Ported verbatim from ruby_ui's phlex-kit--avatar controller. Shows the image once
-// it has loaded (else the fallback). With no image target (fallback-only avatar)
-// connect() no-ops and the fallback stays visible.
+// Ported from ruby_ui's phlex-kit--avatar controller. Shows the image once it
+// has loaded (else the fallback). With no image target (fallback-only avatar)
+// connect() no-ops and the fallback stays visible. Purely progressive
+// enhancement: the CSS stacks the image over the fallback, so with no JS a
+// loaded image covers the fallback and a failed one leaves it showing. Uses
+// the kit's .pk-hidden utility (not a bare .hidden).
 export default class extends Controller {
   static targets = ["image", "fallback"];
 
@@ -19,12 +22,12 @@ export default class extends Controller {
   }
 
   showImage() {
-    this.imageTargets.forEach((image) => image.classList.remove("hidden"));
-    this.fallbackTargets.forEach((fallback) => fallback.classList.add("hidden"));
+    this.imageTargets.forEach((image) => image.classList.remove("pk-hidden"));
+    this.fallbackTargets.forEach((fallback) => fallback.classList.add("pk-hidden"));
   }
 
   showFallback() {
-    this.imageTargets.forEach((image) => image.classList.add("hidden"));
-    this.fallbackTargets.forEach((fallback) => fallback.classList.remove("hidden"));
+    this.imageTargets.forEach((image) => image.classList.add("pk-hidden"));
+    this.fallbackTargets.forEach((fallback) => fallback.classList.remove("pk-hidden"));
   }
 }

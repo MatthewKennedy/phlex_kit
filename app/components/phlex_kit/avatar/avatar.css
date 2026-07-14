@@ -2,9 +2,11 @@
    Group / GroupCount). Matched to shadcn/ui's current avatar (nova): the root
    is NOT overflow-clipped (a Badge hangs over the edge) — image and fallback
    round themselves, and a ::after overlay draws the hairline border, blended
-   darken (light mode) / lighten (dark mode) so it hugs any photo. The
-   controller toggles `.hidden` between image and fallback. shadcn ships
-   sm/default/lg; xs/xl are kit extras. */
+   darken (light mode) / lighten (dark mode) so it hugs any photo. The image
+   is absolutely stacked over the in-flow fallback (both can coexist without
+   squashing pre-hydration / no-JS); the controller then toggles `.pk-hidden`
+   between them as progressive enhancement. shadcn ships sm/default/lg;
+   xs/xl are kit extras. */
 .pk-avatar {
   position: relative;
   display: inline-flex;
@@ -33,7 +35,14 @@
 .pk-avatar.lg { height: 2.5rem; width: 2.5rem; font-size: 1rem; }
 .pk-avatar.xl { height: 5rem; width: 5rem; font-size: 1.875rem; }
 
+/* Stacked over the fallback: pre-hydration both render, and as flex siblings
+   they squashed into half-circles. Absolutely positioning the image lets a
+   loaded image simply cover the fallback with no JS at all; on 404 the
+   fallback stays visible underneath (and the controller removes the broken
+   image once it runs). */
 .pk-avatar-image {
+  position: absolute;
+  inset: 0;
   aspect-ratio: 1 / 1;
   height: 100%;
   width: 100%;
@@ -50,7 +59,9 @@
   background: var(--pk-surface-2);
   color: var(--pk-muted);
 }
-.pk-avatar-image.hidden, .pk-avatar-fallback.hidden { display: none; }
+/* Local restatement of the kit-wide .pk-hidden utility (_tokens.css) so the
+   controller's toggle also holds if avatar.css is consumed standalone. */
+.pk-avatar-image.pk-hidden, .pk-avatar-fallback.pk-hidden { display: none; }
 
 /* Status dot pinned to the bottom-right corner; sized by the avatar's size
    modifier, glyph hidden when there's no room (shadcn's AvatarBadge). */
@@ -84,7 +95,7 @@
 .pk-avatar-group { display: flex; }
 .pk-avatar-group .pk-avatar,
 .pk-avatar-group .pk-avatar-group-count { box-shadow: 0 0 0 2px var(--pk-bg); }
-.pk-avatar-group > :not(:first-child) { margin-left: -.5rem; }
+.pk-avatar-group > :not(:first-child) { margin-inline-start: -.5rem; }
 
 .pk-avatar-group-count {
   position: relative;

@@ -32,6 +32,7 @@ module PhlexKit
       hotkey: %w[alt t],
       dir: :ltr,
       flash: nil,
+      id: "pk-toaster",
       **attrs
     )
       @position = POSITIONS.fetch(position.to_sym)
@@ -46,12 +47,16 @@ module PhlexKit
       @hotkey = hotkey
       @dir = dir
       @flash = flash
+      # Base id for the <ol> stack; the wrapper takes "#{id}-region". Defaults
+      # keep the historical "pk-toaster"/"pk-toaster-region" pair — pass a
+      # distinct id when rendering more than one region on a page.
+      @id = id
       @attrs = attrs
     end
 
     def view_template(&block)
       div(**mix(region_attrs, @attrs)) do
-        ol(id: "pk-toaster", class: "pk-toast-list") do
+        ol(id: @id, class: "pk-toast-list") do
           render_flash if @flash
           yield(self) if block
         end
@@ -73,6 +78,9 @@ module PhlexKit
         render ToastItem.new(variant: variant, id: "flash-#{key}", duration: @duration) do
           render ToastIcon.new(variant: variant)
           render ToastTitle.new { message.to_s }
+          # The region-wide close button must reach flash toasts too — the CSS
+          # already reserves their right padding when close_button is on.
+          render ToastClose.new if @close_button
         end
       end
     end
@@ -98,10 +106,12 @@ module PhlexKit
 
     def region_attrs
       {
-        id: "pk-toaster-region",
+        id: "#{@id}-region",
         role: "region",
         class: "pk-toast-region",
-        aria: { label: "Notifications", live: "polite" },
+        # No aria-live here: each toast item is its own live region
+        # (role="status"/"alert"); a live wrapper would double-announce.
+        aria: { label: "Notifications" },
         data: {
           controller: "phlex-kit--toaster",
           turbo_permanent: "",

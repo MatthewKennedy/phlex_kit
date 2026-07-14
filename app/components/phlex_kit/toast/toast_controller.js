@@ -50,7 +50,17 @@ export default class extends Controller {
 
     requestAnimationFrame(() => {
       this.element.dataset.state = "open"
-      this._start()
+      // Spawned under an already-hovered stack (the toaster stamps
+      // data-pk-toasts-paused while dispatching pause): arm as paused so the
+      // region's resume event starts the timer, instead of ticking away
+      // under the user's cursor.
+      if (Number.isFinite(this.durationValue) && this.durationValue > 0 &&
+          this.element.closest("[data-pk-toasts-paused]")) {
+        this._paused = true
+        this._remaining = this.durationValue
+      } else {
+        this._start()
+      }
     })
   }
 
@@ -142,7 +152,11 @@ export default class extends Controller {
     const dx = e.clientX - this._swipe.x
     const dy = e.clientY - this._swipe.y
     this.element.dataset.swipe = "move"
-    this.element.style.transform = `translate(${dx}px, ${dy}px)`
+    // Never write style.transform here: the toaster owns it (stacking
+    // translate3d + scale, written to compose these vars). Writing it
+    // directly snapped non-front toasts out of position.
+    this.element.style.setProperty("--pk-toast-swipe-x", `${dx}px`)
+    this.element.style.setProperty("--pk-toast-swipe-y", `${dy}px`)
   }
 
   _onPointerUp(e) {
@@ -156,14 +170,20 @@ export default class extends Controller {
     this.element.removeEventListener("pointercancel", this._onPointerUp)
     this._swipe.active = false
     if (dist > SWIPE_THRESHOLD || velocity > 0.5) {
+      // Keep the swipe vars in place: they are the animation's start point.
+      // toast.css's [data-swipe="end"] keyframes fly the toast out along
+      // --swipe-end-x/y while _close fades + removes it.
       this.element.style.setProperty("--swipe-end-x", `${Math.sign(dx) * 500}px`)
       this.element.style.setProperty("--swipe-end-y", `${Math.sign(dy) * 500}px`)
       this.element.dataset.swipe = "end"
-      this.element.style.transform = ""
       this._close("dismiss")
     } else {
+      // Clearing the vars composes the toast back into the toaster's stacking
+      // transform; the transition (re-enabled once data-swipe leaves "move")
+      // animates it home.
       this.element.dataset.swipe = "cancel"
-      this.element.style.transform = ""
+      this.element.style.removeProperty("--pk-toast-swipe-x")
+      this.element.style.removeProperty("--pk-toast-swipe-y")
       this._resume()
     }
   }

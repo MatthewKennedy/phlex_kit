@@ -181,6 +181,9 @@ export default class extends Controller {
   _setExpanded(value) {
     if (this._expanded === value) return
     this._expanded = value
+    // Mirror the pause state onto the DOM so toasts spawned while the stack
+    // is already hovered can arm paused (the pause event predates them).
+    this._listEl?.toggleAttribute("data-pk-toasts-paused", value)
     document.dispatchEvent(new CustomEvent(value ? "phlex-kit:toast:pause" : "phlex-kit:toast:resume"))
     this._reflow()
   }
@@ -227,7 +230,10 @@ export default class extends Controller {
       el.style.transformOrigin = isBottom ? "center bottom" : "center top"
       el.style.top = isBottom ? "auto" : "0"
       el.style.bottom = isBottom ? "0" : "auto"
-      el.style.transform = `translate3d(0, ${ty}px, 0) scale(${scale})`
+      // Compose the toast controller's swipe offset (custom props it sets
+      // during pointer-drag) into the stacking transform — the swipe must
+      // never overwrite this transform or non-front toasts snap out of place.
+      el.style.transform = `translate3d(var(--pk-toast-swipe-x, 0px), calc(${ty}px + var(--pk-toast-swipe-y, 0px)), 0) scale(${scale})`
       el.style.zIndex = String(1000 - i)
       el.style.pointerEvents = visible ? "auto" : "none"
       el.tabIndex = visible ? 0 : -1
@@ -257,13 +263,17 @@ export default class extends Controller {
     const wantAlt = parts.includes("alt")
     const wantCtrl = parts.includes("ctrl")
     const wantMeta = parts.includes("meta")
+    const wantShift = parts.includes("shift")
     if (e.key.toLowerCase() !== key.toLowerCase()) return
     if (wantAlt !== e.altKey) return
     if (wantCtrl !== e.ctrlKey) return
     if (wantMeta !== e.metaKey) return
+    if (wantShift !== e.shiftKey) return
     e.preventDefault()
-    const first = this._listEl.firstElementChild
-    first?.focus()
+    // Newest toast is the LAST child (append order) and fronts the stack —
+    // the first child is the oldest, faded, possibly pointer-events:none one.
+    const newest = this._listEl.lastElementChild
+    newest?.focus()
   }
 
   _registerGlobalApi() {
