@@ -30,7 +30,7 @@ class AuditRound2Test < Minitest::Test
 
   def test_resizable_panel_coerces_default_size_numerically
     html = render(PhlexKit::ResizablePanel.new(default_size: "33.5") { "x" })
-    assert_includes html, %(style="flex-grow: 33.5")
+    assert_includes html, %(style="flex-grow: 33.5;")
     assert_raises(ArgumentError) do
       PhlexKit::ResizablePanel.new(default_size: "1;position:fixed;inset:0")
     end

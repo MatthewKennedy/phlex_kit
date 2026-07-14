@@ -37,6 +37,12 @@ export default class extends Controller {
     this._onPointerUp = this._onPointerUp.bind(this);
     this._onClickCapture = this._onClickCapture.bind(this);
     window.addEventListener("resize", this._onResize);
+    // window resize misses container-only resizes (flex/grid reflow,
+    // sidebar toggles) — observe the viewport itself.
+    if (typeof ResizeObserver !== "undefined") {
+      this._resizeObserver = new ResizeObserver(() => this._applyTransform());
+      this._resizeObserver.observe(this.viewportTarget);
+    }
     this.viewportTarget.addEventListener("pointerdown", this._onPointerDown);
     this.viewportTarget.addEventListener("click", this._onClickCapture, true);
     this._update();
@@ -44,8 +50,19 @@ export default class extends Controller {
 
   disconnect() {
     window.removeEventListener("resize", this._onResize);
+    this._resizeObserver?.disconnect();
+    this._resizeObserver = null;
     this.viewportTarget.removeEventListener("pointerdown", this._onPointerDown);
     this.viewportTarget.removeEventListener("click", this._onClickCapture, true);
+    // a disconnect mid-drag must drop the move/up listeners and drag state
+    this.viewportTarget.removeEventListener("pointermove", this._onPointerMove);
+    this.viewportTarget.removeEventListener("pointerup", this._onPointerUp);
+    this.viewportTarget.removeEventListener("pointercancel", this._onPointerUp);
+    if (this.drag) {
+      this.drag = null;
+      if (this.track) this.track.style.transition = "";
+      this.viewportTarget.classList.remove("dragging");
+    }
   }
 
   scrollNext() {
@@ -170,9 +187,19 @@ export default class extends Controller {
     const slide = this.slides[index];
     const first = this.slides[0];
     if (!slide || !first) return 0;
-    return this.options.axis === "y"
+    const raw = this.options.axis === "y"
       ? slide.offsetTop - first.offsetTop
       : slide.offsetLeft - first.offsetLeft;
+    // Never scroll past the content edge: with multi-up layouts the last
+    // slides' offsets overshoot the max scrollable offset (track − viewport).
+    return Math.min(Math.max(0, raw), this._maxOffset());
+  }
+
+  _maxOffset() {
+    const vertical = this.options.axis === "y";
+    const trackSize = vertical ? this.track.scrollHeight : this.track.scrollWidth;
+    const viewportSize = vertical ? this.viewportTarget.clientHeight : this.viewportTarget.clientWidth;
+    return Math.max(0, trackSize - viewportSize);
   }
 
   _slideSize() {

@@ -11,7 +11,11 @@ module PhlexKit
         name: "next-month",
         class: "pk-calendar-next",
         aria: { label: "Go to next month" },
-        data: { action: "click->phlex-kit--calendar#nextMonth" }
+        data: {
+          action: "click->phlex-kit--calendar#nextMonth",
+          # target so the controller can disable it at the max-date/to-year bound
+          phlex_kit__calendar_target: "nextButton"
+        }
       }, @attrs)) do
         icon
       end

@@ -7,6 +7,8 @@
   position: relative;
   flex: none;
   background: var(--pk-border);
+  /* without this, touch drags scroll the page instead of resizing */
+  touch-action: none;
 }
 .pk-resizable-group.horizontal > .pk-resizable-handle { width: 1px; cursor: col-resize; }
 .pk-resizable-group.vertical > .pk-resizable-handle { height: 1px; cursor: row-resize; }
@@ -19,7 +21,7 @@
 }
 .pk-resizable-handle:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 
 /* Visible grip pill (their withHandle / .cn-resizable-handle-icon). */

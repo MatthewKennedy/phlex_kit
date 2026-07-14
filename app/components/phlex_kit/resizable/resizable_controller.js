@@ -11,6 +11,17 @@ export default class extends Controller {
   static targets = ["panel", "handle"]
   static values = { direction: { type: String, default: "horizontal" } }
 
+  disconnect() {
+    // a disconnect mid-drag must drop the handle's move/up listeners
+    if (this._activeDrag) {
+      const { handle, onMove, onUp } = this._activeDrag
+      handle.removeEventListener("pointermove", onMove)
+      handle.removeEventListener("pointerup", onUp)
+      handle.removeEventListener("pointercancel", onUp)
+      this._activeDrag = null
+    }
+  }
+
   handleTargetConnected(handle) {
     handle.setAttribute("aria-orientation", this.directionValue === "horizontal" ? "vertical" : "horizontal")
     handle.setAttribute("aria-valuemin", "0")
@@ -51,10 +62,12 @@ export default class extends Controller {
       handle.removeEventListener("pointermove", onMove)
       handle.removeEventListener("pointerup", onUp)
       handle.removeEventListener("pointercancel", onUp)
+      this._activeDrag = null
     }
     handle.addEventListener("pointermove", onMove)
     handle.addEventListener("pointerup", onUp)
     handle.addEventListener("pointercancel", onUp)
+    this._activeDrag = { handle, onMove, onUp } // for disconnect() cleanup
   }
 
   // Arrow keys resize by 5% of the pair per press (matching the drag axis);

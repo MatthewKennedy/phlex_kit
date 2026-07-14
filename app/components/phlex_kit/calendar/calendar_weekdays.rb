@@ -12,7 +12,7 @@ module PhlexKit
     def view_template
       template(data: { phlex_kit__calendar_target: "weekdaysTemplate" }) do
         thead(**@attrs) do
-          tr(class: "pk-calendar-weekdays-row") do
+          tr(class: "pk-calendar-weekdays-row", role: "row") do
             th(scope: "col", class: "pk-calendar-weekday pk-calendar-weeknumber-head", aria: { label: "Week number" }) { "#" } if @week_numbers
             DAYS.each { |day| render_day(day) }
           end

@@ -10,7 +10,9 @@ module PhlexKit
     end
 
     def view_template(&)
-      style = @default_size ? "flex-grow: #{Kernel.format("%g", @default_size)}" : nil
+      # Trailing ";" matters: Phlex's mix joins string attrs with a space, so
+      # a caller style: would otherwise fuse into one invalid declaration.
+      style = @default_size ? "flex-grow: #{Kernel.format("%g", @default_size)};" : nil
       div(**mix({
         class: "pk-resizable-panel",
         style: style,

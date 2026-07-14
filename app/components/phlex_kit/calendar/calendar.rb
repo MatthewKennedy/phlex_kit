@@ -64,7 +64,9 @@ module PhlexKit
     private
 
     def render_dropdown_caption
-      view_year = parse_year(@selected_date) || parse_year(@range_start) || Time.now.year
+      view_seed = @selected_date || @range_start || @selected_dates.first
+      view_year = parse_year(view_seed) || Time.now.year
+      view_month = parse_month(view_seed) || Time.now.month # 1-12
       first_year = @from_year || parse_year(@min_date) || (view_year - 10)
       last_year = @to_year || parse_year(@max_date) || (view_year + 10)
 
@@ -74,20 +76,25 @@ module PhlexKit
           aria: { label: "Month" },
           data: { phlex_kit__calendar_target: "monthSelect", action: "change->phlex-kit--calendar#setMonth" }
         ) do
-          MONTHS.each_with_index { |name, index| option(value: index.to_s) { name } }
+          # Mark the view month selected so the caption is right pre-JS.
+          MONTHS.each_with_index { |name, index| option(value: index.to_s, selected: index == view_month - 1) { name } }
         end
         select(
           class: "pk-native-select-field pk-calendar-dropdown",
           aria: { label: "Year" },
           data: { phlex_kit__calendar_target: "yearSelect", action: "change->phlex-kit--calendar#setYear" }
         ) do
-          (first_year..last_year).each { |year| option(value: year.to_s) { year.to_s } }
+          (first_year..last_year).each { |year| option(value: year.to_s, selected: year == view_year) { year.to_s } }
         end
       end
     end
 
     def parse_year(value)
       value.to_s[/\A(\d{4})/, 1]&.to_i
+    end
+
+    def parse_month(value)
+      value.to_s[/\A\d{4}-(\d{2})/, 1]&.to_i
     end
 
     def calendar_attrs

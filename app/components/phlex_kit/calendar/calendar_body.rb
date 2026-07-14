@@ -9,6 +9,9 @@ module PhlexKit
     def view_template
       table(**mix({
         class: "pk-calendar-body",
+        # The day grid is a real ARIA grid: this table is role="grid", the
+        # controller-rendered rows are role="row", the <td>s gridcells.
+        role: "grid",
         data: {
           phlex_kit__calendar_target: "calendar",
           # Delegated arrow-key/Home/End navigation for the day grid (the

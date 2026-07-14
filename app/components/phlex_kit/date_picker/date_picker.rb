@@ -24,10 +24,13 @@ module PhlexKit
       @id = id || "date-picker-#{SecureRandom.hex(4)}"
       @name = name
       @label = label
-      @value = value || selected_date&.to_s
-      @placeholder = placeholder
       @selected_date = selected_date
       @date_format = date_format
+      # Seed the input with the same date_format the calendar controller
+      # writes — a bare `selected_date.to_s` (ISO) would mismatch the format
+      # until the first interaction.
+      @value = value || format_selected_date
+      @placeholder = placeholder
       @input_attrs = input_attrs
       @calendar_attrs = calendar_attrs
       @trigger_attrs = trigger_attrs
@@ -45,13 +48,57 @@ module PhlexKit
             end
           end
           render PopoverContent.new(**@content_attrs) do
-            render Calendar.new(input_id: "##{@id}", selected_date: @selected_date, date_format: @date_format, **@calendar_attrs)
+            render Calendar.new(input_id: input_selector, selected_date: @selected_date, date_format: @date_format, **@calendar_attrs)
           end
         end
       end
     end
 
     private
+
+    # The outlet takes a CSS selector. "#id" is only valid for CSS-identifier
+    # ids — anything else (Rails-style "user:due.date" etc) must go through a
+    # quoted attribute selector or querySelector throws.
+    def input_selector
+      return "##{@id}" if @id.match?(/\A[A-Za-z][\w-]*\z/)
+
+      %([id="#{@id.gsub(/[\\"]/) { |c| "\\#{c}" }}"])
+    end
+
+    # Mirrors the calendar controller's formatDate tokens (calendar_controller.js)
+    # so the server-rendered input matches what JS writes after a pick.
+    FORMAT_TOKENS = /yyyy|MMMM|MM|dd|HH|mm|ss|EEEE|PPPP|do/
+
+    def format_selected_date
+      return nil unless @selected_date
+
+      date = @selected_date.respond_to?(:strftime) ? @selected_date : Date.parse(@selected_date.to_s)
+      day = date.day
+      suffix = day_suffix(day)
+      day_name = Date::DAYNAMES[date.wday]
+      month_name = Date::MONTHNAMES[date.month]
+      map = {
+        "yyyy" => date.year.to_s,
+        "MMMM" => month_name,
+        "MM" => Kernel.format("%02d", date.month),
+        "dd" => Kernel.format("%02d", day),
+        "HH" => Kernel.format("%02d", date.respond_to?(:hour) ? date.hour : 0),
+        "mm" => Kernel.format("%02d", date.respond_to?(:min) ? date.min : 0),
+        "ss" => Kernel.format("%02d", date.respond_to?(:sec) ? date.sec : 0),
+        "EEEE" => day_name,
+        "do" => "#{day}#{suffix}",
+        "PPPP" => "#{day_name}, #{month_name} #{day}#{suffix}, #{date.year}"
+      }
+      @date_format.gsub(FORMAT_TOKENS) { |token| map[token] }
+    rescue Date::Error
+      @selected_date.to_s
+    end
+
+    def day_suffix(day)
+      return "th" if day > 3 && day < 21
+
+      { 1 => "st", 2 => "nd", 3 => "rd" }.fetch(day % 10, "th")
+    end
 
     def trigger_attrs
       mix({ class: "pk-date-picker-trigger" }, @trigger_attrs)

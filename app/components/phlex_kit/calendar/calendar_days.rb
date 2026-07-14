@@ -1,8 +1,11 @@
 module PhlexKit
   # <template>s for the five day states (disabled / selected / today / current
   # month / other month). The controller picks one per day and interpolates
-  # {{day}} / {{dayDate}} / {{state}} — state carries the extra range/booked
-  # classes (range-start / range-end / in-range / booked). See calendar.rb.
+  # {{day}} / {{dayDate}} / {{dayLabel}} / {{state}} — state carries the extra
+  # range/booked classes (range-start / range-end / in-range / booked), and
+  # dayLabel is the full human-readable date used as the button's accessible
+  # name. Per the APG date-grid pattern the <td> is the gridcell (and carries
+  # aria-selected); the <button> inside is a plain button. See calendar.rb.
   class CalendarDays < BaseComponent
     def initialize(**attrs)
       @attrs = attrs
@@ -25,25 +28,24 @@ module PhlexKit
           name: "day",
           class: "pk-calendar-day disabled {{state}}",
           disabled: true,
-          role: "gridcell",
           tabindex: "-1",
           type: "button",
-          aria_disabled: "true"
+          aria_disabled: "true",
+          aria_label: "{{dayLabel}}"
         ) { "{{dayDate}}" }
       end
     end
 
     def render_selected_date_template
-      date_template("selectedDateTemplate") do
+      date_template("selectedDateTemplate", aria_selected: "true") do
         button(
           data_day: "{{day}}",
           data_action: "click->phlex-kit--calendar#selectDay",
           name: "day",
           class: "pk-calendar-day selected {{state}}",
-          role: "gridcell",
           tabindex: "0",
           type: "button",
-          aria_selected: "true"
+          aria_label: "{{dayLabel}}"
         ) { "{{dayDate}}" }
       end
     end
@@ -55,9 +57,9 @@ module PhlexKit
           data_action: "click->phlex-kit--calendar#selectDay",
           name: "day",
           class: "pk-calendar-day today {{state}}",
-          role: "gridcell",
           tabindex: "-1",
-          type: "button"
+          type: "button",
+          aria_label: "{{dayLabel}}"
         ) { "{{dayDate}}" }
       end
     end
@@ -69,9 +71,9 @@ module PhlexKit
           data_action: "click->phlex-kit--calendar#selectDay",
           name: "day",
           class: "pk-calendar-day {{state}}",
-          role: "gridcell",
           tabindex: "-1",
-          type: "button"
+          type: "button",
+          aria_label: "{{dayLabel}}"
         ) { "{{dayDate}}" }
       end
     end
@@ -83,16 +85,16 @@ module PhlexKit
           data_action: "click->phlex-kit--calendar#selectDay",
           name: "day",
           class: "pk-calendar-day other {{state}}",
-          role: "gridcell",
           tabindex: "-1",
-          type: "button"
+          type: "button",
+          aria_label: "{{dayLabel}}"
         ) { "{{dayDate}}" }
       end
     end
 
-    def date_template(target, &block)
+    def date_template(target, **td_attrs, &block)
       template(data: { phlex_kit__calendar_target: target }) do
-        td(class: "pk-calendar-cell", role: "presentation", &block)
+        td(class: "pk-calendar-cell", role: "gridcell", **td_attrs, &block)
       end
     end
   end

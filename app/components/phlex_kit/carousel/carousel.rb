@@ -23,7 +23,7 @@ module PhlexKit
         data: {
           controller: "phlex-kit--carousel",
           phlex_kit__carousel_options_value: JSON.generate(default_options.merge(@options)),
-          action: "keydown.right->phlex-kit--carousel#scrollNext:prevent keydown.left->phlex-kit--carousel#scrollPrev:prevent"
+          action: keyboard_action
         }
       }, @attrs), &)
     end
@@ -32,6 +32,16 @@ module PhlexKit
 
     def default_options
       { axis: (@orientation == :horizontal) ? "x" : "y" }
+    end
+
+    # Arrow keys follow the scroll axis: left/right for horizontal, up/down
+    # for vertical.
+    def keyboard_action
+      if @orientation == :vertical
+        "keydown.down->phlex-kit--carousel#scrollNext:prevent keydown.up->phlex-kit--carousel#scrollPrev:prevent"
+      else
+        "keydown.right->phlex-kit--carousel#scrollNext:prevent keydown.left->phlex-kit--carousel#scrollPrev:prevent"
+      end
     end
   end
 end

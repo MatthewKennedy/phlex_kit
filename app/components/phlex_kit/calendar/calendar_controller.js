@@ -17,6 +17,8 @@ export default class extends Controller {
     "title",
     "monthSelect",
     "yearSelect",
+    "prevButton",
+    "nextButton",
     "weekdaysTemplate",
     "disabledDateTemplate",
     "selectedDateTemplate",
@@ -42,18 +44,18 @@ export default class extends Controller {
   };
   static outlets = ["phlex-kit--calendar-input"];
 
-  initialize() {
-    this.updateCalendar(); // Initial calendar render
-  }
+  // No initialize() render: Stimulus fires every value's `…ValueChanged`
+  // callback once during value initialization (before connect()), so
+  // viewDateValueChanged already performs the initial updateCalendar().
 
   nextMonth(e) {
     e.preventDefault();
-    this.viewDateValue = this.adjustMonth(1);
+    this.viewDateValue = this.clampViewIso(this.adjustMonth(1));
   }
 
   prevMonth(e) {
     e.preventDefault();
-    this.viewDateValue = this.adjustMonth(-1);
+    this.viewDateValue = this.clampViewIso(this.adjustMonth(-1));
   }
 
   // month/year dropdown caption (native selects)
@@ -61,14 +63,62 @@ export default class extends Controller {
     const date = this.viewDate();
     date.setDate(2);
     date.setMonth(Number(e.target.value));
-    this.viewDateValue = this.isoDate(date);
+    this.viewDateValue = this.clampViewIso(this.isoDate(date));
   }
 
   setYear(e) {
     const date = this.viewDate();
     date.setDate(2);
     date.setFullYear(Number(e.target.value));
-    this.viewDateValue = this.isoDate(date);
+    this.viewDateValue = this.clampViewIso(this.isoDate(date));
+  }
+
+  // --- month-navigation bounds (min/max dates + the year dropdown's range) ---
+
+  // Earliest/latest navigable months. min/max dates bound directly; a year
+  // dropdown additionally bounds the view to its option range (from_year /
+  // to_year) so navigation can't drive the select out of range (blank).
+  monthBounds() {
+    let min = this.minDate();
+    let max = this.maxDate();
+    if (this.hasYearSelectTarget) {
+      const years = [...this.yearSelectTarget.options].map((o) => Number(o.value)).filter(Number.isFinite);
+      if (years.length) {
+        const yearMin = new Date(Math.min(...years), 0, 1);
+        const yearMax = new Date(Math.max(...years), 11, 31);
+        if (!min || yearMin > min) min = yearMin;
+        if (!max || yearMax < max) max = yearMax;
+      }
+    }
+    return { min, max };
+  }
+
+  monthIndexOf(date) {
+    return date.getFullYear() * 12 + date.getMonth();
+  }
+
+  clampViewIso(iso) {
+    const date = this.parseDate(iso);
+    if (!date) return iso;
+    const { min, max } = this.monthBounds();
+    if (min && this.monthIndexOf(date) < this.monthIndexOf(min)) {
+      return this.isoDate(new Date(min.getFullYear(), min.getMonth(), 2));
+    }
+    if (max && this.monthIndexOf(date) > this.monthIndexOf(max)) {
+      return this.isoDate(new Date(max.getFullYear(), max.getMonth(), 2));
+    }
+    return iso;
+  }
+
+  syncNavButtons() {
+    const { min, max } = this.monthBounds();
+    const view = this.monthIndexOf(this.viewDate());
+    if (this.hasPrevButtonTarget) {
+      this.prevButtonTarget.disabled = Boolean(min && view <= this.monthIndexOf(min));
+    }
+    if (this.hasNextButtonTarget) {
+      this.nextButtonTarget.disabled = Boolean(max && view >= this.monthIndexOf(max));
+    }
   }
 
   selectDay(e) {
@@ -162,6 +212,9 @@ export default class extends Controller {
       return end ? `${this.formatDate(start)} – ${this.formatDate(end)}` : this.formatDate(start);
     }
     if (this.modeValue === "multiple") {
+      // Deselecting the last date must clear the bound input: return ""
+      // (pushed to outlets), not null (skipped by pushToOutlets' guard).
+      if (!this.selectedDatesValue.length) return "";
       return this.selectedDatesValue.map((d) => this.formatDate(this.parseDate(d))).join(", ");
     }
     const selected = this.selectedDate();
@@ -193,6 +246,7 @@ export default class extends Controller {
       this.titleTarget.textContent = this.monthAndYear();
     }
     this.syncDropdowns();
+    this.syncNavButtons();
     // innerHTML replacement drops focus — remember the focused day so
     // keyboard selection/month hops don't strand focus on <body>.
     const focusedDay = this.calendarTarget.contains(document.activeElement)
@@ -221,9 +275,10 @@ export default class extends Controller {
     if (focused) stop.focus({ preventScroll: true });
   }
 
-  // Arrow keys move by day/week, Home/End jump within the rendered week row;
-  // crossing a month boundary re-renders the grid on the target month.
-  // Enter/Space activate natively (the days are real <button>s).
+  // Arrow keys move by day/week, PageUp/PageDown by month (Shift: by year,
+  // per APG), Home/End jump within the rendered week row; crossing a month
+  // boundary re-renders the grid on the target month. Enter/Space activate
+  // natively (the days are real <button>s).
   onKeydown(e) {
     const STEPS = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
     const day = e.target.closest?.("[data-day]");
@@ -233,6 +288,13 @@ export default class extends Controller {
     if (e.key in STEPS) {
       target = this.parseDate(day.dataset.day);
       target.setDate(target.getDate() + STEPS[e.key]);
+    } else if (e.key === "PageUp" || e.key === "PageDown") {
+      const base = this.parseDate(day.dataset.day);
+      const months = (e.key === "PageUp" ? -1 : 1) * (e.shiftKey ? 12 : 1);
+      target = new Date(base.getFullYear(), base.getMonth() + months, 1);
+      // land on the same day-of-month, clamped to the target month's length
+      const lastDay = new Date(target.getFullYear(), target.getMonth() + 1, 0).getDate();
+      target.setDate(Math.min(base.getDate(), lastDay));
     } else if (e.key === "Home" || e.key === "End") {
       const rowDays = [...day.closest("tr").querySelectorAll("[data-day]")];
       target = this.parseDate(rowDays[e.key === "Home" ? 0 : rowDays.length - 1].dataset.day);
@@ -260,7 +322,15 @@ export default class extends Controller {
       this.monthSelectTarget.value = String(this.viewDate().getMonth());
     }
     if (this.hasYearSelectTarget) {
-      this.yearSelectTarget.value = String(this.viewDate().getFullYear());
+      const select = this.yearSelectTarget;
+      const year = this.viewDate().getFullYear();
+      select.value = String(year);
+      if (select.selectedIndex === -1 && select.options.length) {
+        // view year outside the option range — clamp to the nearest end
+        // instead of leaving the select blank
+        const years = [...select.options].map((o) => Number(o.value));
+        select.value = String(year < Math.min(...years) ? Math.min(...years) : Math.max(...years));
+      }
     }
   }
 
@@ -278,15 +348,22 @@ export default class extends Controller {
     let cells = week.map((day) => this.renderDay(day)).join("");
     if (this.weekNumbersValue) {
       const weekNumber = this.isoWeekNumber(week[0]);
-      cells = `<td class="pk-calendar-weeknumber" role="presentation">${weekNumber}</td>` + cells;
+      cells = `<td class="pk-calendar-weeknumber" role="rowheader">${weekNumber}</td>` + cells;
     }
-    return `<tr class="pk-calendar-week">${cells}</tr>`;
+    return `<tr class="pk-calendar-week" role="row">${cells}</tr>`;
   }
 
   renderDay(day) {
     const today = new Date();
     const iso = this.isoDate(day);
-    const data = { day: iso, dayDate: day.getDate(), state: this.dayState(day) };
+    const data = {
+      day: iso,
+      dayDate: day.getDate(),
+      // full human-readable date for the button's accessible name — a bare
+      // day number ("14") is meaningless to a screen reader
+      dayLabel: day.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
+      state: this.dayState(day),
+    };
 
     if (this.isDateDisabled(day)) {
       return renderTemplate(this.disabledDateTemplateTarget.innerHTML, data);
