@@ -16,13 +16,15 @@
 .pk-table-head {
   height: 2.5rem;
   padding: 0 .5rem;
-  text-align: left;
+  text-align: start;
   vertical-align: middle;
   font-weight: 500;
   white-space: nowrap;
   color: var(--pk-text);
 }
-.pk-table-head:has([role="checkbox"]),
-.pk-table-cell:has([role="checkbox"]) { padding-right: 0; }
+/* Native inputs (the kit Checkbox) have no role="checkbox" — match both;
+   the [role] arm covers custom/ARIA checkboxes. */
+.pk-table-head:has(input[type="checkbox"], [role="checkbox"]),
+.pk-table-cell:has(input[type="checkbox"], [role="checkbox"]) { padding-inline-end: 0; }
 .pk-table-cell { padding: .5rem; vertical-align: middle; white-space: nowrap; }
 .pk-table-caption { margin-top: 1rem; font-size: .875rem; color: var(--pk-muted); }

@@ -16,7 +16,8 @@
   height: 1rem;
   margin: 0;
   border: 1px solid var(--pk-input);
-  border-radius: 4px;
+  /* Tracks the radius token — 4px at the default --pk-radius (0.625rem). */
+  border-radius: calc(var(--pk-radius) - 6px);
   background: color-mix(in oklab, var(--pk-input) 30%, transparent);
   cursor: pointer;
   transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;

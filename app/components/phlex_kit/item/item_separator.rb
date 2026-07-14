@@ -4,7 +4,9 @@ module PhlexKit
   class ItemSeparator < BaseComponent
     def initialize(**attrs) = (@attrs = attrs)
     def view_template
-      div(**mix({ class: "pk-item-separator", role: "separator", aria: { hidden: true } }, @attrs))
+      # Purely decorative — aria-hidden only (role="separator" would
+      # contradict aria-hidden and confuse AT).
+      div(**mix({ class: "pk-item-separator", aria: { hidden: true } }, @attrs))
     end
   end
 end

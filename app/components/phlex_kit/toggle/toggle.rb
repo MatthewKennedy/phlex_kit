@@ -54,8 +54,12 @@ module PhlexKit
     end
 
     def render_hidden_input
-      input(type: "hidden", name: @name, value: @pressed ? @value : @unpressed_value.to_s,
-        data: { phlex_kit__toggle_target: "input" })
+      # Disabled in lockstep with the button — a disabled toggle must not
+      # submit its value (matches native disabled-control form semantics).
+      a = { type: "hidden", name: @name, value: @pressed ? @value : @unpressed_value.to_s,
+            data: { phlex_kit__toggle_target: "input" } }
+      a[:disabled] = true if @disabled
+      input(**a)
     end
   end
 end

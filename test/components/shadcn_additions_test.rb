@@ -33,7 +33,8 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes html, "pk-item outline"
     assert_raises(KeyError) { render(PhlexKit::Item.new(variant: :bad) { "x" }) }
     assert_includes render(PhlexKit::ItemContent.new { "x" }), "pk-item-content"
-    assert_includes render(PhlexKit::ItemGroup.new { "x" }), %(role="list")
+    # No role="list": Items carry no listitem role (audit round 4).
+    assert_includes render(PhlexKit::ItemGroup.new { "x" }), "pk-item-group"
   end
 
   def test_input_group_addon_aligns

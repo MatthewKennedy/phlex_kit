@@ -16,8 +16,10 @@ module PhlexKit
 
     def view_template(&block)
       # **mix on the ROOT (kit rule) — caller attrs previously landed on the
-      # inner div and could never reach the actual root element.
-      div(**mix({ class: "pk-aspect-ratio", style: "padding-bottom: #{padding_bottom}%" }, @attrs)) do
+      # inner div and could never reach the actual root element. The trailing
+      # ";" matters: mix joins duplicate string attrs with a space, so a
+      # caller style: would otherwise fuse into one invalid declaration.
+      div(**mix({ class: "pk-aspect-ratio", style: "padding-bottom: #{padding_bottom}%;" }, @attrs)) do
         div(class: "pk-aspect-ratio-inner", &block)
       end
     end

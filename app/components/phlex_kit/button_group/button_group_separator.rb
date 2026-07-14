@@ -8,7 +8,9 @@ module PhlexKit
     end
 
     def view_template
-      div(**mix({ class: "pk-button-group-separator", role: "separator", aria: { hidden: true } }, @attrs))
+      # Purely decorative — aria-hidden only (role="separator" would
+      # contradict aria-hidden and confuse AT).
+      div(**mix({ class: "pk-button-group-separator", aria: { hidden: true } }, @attrs))
     end
   end
 end

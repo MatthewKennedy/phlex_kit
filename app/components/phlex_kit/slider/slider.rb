@@ -20,7 +20,9 @@ module PhlexKit
         step: @step,
         value: @value,
         class: "pk-slider",
-        style: "--pk-slider-progress: #{progress}%",
+        # Trailing ";" — mix joins a caller style: with a space; without it
+        # both declarations fuse into one invalid declaration.
+        style: "--pk-slider-progress: #{progress}%;",
         data: {
           controller: "phlex-kit--slider",
           action: "input->phlex-kit--slider#update"

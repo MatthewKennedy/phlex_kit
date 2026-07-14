@@ -1,14 +1,20 @@
 module PhlexKit
-  # Heading, ported from ruby_ui's RubyUI::Heading. `level:` (1–4) picks the
+  # Heading, ported from ruby_ui's RubyUI::Heading. `level:` (1–6) picks the
   # element AND a default size; `as:` overrides the element; `size:` (1–9)
   # overrides the size on ruby_ui's scale (text-xs … text-5xl). Presentational;
   # attrs pass through via mix. Tailwind → vanilla `.pk-heading*` (typography.css).
   class Heading < BaseComponent
     SIZES = %w[1 2 3 4 5 6 7 8 9].freeze
-    # ruby_ui's level → default size mapping (h1 is big, h4 smaller).
-    LEVEL_SIZE = { "1" => "7", "2" => "6", "3" => "5", "4" => "4" }.freeze
+    # ruby_ui's level → default size mapping (h1 is big, h4 smaller); 5/6
+    # extend the scale downward — HTML has h1–h6, so all six must map.
+    LEVEL_SIZE = { "1" => "7", "2" => "6", "3" => "5", "4" => "4", "5" => "3", "6" => "2" }.freeze
 
     def initialize(level: nil, as: nil, size: nil, **attrs)
+      # Fail loud at construction: level 7 previously exploded at render time
+      # with NoMethodError (no h7 element), and 5/6 fell through the size map.
+      unless level.nil? || LEVEL_SIZE.key?(level.to_s)
+        raise ArgumentError, "Invalid heading level: #{level.inspect} — valid: 1–6"
+      end
       @level = level
       @as = as
       @size = size

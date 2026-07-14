@@ -16,7 +16,12 @@ module PhlexKit
 
     def view_template
       label(**mix({ class: [ "pk-switch", fetch_option(SIZES, @size, :size) ].compact.join(" ") }, @wrapper)) do
-        input(type: "hidden", name: @attrs[:name], value: @unchecked_value) if @include_hidden && @attrs[:name]
+        if @include_hidden && @attrs[:name]
+          # Disabled in lockstep with the checkbox (Rails' check_box idiom) —
+          # a disabled switch must not still post its unchecked value.
+          input(type: "hidden", name: @attrs[:name], value: @unchecked_value,
+            disabled: @attrs[:disabled] ? true : nil)
+        end
         # role="switch" belongs on the focusable control: native checkedness then
         # maps to aria-checked for AT, and the label stays a plain label.
         input(**mix({ class: "pk-switch-input", role: "switch" }, @attrs).merge(type: "checkbox", value: @checked_value))
