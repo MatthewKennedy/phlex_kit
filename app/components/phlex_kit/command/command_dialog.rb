@@ -1,7 +1,9 @@
 module PhlexKit
   # Wrapper wiring a CommandDialogTrigger to its CommandDialogContent. The
-  # outlet selector finds the live palette instance (if already open) so a
-  # second trigger press just refocuses the input. See command.rb.
+  # controller tracks its own live clone (sheet pattern) so a second trigger
+  # press just refocuses the input — per instance, unlike the old
+  # document-scoped outlet selector, which let one dialog adopt another's
+  # open palette. See command.rb.
   class CommandDialog < BaseComponent
     def initialize(**attrs)
       @attrs = attrs
@@ -9,10 +11,7 @@ module PhlexKit
 
     def view_template(&)
       div(**mix({
-        data: {
-          controller: "phlex-kit--command-dialog",
-          phlex_kit__command_dialog_phlex_kit__command_outlet: "[data-phlex-kit--command-dialog-instance]"
-        }
+        data: { controller: "phlex-kit--command-dialog" }
       }, @attrs), &)
     end
   end

@@ -8,9 +8,13 @@ module PhlexKit
   # stays "true" because the list is always visible (filtering hides items,
   # never the listbox itself).
   class CommandInput < BaseComponent
-    def initialize(placeholder: "Type a command or search...", list_id: nil, **attrs)
+    # `autofocus:` defaults off so an inline palette doesn't steal page focus
+    # on load; the dialog clone needs no autofocus either — the command
+    # controller's connect() focuses the input when the clone is inserted.
+    def initialize(placeholder: "Type a command or search...", list_id: nil, autofocus: false, **attrs)
       @placeholder = placeholder
       @list_id = list_id
+      @autofocus = autofocus
       @attrs = attrs
     end
 
@@ -25,7 +29,7 @@ module PhlexKit
             autocomplete: "off",
             autocorrect: "off",
             spellcheck: "false",
-            autofocus: true,
+            autofocus: @autofocus,
             role: "combobox",
             value: "",
             aria: { autocomplete: "list", expanded: "true", controls: @list_id },

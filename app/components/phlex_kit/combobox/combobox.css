@@ -41,7 +41,7 @@
 .pk-combobox-trigger:disabled,
 .pk-combobox-trigger[aria-disabled="true"] { pointer-events: none; opacity: .5; }
 .pk-combobox-trigger-content { overflow: hidden; text-overflow: ellipsis; }
-.pk-combobox-trigger-icon { flex: none; width: 1rem; height: 1rem; margin-left: .5rem; opacity: .5; }
+.pk-combobox-trigger-icon { flex: none; width: 1rem; height: 1rem; margin-inline-start: .5rem; opacity: .5; }
 
 /* Dropdown panel — anchored below the combobox, flips above at the viewport
    bottom. Width: trigger width with a 15rem floor (was JS
@@ -58,7 +58,7 @@
   border-radius: var(--pk-radius);
   background: var(--pk-surface);
   color: var(--pk-text);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, .4);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--pk-shadow-color) 40%, transparent);
 }
 
 /* Search row. */
@@ -69,7 +69,7 @@
   border-bottom: 1px solid var(--pk-border);
   color: var(--pk-muted);
 }
-.pk-combobox-search-icon { flex: none; width: 1rem; height: 1rem; margin-right: .5rem; opacity: .5; }
+.pk-combobox-search-icon { flex: none; width: 1rem; height: 1rem; margin-inline-end: .5rem; opacity: .5; }
 .pk-combobox-search-input {
   width: 100%;
   height: 2rem;
@@ -95,8 +95,10 @@
   color: var(--pk-text);
 }
 
-/* Labelled group — the label renders from the `label` attribute, and the group
-   hides itself (pure CSS) when filtering leaves no visible item inside. */
+/* Labelled group — the label renders from the `data-label` attribute (the
+   invalid bare `label` attribute was dropped; aria-label carries it for AT),
+   and the group hides itself (pure CSS) when filtering leaves no visible item
+   inside. */
 .pk-combobox-group { display: none; }
 .pk-combobox-group:has(label:not(.pk-hidden)) {
   display: flex;
@@ -106,7 +108,7 @@
   border-bottom: 1px solid var(--pk-border);
 }
 .pk-combobox-group::before {
-  content: attr(label);
+  content: attr(data-label);
   padding: .375rem .5rem;
   font-size: .75rem;
   font-weight: 500;
@@ -159,7 +161,7 @@
 
 /* Trailing ✓, visible while the row's input is checked. */
 .pk-combobox-item-indicator {
-  margin-left: auto;
+  margin-inline-start: auto;
   width: 1rem;
   height: 1rem;
   flex: none;
@@ -314,7 +316,7 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  margin-left: auto;
+  margin-inline-start: auto;
   border: 0;
   border-radius: .125rem;
   padding: 0;

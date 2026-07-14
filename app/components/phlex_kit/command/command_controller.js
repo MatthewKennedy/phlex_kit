@@ -47,9 +47,17 @@ export default class extends Controller {
     }
 
     this.generateItemIds();
-    this.inputTarget.focus();
+    // Only the cloned dialog overlay grabs focus on connect — an inline
+    // palette connecting at page load must not steal it.
+    if (this.isDialogClone()) this.inputTarget.focus();
     this.searchIndex = this.buildSearchIndex();
     this.toggleVisibility(this.emptyTargets, false);
+  }
+
+  // The command-dialog controller clones its <template> content into <body>;
+  // the clone's wrapper carries this marker (CommandDialogContent renders it).
+  isDialogClone() {
+    return this.element.hasAttribute("data-phlex-kit--command-dialog-instance");
   }
 
   // ARIA plumbing: every result gets an id derived from the listbox id so the
@@ -67,15 +75,37 @@ export default class extends Controller {
   }
 
   dismiss() {
-    // allow scroll on body
-    document.body.style.removeProperty("overflow");
-    const previous = this.previouslyFocused;
-    // remove the element
-    this.element.remove();
-    // restore focus to wherever it was before the palette opened
-    if (previous instanceof HTMLElement && document.contains(previous)) {
-      previous.focus();
+    // Cloned dialog overlay: tear the clone down and hand focus back.
+    if (this.isDialogClone()) {
+      // allow scroll on body
+      document.body.style.removeProperty("overflow");
+      const previous = this.previouslyFocused;
+      // remove the element
+      this.element.remove();
+      // restore focus to wherever it was before the palette opened
+      if (previous instanceof HTMLElement && document.contains(previous)) {
+        previous.focus();
+      }
+      return;
     }
+
+    // Inline palette: removing the element would delete it permanently.
+    // Reset the query instead and let the host react via the dispatched
+    // phlex-kit--command:dismiss event.
+    if (this.hasInputTarget && this.inputTarget.value !== "") {
+      this.inputTarget.value = "";
+      this.deselectAll();
+      this.resetVisibility();
+      this.announceResultCount(null);
+    }
+    this.dispatch("dismiss");
+  }
+
+  // Guards the items' default href="#": without it an Enter-synthesized
+  // click() or a mouse click scrolls to top and appends # to the URL
+  // (mirrors dropdown_menu_controller's close() guard).
+  onItemClick(event) {
+    if (event?.target?.closest?.('a[href="#"]')) event.preventDefault();
   }
 
   // Focus trap for the cloned dialog overlay: Tab / Shift+Tab cycle among the
@@ -173,16 +203,25 @@ export default class extends Controller {
 
   // Upstream builds a Fuse index here; this keeps the same search() shape —
   // [{ item }] sorted best-match-first — using the fuzzy scorer above.
+  // Both data-value and data-text are searchable (an item's `text:` was
+  // rendered but never indexed); the better of the two scores wins.
   buildSearchIndex() {
     const items = this.itemTargets.map((el) => ({
       value: (el.dataset.value || "").toLowerCase(),
+      text: (el.dataset.text || "").toLowerCase(),
       element: el,
     }));
     return {
       search(query) {
         const q = query.toLowerCase();
         return items
-          .map((item) => ({ item, score: fuzzyScore(q, item.value) }))
+          .map((item) => {
+            const scores = [item.value, item.text]
+              .filter(Boolean)
+              .map((field) => fuzzyScore(q, field))
+              .filter((score) => score !== null);
+            return { item, score: scores.length ? Math.max(...scores) : null };
+          })
           .filter((result) => result.score !== null)
           .sort((a, b) => b.score - a.score);
       },
@@ -225,6 +264,8 @@ export default class extends Controller {
     }
 
     this.toggleAriaSelected(visibleItems[this.selectedIndex], true);
+    // Keep the highlight visible inside the max-height scrollable list.
+    visibleItems[this.selectedIndex].scrollIntoView({ block: "nearest" });
 
     // Focus stays in the input; the highlighted option is exposed via
     // aria-activedescendant (result ids come from generateItemIds).

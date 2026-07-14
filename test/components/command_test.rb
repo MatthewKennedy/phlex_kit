@@ -7,10 +7,12 @@ require "test_helper"
 class CommandTest < Minitest::Test
   include RenderHelper
 
-  def test_command_dialog_declares_outlet
+  # The document-scoped outlet selector is gone — the controller tracks its
+  # own clone per instance (see audit4_pickers_test.rb).
+  def test_command_dialog_declares_controller_without_global_outlet
     html = render(PhlexKit::CommandDialog.new { "x" })
     assert_includes html, "phlex-kit--command-dialog"
-    assert_includes html, %(data-phlex-kit--command-dialog-phlex-kit--command-outlet="[data-phlex-kit--command-dialog-instance]")
+    refute_includes html, "outlet"
   end
 
   def test_trigger_binds_click_and_hotkeys

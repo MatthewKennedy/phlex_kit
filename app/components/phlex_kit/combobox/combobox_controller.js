@@ -37,23 +37,37 @@ export default class extends Controller {
 
   selectedItemIndex = null
 
+  initialize() {
+    // Stimulus fires [target]Connected before connect(): anything
+    // itemTargetConnected uses must be initialized here.
+    this.itemIdCounter = 0
+    this.refocusing = false
+  }
+
   connect() {
     this.generateItemIds()
     this.updateTriggerContent()
   }
 
-  // ARIA plumbing: every option gets an id derived from the listbox id so the
-  // combobox element can point aria-activedescendant at the keyboard highlight,
-  // and aria-controls is wired to the listbox (mirrors select_controller.js).
+  // ARIA plumbing: aria-controls is wired to the listbox (mirrors
+  // select_controller.js); the per-option ids come from itemTargetConnected.
   generateItemIds() {
+    this.ariaExpandedElements().forEach((el) => el.setAttribute("aria-controls", this.listId()))
+  }
+
+  listId() {
     const list = this.hasListTarget ? this.listTarget : (this.hasPopoverTarget ? this.popoverTarget : this.element)
     if (!list.id) list.id = `pk-combobox-list-${Math.random().toString(36).slice(2, 10)}`
+    return list.id
+  }
 
-    this.itemTargets.forEach((item, index) => {
-      if (!item.id) item.id = `${list.id}-${index}`
-    })
-
-    this.ariaExpandedElements().forEach((el) => el.setAttribute("aria-controls", list.id))
+  // Every option gets an id derived from the listbox id so the combobox
+  // element can point aria-activedescendant at the keyboard highlight. A
+  // target callback (not a connect() loop) so options added after connect —
+  // e.g. rendered in by the host — get ids too. Counter-based, so a removed
+  // option's id is never reissued to a later arrival.
+  itemTargetConnected(item) {
+    if (!item.id) item.id = `${this.listId()}-${this.itemIdCounter++}`
   }
 
   // The elements carrying the open/closed combobox state: the trigger button
@@ -233,6 +247,14 @@ export default class extends Controller {
   }
 
   openPopover(event) {
+    // The remove-× on a chip and the clear-all button live inside the badge
+    // trigger, whose focusin (and click) actions open the popover — clicking
+    // them must not reopen it (stopPropagation covers click but focusin still
+    // fires when the button takes focus).
+    if (event?.target?.closest?.(".pk-combobox-badge-remove, .pk-combobox-clear-button")) return
+    // closePopover's focus restore fires the input/badge wrapper's
+    // focusin->openPopover action synchronously — don't bounce straight back open.
+    if (this.refocusing) return
     if (event) event.preventDefault()
     if (this.isOpen()) return
 
@@ -252,12 +274,31 @@ export default class extends Controller {
   }
 
   closePopover() {
+    // Hiding the popover while focus is inside it (search input, option) drops
+    // focus to <body>; hand it back to the trigger. Checked BEFORE hiding, and
+    // only when focus would actually be orphaned — a click elsewhere on the
+    // page (onClickOutside) must not have its focus stolen.
+    const focusWasInside = this.hasPopoverTarget && this.popoverTarget.contains(document.activeElement)
+
     this.setExpanded(false)
     // aria-activedescendant holds an element id; on close it must be removed,
     // not left pointing at a hidden option.
     this.clearActiveDescendant()
     if (this.popoverTarget.matches(":popover-open")) this.popoverTarget.hidePopover()
     this.updateTriggerContent() // reflect the selection into an input trigger
+
+    if (focusWasInside) {
+      const field = this.filterField()
+      // Input/badge layouts: back to the filter field (it lives outside the
+      // popover). Button layout: back to the trigger button (its search input
+      // is inside the popover, now hidden).
+      const anchor = (field && !this.popoverTarget.contains(field)) ? field : (this.hasTriggerTarget ? this.triggerTarget : null)
+      // focus() dispatches focusin synchronously; the flag stops the
+      // wrapper's focusin->openPopover action from reopening the panel.
+      this.refocusing = true
+      anchor?.focus()
+      this.refocusing = false
+    }
   }
 
   onClickOutside(event) {
@@ -277,7 +318,9 @@ export default class extends Controller {
   }
 
   filterItems(e) {
-    if (["ArrowDown", "ArrowUp", "Tab", "Enter"].includes(e.key)) {
+    // Escape's keyup arrives after keydown.esc already closed the popover —
+    // re-running the filter then would wipe the highlight state for nothing.
+    if (["ArrowDown", "ArrowUp", "Tab", "Enter", "Escape"].includes(e.key)) {
       return
     }
 

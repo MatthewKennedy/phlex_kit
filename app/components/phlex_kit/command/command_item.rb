@@ -23,7 +23,10 @@ module PhlexKit
           phlex_kit__command_target: "item",
           value: @value,
           text: @text,
-          disabled: (@disabled ? "true" : nil)
+          disabled: (@disabled ? "true" : nil),
+          # Guards the default href="#": without it a mouse click (or the
+          # Enter-synthesized click()) scrolls to top and appends # to the URL.
+          action: "click->phlex-kit--command#onItemClick"
         }
       }, @attrs), &)
     end

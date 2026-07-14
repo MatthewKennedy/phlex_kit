@@ -72,7 +72,25 @@ export default class extends Controller {
     }
   }
 
+  handleHome(event) {
+    event.preventDefault();
+    if (this.itemTargets.length === 0) return;
+    this.resetCurrent();
+    this.setAriaCurrentAndActiveDescendant(0);
+  }
+
+  handleEnd(event) {
+    event.preventDefault();
+    if (this.itemTargets.length === 0) return;
+    this.resetCurrent();
+    this.setAriaCurrentAndActiveDescendant(this.itemTargets.length - 1);
+  }
+
+  // Bound on the root as well as the items, so Escape also closes with focus
+  // on the trigger; no-op while closed (a closed-state Escape must not steal
+  // focus back to the trigger).
   handleEsc(event) {
+    if (!this.contentTarget.matches(":popover-open")) return;
     event.preventDefault();
     this.closeContent();
   }
@@ -85,7 +103,11 @@ export default class extends Controller {
     const focusItem = selectedItem || (this.hasItemTarget ? this.itemTarget : null);
     if (!focusItem) return; // empty select — nothing to focus
 
+    // preventScroll stops the page jumping when the top-layer panel opens;
+    // scrollIntoView(nearest) then scrolls only the panel's own viewport so
+    // the focused option is actually visible (max-height panel).
     focusItem.focus({ preventScroll: true });
+    focusItem.scrollIntoView({ block: "nearest" });
     focusItem.setAttribute("aria-current", "true");
     this.triggerTarget.setAttribute("aria-activedescendant", focusItem.getAttribute("id"));
   }
@@ -133,6 +155,9 @@ export default class extends Controller {
   setAriaCurrentAndActiveDescendant(currentIndex) {
     const currentItem = this.itemTargets[currentIndex];
     currentItem.focus({ preventScroll: true });
+    // Keep the highlighted option visible inside the scrollable viewport —
+    // preventScroll (page-jump guard) otherwise lets it scroll out of view.
+    currentItem.scrollIntoView({ block: "nearest" });
     currentItem.setAttribute("aria-current", "true");
     this.triggerTarget.setAttribute("aria-activedescendant", currentItem.getAttribute("id"));
   }

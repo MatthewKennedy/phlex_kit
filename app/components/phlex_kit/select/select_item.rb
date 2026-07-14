@@ -16,13 +16,17 @@ module PhlexKit
     def view_template(&block)
       div(**mix({
         role: "option",
-        tabindex: "0",
+        # Roving listbox pattern: options are focusable programmatically only
+        # (focus() works on tabindex=-1), so Tab exits the widget instead of
+        # walking every option.
+        tabindex: "-1",
         class: "pk-select-item",
         "aria-selected": (@selected ? "true" : "false"),
         data: {
           value: @value,
           action: "click->phlex-kit--select#selectItem keydown.enter->phlex-kit--select#selectItem " \
                   "keydown.down->phlex-kit--select#handleKeyDown keydown.up->phlex-kit--select#handleKeyUp " \
+                  "keydown.home->phlex-kit--select#handleHome keydown.end->phlex-kit--select#handleEnd " \
                   "keydown.esc->phlex-kit--select#handleEsc",
           phlex_kit__select_target: "item"
         }
