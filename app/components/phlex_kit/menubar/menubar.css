@@ -30,6 +30,7 @@
 }
 .pk-menubar-trigger:hover,
 .pk-menubar-trigger[aria-expanded="true"] { background: var(--pk-surface-2); }
+.pk-menubar-trigger:focus-visible { box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent); }
 .pk-menubar-content {
   position: fixed;
   position-anchor: --pk-menubar-menu;
@@ -46,7 +47,7 @@
   background: var(--pk-surface);
   color: var(--pk-text);
   padding: .25rem;
-  box-shadow: 0 8px 24px rgb(0 0 0 / .3);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--pk-shadow-color) 30%, transparent);
 }
 /* Hover bridge over the trigger→panel gap — both sides, since a flip
    fallback puts the gap below the panel instead of above. */
@@ -82,7 +83,7 @@
 .pk-menubar-item svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
 .pk-menubar-item:hover, .pk-menubar-item:focus { background: var(--pk-accent); }
 .pk-menubar-item[data-disabled="true"] { pointer-events: none; opacity: .5; }
-.pk-menubar-item.inset { padding-left: 1.75rem; }
+.pk-menubar-item.inset { padding-inline-start: 1.75rem; }
 .pk-menubar-item.destructive { color: var(--pk-red); }
 .pk-menubar-item.destructive > svg { color: var(--pk-red); }
 .pk-menubar-item.destructive:hover,
@@ -90,9 +91,9 @@
   background: color-mix(in oklab, var(--pk-red) 12%, transparent);
   color: var(--pk-red);
 }
-.pk-menubar-shortcut { margin-left: auto; font-size: .75rem; color: var(--pk-muted); letter-spacing: .1em; }
+.pk-menubar-shortcut { margin-inline-start: auto; font-size: .75rem; color: var(--pk-muted); letter-spacing: .1em; }
 .pk-menubar-label { padding: .25rem .375rem; font-size: .875rem; font-weight: 500; }
-.pk-menubar-label.inset { padding-left: 1.75rem; }
+.pk-menubar-label.inset { padding-inline-start: 1.75rem; }
 .pk-menubar-separator { height: 1px; margin: .25rem -0.25rem; background: var(--pk-border); }
 .pk-menubar-group { display: contents; }
 
@@ -105,10 +106,10 @@
   pointer-events: none;
 }
 .pk-menubar-checkbox-item,
-.pk-menubar-radio-item { position: relative; padding-left: 1.75rem; }
+.pk-menubar-radio-item { position: relative; padding-inline-start: 1.75rem; }
 .pk-menubar-item-indicator {
   position: absolute;
-  left: .375rem;
+  inset-inline-start: .375rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -120,14 +121,14 @@
 .pk-menubar-radio-item .pk-menubar-item-indicator svg { width: .5rem; height: .5rem; }
 .pk-menubar-item:has(.pk-menubar-item-input:checked) .pk-menubar-item-indicator { visibility: visible; }
 .pk-menubar-item:has(.pk-menubar-item-input:focus-visible) {
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 
 /* Submenu: trigger row + side panel, revealed on hover/focus — pure CSS.
    The row is its own scoped anchor; the panel flips to the other side at
    the viewport right edge. */
 .pk-menubar-sub { anchor-name: --pk-menubar-sub; anchor-scope: --pk-menubar-sub; }
-.pk-menubar-sub-chevron { margin-left: auto; width: 1rem; height: 1rem; }
+.pk-menubar-sub-chevron { margin-inline-start: auto; width: 1rem; height: 1rem; }
 .pk-menubar-sub-content {
   position: fixed;
   position-anchor: --pk-menubar-sub;
@@ -148,7 +149,7 @@
   background: var(--pk-surface);
   color: var(--pk-text);
   padding: .25rem;
-  box-shadow: 0 8px 24px rgb(0 0 0 / .3);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--pk-shadow-color) 30%, transparent);
 }
 .pk-menubar-sub:hover > .pk-menubar-sub-content,
 .pk-menubar-sub:focus-within > .pk-menubar-sub-content { display: block; }

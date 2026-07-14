@@ -6,7 +6,9 @@ module PhlexKit
     end
 
     def view_template(&block)
-      h3(**mix({ class: "pk-dropdown-menu-label" }, @attrs), &block)
+      # div, not a heading: role="menu" only allows menuitem/group/separator
+      # children, so an <h3> is invalid ARIA there (shadcn uses a div too).
+      div(**mix({ class: "pk-dropdown-menu-label" }, @attrs), &block)
     end
   end
 end

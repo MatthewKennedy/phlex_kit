@@ -21,6 +21,9 @@ export default class extends Controller {
     this.invoker = this.triggerTarget.querySelector("button, a, [tabindex]") || this.triggerTarget;
     this.invoker.setAttribute("aria-haspopup", "menu");
     this.invoker.setAttribute("aria-expanded", "false");
+    // `open:` on the Ruby side renders the value — start open (same
+    // kwarg -> value -> connect flow as Collapsible).
+    if (this.openValue) this.#open();
   }
 
   disconnect() {
@@ -33,6 +36,9 @@ export default class extends Controller {
     if (!this.contentTarget.matches(":popover-open")) return;
     if (this.element.contains(event.target)) return;
 
+    // Deliberate (matches Radix's modal dismiss): the outside click ONLY
+    // dismisses the menu — it is swallowed rather than also acting on
+    // whatever was under the pointer (e.g. navigating a link).
     event.preventDefault();
     this.close();
   }
@@ -104,7 +110,34 @@ export default class extends Controller {
         this.close();
         this.invoker.focus();
         break;
+      case "ArrowRight":
+        // On a sub trigger, enter the submenu (focus reveals it via
+        // :focus-within, making its rows visible to the roving nav).
+        // Same keyboard grammar as context_menu.
+        if (document.activeElement?.matches(".pk-dropdown-menu-sub-trigger")) {
+          e.preventDefault();
+          this.#enterSub(document.activeElement);
+        }
+        break;
+      case "ArrowLeft": {
+        // Inside a submenu, step back to its trigger (closes it on focus-out).
+        const sub = document.activeElement?.closest(".pk-dropdown-menu-sub-content");
+        if (sub) {
+          e.preventDefault();
+          sub.closest(".pk-dropdown-menu-sub")?.querySelector(".pk-dropdown-menu-sub-trigger")?.focus();
+        }
+        break;
+      }
     }
+  }
+
+  #enterSub(trigger) {
+    trigger.focus();
+    const panel = trigger.closest(".pk-dropdown-menu-sub")?.querySelector(".pk-dropdown-menu-sub-content");
+    if (!panel) return;
+    const first = [...panel.querySelectorAll('[role^="menuitem"]')]
+      .find((el) => !el.closest("[data-disabled]") && el.getClientRects().length > 0);
+    first?.focus();
   }
 
   // Rows inside a closed submenu are display:none (revealed by CSS on

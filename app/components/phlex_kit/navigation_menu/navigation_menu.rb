@@ -15,7 +15,12 @@ module PhlexKit
         data: {
           controller: "phlex-kit--menubar",
           hover_open: true,
-          action: "click@window->phlex-kit--menubar#onClickOutside keydown.esc->phlex-kit--menubar#close mouseleave->phlex-kit--menubar#closeSoon"
+          # onKeydown (not keydown.esc->close): the shared handler drives
+          # arrow-key navigation over the panels AND closes on Escape with
+          # focus returned to the trigger (bare #close as an action received
+          # the event as `opts`, so refocus never happened — focus fell to
+          # <body> when the panel hid).
+          action: "click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown mouseleave->phlex-kit--menubar#closeSoon"
         }
       }, @attrs), &)
     end

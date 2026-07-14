@@ -5,7 +5,10 @@ module PhlexKit
   # Trigger + Content (+ Item / Label / Separator). Tailwind → vanilla
   # `.pk-dropdown-menu*` (dropdown_menu.css).
   class DropdownMenu < BaseComponent
-    def initialize(**attrs)
+    # `open: true` renders the menu open on connect (matching Collapsible's
+    # kwarg -> Stimulus value -> connect flow).
+    def initialize(open: false, **attrs)
+      @open = open
       @attrs = attrs
     end
 
@@ -14,6 +17,7 @@ module PhlexKit
         class: "pk-dropdown-menu",
         data: {
           controller: "phlex-kit--dropdown-menu",
+          phlex_kit__dropdown_menu_open_value: @open,
           action: "click@window->phlex-kit--dropdown-menu#onClickOutside"
         }
       }, @attrs), &block)

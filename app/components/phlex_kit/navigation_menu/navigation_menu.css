@@ -57,7 +57,7 @@
   background: var(--pk-surface);
   color: var(--pk-text);
   padding: .25rem;
-  box-shadow: 0 8px 24px rgb(0 0 0 / .3);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--pk-shadow-color) 30%, transparent);
 }
 .pk-navigation-menu-content .pk-navigation-menu-link {
   display: flex;
@@ -68,7 +68,12 @@
   align-items: flex-start;
   gap: .25rem;
 }
-/* Gap bridges on both sides — a flip fallback puts the gap below. */
+/* Gap bridges on both sides — a flip fallback puts the gap below. They only
+   exist while the panel is open (the closed panel is display:none) and are
+   already sized to the actual gap; the ~7px hit-area spill on the non-gap
+   side is the accepted cost: CSS has no selector for which position-try
+   fallback applied, so we can't scope the bridge to the active side, and
+   pointer-events:none would defeat the mouseleave continuity they exist for. */
 .pk-navigation-menu-content::before {
   content: "";
   position: absolute;

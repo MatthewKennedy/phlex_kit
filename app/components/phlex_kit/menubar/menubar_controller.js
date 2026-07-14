@@ -11,6 +11,8 @@ import { Controller } from "@hotwired/stimulus"
 // (skipping [data-disabled]); ArrowLeft/ArrowRight jump to the sibling menus;
 // Escape closes and returns focus to the trigger.
 // Connects to data-controller="phlex-kit--menubar"
+let uid = 0
+
 export default class extends Controller {
   static targets = ["menu"]
 
@@ -21,13 +23,38 @@ export default class extends Controller {
     return this.menuTargets.find((menu) => this.panel(menu)?.matches(":popover-open")) ?? null
   }
 
+  initialize() {
+    // menuTargetConnected fires BEFORE connect() — state it reads must be
+    // set here. Roving tabindex applies only in menubar mode: a nav's
+    // triggers and links stay natural tab stops.
+    this.roving = this.element.dataset.hoverOpen === undefined
+  }
+
+  // Pair each trigger with its panel for AT (aria-controls), and fold the
+  // trigger into the roving tabindex (first trigger 0, rest -1).
+  menuTargetConnected(menu) {
+    const trigger = this.trigger(menu)
+    const panel = this.panel(menu)
+    if (trigger && panel) {
+      if (!panel.id) panel.id = `pk-menu-panel-${++uid}`
+      trigger.setAttribute("aria-controls", panel.id)
+    }
+    if (this.roving) this.applyRoving()
+  }
+
+  menuTargetDisconnected() {
+    if (this.roving) this.applyRoving()
+  }
+
   disconnect() {
     clearTimeout(this.graceTimer)
   }
 
   toggle(e) {
     const menu = e.currentTarget.closest("[data-phlex-kit--menubar-target=\"menu\"]")
-    this.openMenu === menu ? this.close() : this.show(menu, true)
+    // detail 0 = keyboard-activated click (Enter/Space): only then does the
+    // first item get force-focused — a mouse open leaves focus on the trigger.
+    this.openMenu === menu ? this.close() : this.show(menu, e.detail === 0)
   }
 
   // Hover: switches between menus while one is open (menubar), or opens
@@ -58,10 +85,15 @@ export default class extends Controller {
   show(menu, focus = false) {
     if (this.openMenu !== menu) {
       this.close()
-      this.panel(menu)?.showPopover()
-      menu.querySelector("[aria-expanded]")?.setAttribute("aria-expanded", "true")
+      if (this.panel(menu)) {
+        this.panel(menu).showPopover()
+        menu.querySelector("[aria-expanded]")?.setAttribute("aria-expanded", "true")
+      }
     }
-    if (focus) this.items(menu)[0]?.focus()
+    if (this.roving) this.applyRoving(this.trigger(menu))
+    // No panel items (e.g. a panel-less nav link item reached via arrows):
+    // land on the trigger itself instead of stranding focus.
+    if (focus) (this.items(menu)[0] ?? this.trigger(menu))?.focus()
   }
 
   close(opts = {}) {
@@ -94,7 +126,9 @@ export default class extends Controller {
         e.preventDefault()
         const menus = this.menuTargets
         const next = menus[(menus.indexOf(menu) + (e.key === "ArrowRight" ? 1 : -1) + menus.length) % menus.length]
-        next?.querySelector("[aria-expanded], a, button, [tabindex]")?.focus()
+        const target = next ? this.trigger(next) : null
+        target?.focus()
+        if (this.roving && target) this.applyRoving(target)
       }
       return
     }
@@ -176,10 +210,36 @@ export default class extends Controller {
     group.forEach((i) => i.closest("[role^=\"menuitem\"]")?.setAttribute("aria-checked", i.checked))
   }
 
+  // Mirrors the CSS-driven submenu state (:hover / :focus-within) onto the
+  // sub trigger's aria-expanded. rAF: on mouseleave/focusout the pseudo-class
+  // state isn't settled until the event finishes dispatching.
+  syncSub(e) {
+    const sub = e.currentTarget
+    requestAnimationFrame(() => {
+      sub.querySelector(":scope > [aria-haspopup]")
+        ?.setAttribute("aria-expanded", sub.matches(":hover, :focus-within"))
+    })
+  }
+
   shift(dir) {
     const menus = this.menuTargets
     const index = menus.indexOf(this.openMenu)
     this.show(menus[(index + dir + menus.length) % menus.length], true)
+  }
+
+  // The bar's single tab stop (APG menubar): `current` keeps tabindex 0,
+  // every other trigger gets -1.
+  applyRoving(current = null) {
+    const triggers = this.menuTargets.map((menu) => this.trigger(menu)).filter(Boolean)
+    if (triggers.length === 0) return
+    if (!current || !triggers.includes(current)) {
+      current = triggers.find((t) => t.getAttribute("tabindex") === "0") ?? triggers[0]
+    }
+    triggers.forEach((t) => t.setAttribute("tabindex", t === current ? "0" : "-1"))
+  }
+
+  trigger(menu) {
+    return menu?.querySelector("[aria-expanded], a, button, [tabindex]")
   }
 
   panel(menu) {
@@ -192,7 +252,10 @@ export default class extends Controller {
     // getClientRects also skips rows inside a CLOSED sub panel (its
     // display:none comes from the hover/focus-within CSS, not .pk-hidden) —
     // focus() on those silently fails and the roving nav jams there.
-    return [...panel.querySelectorAll("[role^=\"menuitem\"]")]
-      .filter((el) => !el.closest("[data-disabled]") && el.getClientRects().length > 0)
+    // Nav panels hold plain links (no menu roles, matching Radix/shadcn) —
+    // fall back to them so arrow keys navigate there too.
+    const rows = [...panel.querySelectorAll("[role^=\"menuitem\"]")]
+    const list = rows.length ? rows : [...panel.querySelectorAll("a[href], button")]
+    return list.filter((el) => !el.closest("[data-disabled]") && el.getClientRects().length > 0)
   }
 }

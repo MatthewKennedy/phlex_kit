@@ -9,7 +9,10 @@ module PhlexKit
         # -1: the roving focus reaches it via arrows (focus-within opens the
         # sub); tabindex 0 made it a stray tab stop inside the open panel.
         tabindex: "-1",
-        aria: { haspopup: "menu" }
+        # expanded starts false; the sub is revealed by CSS (:hover /
+        # :focus-within), so MenubarSub's syncSub actions mirror that state
+        # onto this attribute.
+        aria: { haspopup: "menu", expanded: "false" }
       }, @attrs)) do
         block&.call
         render Icon.new(:chevron_right, size: nil, class: "pk-menubar-sub-chevron")

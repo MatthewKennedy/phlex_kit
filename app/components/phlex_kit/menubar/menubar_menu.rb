@@ -3,7 +3,10 @@ module PhlexKit
   class MenubarMenu < BaseComponent
     def initialize(**attrs) = (@attrs = attrs)
     def view_template(&)
-      div(**mix({ class: "pk-menubar-menu", data: { phlex_kit__menubar_target: "menu" } }, @attrs), &)
+      # role="none": role="menubar" only allows menuitem children in the
+      # accessibility tree — this layout wrapper must be presentational so
+      # the tree flattens to menubar > menuitem (axe: required-children).
+      div(**mix({ class: "pk-menubar-menu", role: "none", data: { phlex_kit__menubar_target: "menu" } }, @attrs), &)
     end
   end
 end

@@ -12,12 +12,22 @@ export default class extends Controller {
   static targets = ["content", "trigger", "menuItem"]
 
   connect() {
-    this.onDoc = (e) => { if (!this.contentTarget.contains(e.target)) this.close() }
+    this.onDoc = (e) => {
+      if (this.contentTarget.contains(e.target)) return
+      // The opening right-click bubbles to document AFTER open() adds this
+      // listener — a contextmenu inside our own element must not close what
+      // it just opened (it repositions instead). A contextmenu anywhere
+      // else closes us, which also covers opening a second kit context
+      // menu: its trigger's contextmenu is "outside" for this instance.
+      if (e.type === "contextmenu" && this.element.contains(e.target)) return
+      this.close()
+    }
     this.onKey = (e) => this.keydown(e)
   }
 
   disconnect() {
     document.removeEventListener("click", this.onDoc)
+    document.removeEventListener("contextmenu", this.onDoc)
     document.removeEventListener("keydown", this.onKey)
   }
 
@@ -38,14 +48,21 @@ export default class extends Controller {
     c.style.top = `${y}px`
     c.dataset.state = "open"
     document.addEventListener("click", this.onDoc)
+    document.addEventListener("contextmenu", this.onDoc)
     document.addEventListener("keydown", this.onKey)
     this.items()[0]?.focus()
   }
 
   close(opts = {}) {
+    // Menu rows default to href="#"; without this an Enter/click on a
+    // non-link row scrolls to top and appends # to the URL. (`opts` is the
+    // click event when close runs as the item's data-action; Enter/Space
+    // arrive here too, via keydown()'s synthesized click.)
+    if (opts?.target?.closest?.('a[href="#"]')) opts.preventDefault()
     if (this.contentTarget.matches(":popover-open")) this.contentTarget.hidePopover()
     this.contentTarget.dataset.state = "closed"
     document.removeEventListener("click", this.onDoc)
+    document.removeEventListener("contextmenu", this.onDoc)
     document.removeEventListener("keydown", this.onKey)
     if (opts.refocus === true) this.anchor().focus()
   }
