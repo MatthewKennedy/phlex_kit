@@ -13,7 +13,7 @@ class Audit4MechanicalTest < Minitest::Test
   # --- Finding 1: AspectRatio inline style must end with ";" so a caller
   # style: merges into two valid declarations (Phlex joins duplicates with a space).
   def test_aspect_ratio_style_merges_with_caller_style
-    html = render(PhlexKit::AspectRatio.new(style: "background: red;") {})
+    html = render(PhlexKit::AspectRatio.new(style: "background: red;") { })
     assert_includes html, "padding-bottom: 56.25%;"
     assert_includes html, "background: red;"
     assert_includes html, %(style="padding-bottom: 56.25%; background: red;")
