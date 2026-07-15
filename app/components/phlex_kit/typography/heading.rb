@@ -9,10 +9,12 @@ module PhlexKit
     # extend the scale downward — HTML has h1–h6, so all six must map.
     LEVEL_SIZE = { "1" => "7", "2" => "6", "3" => "5", "4" => "4", "5" => "3", "6" => "2" }.freeze
 
-    def initialize(level: nil, as: nil, size: nil, **attrs)
+    # level: defaults to 1 so `Heading.new` is identical to `Heading.new(level: 1)`
+    # (a nil default used to render h1 with the level-6 size — self-disagreeing).
+    def initialize(level: 1, as: nil, size: nil, **attrs)
       # Fail loud at construction: level 7 previously exploded at render time
       # with NoMethodError (no h7 element), and 5/6 fell through the size map.
-      unless level.nil? || LEVEL_SIZE.key?(level.to_s)
+      unless LEVEL_SIZE.key?(level.to_s)
         raise ArgumentError, "Invalid heading level: #{level.inspect} — valid: 1–6"
       end
       @level = level
@@ -28,11 +30,11 @@ module PhlexKit
     private
 
     def element
-      (@as || (@level ? "h#{@level}" : "h1")).to_sym
+      (@as || "h#{@level}").to_sym
     end
 
     def size_token
-      token = (@size || LEVEL_SIZE[@level.to_s] || "6").to_s
+      token = (@size || LEVEL_SIZE.fetch(@level.to_s)).to_s
       raise ArgumentError, "Invalid heading size: #{token.inspect}" unless SIZES.include?(token)
       token
     end

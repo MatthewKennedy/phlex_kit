@@ -15,7 +15,7 @@ module PhlexKit
   # shadcn ships default/destructive; success/warning are kit extras kept from
   # ruby_ui, restyled to the same text-tint grammar. `VARIANTS.fetch` fails loud.
   class Alert < BaseComponent
-    # variant => extra class appended after the base `ui-alert` (nil = neutral).
+    # variant => extra class appended after the base `pk-alert` (nil = neutral).
     VARIANTS = {
       default: nil,
       warning: "warning",

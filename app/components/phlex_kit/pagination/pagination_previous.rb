@@ -3,15 +3,22 @@ module PhlexKit
   # ported from shadcn/ui's PaginationPrevious. Renders its own <li>.
   # See pagination.rb.
   class PaginationPrevious < BaseComponent
-    def initialize(href: "#", label: "Previous", **attrs)
+    DEFAULT_LABEL = "Previous"
+
+    def initialize(href: "#", label: DEFAULT_LABEL, **attrs)
       @href = href
       @label = label
       @attrs = attrs
     end
 
     def view_template
+      # The English aria-label only accompanies the default English label; a
+      # custom (possibly localized) label: speaks for itself — hardcoding
+      # "Go to previous page" over it would make AT announce the wrong language.
+      base = { href: @href, class: "pk-button ghost pk-pagination-previous" }
+      base[:aria] = { label: "Go to previous page" } if @label == DEFAULT_LABEL
       li do
-        a(**mix({ href: @href, class: "pk-button ghost pk-pagination-previous", aria: { label: "Go to previous page" } }, @attrs)) do
+        a(**mix(base, @attrs)) do
           render Icon.new(:chevron_left, size: nil)
           span(class: "pk-pagination-label") { @label }
         end

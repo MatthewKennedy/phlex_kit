@@ -68,6 +68,10 @@ export default class extends Controller {
   }
 
   keydown(event) {
+    // Every open clone has its own document-level listener; with stacked
+    // alert dialogs (a trigger inside a panel) only the topmost clone may
+    // handle the keyboard, or one Escape would close every layer at once.
+    if (!this.#topmost()) return;
     if (event.key === "Escape") {
       event.preventDefault();
       this.dismiss();
@@ -95,6 +99,14 @@ export default class extends Controller {
       event.preventDefault();
       first.focus();
     }
+  }
+
+  // Clones are appended as direct <body> children whose direct child is the
+  // [role="alertdialog"] panel (source elements only hold a <template>, whose
+  // content never matches querySelector). The last such clone is the topmost.
+  #topmost() {
+    const clones = document.body.querySelectorAll(':scope > [data-controller~="phlex-kit--alert-dialog"] > [role="alertdialog"]');
+    return clones.length > 0 && clones[clones.length - 1].parentElement === this.element;
   }
 
   #panel() {

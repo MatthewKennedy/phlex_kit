@@ -6,11 +6,17 @@ module PhlexKit
   # underline and brighten on hover. `.pk-marker*` (marker.css).
   class Marker < BaseComponent
     VARIANTS = { default: nil, border: "border", separator: "separator" }.freeze
+    # The elements this component knows how to render (href: forces <a>);
+    # unknown values used to fall through silently to <div> — fail loud instead.
+    AS_TAGS = %i[div button].freeze
 
     def initialize(variant: :default, href: nil, as: :div, **attrs)
       @variant = variant.to_sym
       @href = href
       @as = as.to_sym
+      unless AS_TAGS.include?(@as)
+        raise ArgumentError, "unknown Marker as: #{@as.inspect} (use one of #{AS_TAGS.join(", ")})"
+      end
       @attrs = attrs
     end
 
