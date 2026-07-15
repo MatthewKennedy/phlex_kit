@@ -96,11 +96,18 @@ class Audit6TurboStateSystemTest < SystemTestCase
     section.assert_selector ".pk-combobox-popover:popover-open"
     expanded = section.all("[aria-expanded='true']", minimum: 1)
     refute_empty expanded
+    press(:down) # highlights the first item — leaves aria-current="true" behind
+    section.assert_selector ".pk-combobox-item[aria-current='true']"
 
     root = section.find("[data-controller~='phlex-kit--combobox']", match: :first)
     page.execute_script(RECONNECT, root)
 
     section.assert_no_selector "[aria-expanded='true']"
+    # Detaching a native [popover] force-closes it, so the item is no longer
+    # visible — Capybara's default visible-only filter would mask the bug
+    # (aria-current is still readable in the DOM even though the panel is
+    # invisible), so check with visible: :all, like the toggle-all sweep above.
+    section.assert_no_selector ".pk-combobox-item[aria-current='true']", visible: :all
   end
 
   def test_menubar_connect_normalizes_stale_expanded_state

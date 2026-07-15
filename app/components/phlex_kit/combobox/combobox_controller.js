@@ -50,6 +50,10 @@ export default class extends Controller {
     // a restored page doesn't announce an open listbox over a closed combobox.
     this.setExpanded(false)
     this.clearActiveDescendant()
+    // Mirrors select_controller.js's connect(): a Turbo snapshot also
+    // serializes the keyboard-highlighted item's aria-current even though
+    // the popover itself does not survive the restore.
+    this.itemTargets.forEach((item) => item.removeAttribute("aria-current"))
     this.generateItemIds()
     this.updateTriggerContent()
   }
@@ -303,6 +307,11 @@ export default class extends Controller {
     // aria-activedescendant holds an element id; on close it must be removed,
     // not left pointing at a hidden option.
     this.clearActiveDescendant()
+    // Also drop the highlight itself — otherwise a closed combobox still
+    // exposes an aria-current="true" option that Enter would go on to
+    // activate (APG: Enter on a closed combobox must be a no-op).
+    this.selectedItemIndex = null
+    this.itemTargets.forEach(item => item.ariaCurrent = "false")
     if (this.hasPopoverTarget && this.popoverTarget.matches(":popover-open")) this.popoverTarget.hidePopover()
     this.updateTriggerContent() // reflect the selection into an input trigger
 
@@ -395,6 +404,12 @@ export default class extends Controller {
   keyDownPressed(e) {
     if (e) e.preventDefault()
 
+    // APG: ArrowDown on a closed combobox opens it and highlights the first
+    // option, rather than walking aria-current through invisible options.
+    // openPopover() resets selectedItemIndex to null, so the branch below
+    // still lands on 0.
+    if (!this.isOpen()) this.openPopover()
+
     if (this.selectedItemIndex !== null) {
       this.selectedItemIndex++
     } else {
@@ -406,6 +421,11 @@ export default class extends Controller {
 
   keyUpPressed(e) {
     if (e) e.preventDefault()
+
+    // Same as keyDownPressed: ArrowUp on a closed combobox opens it and
+    // highlights the last option (wrapSelectedInputIndex turns -1 into the
+    // final index).
+    if (!this.isOpen()) this.openPopover()
 
     if (this.selectedItemIndex !== null) {
       this.selectedItemIndex--
@@ -439,6 +459,12 @@ export default class extends Controller {
   }
 
   keyEnterPressed(event) {
+    // APG: Enter on a CLOSED combobox is a no-op — it must not activate
+    // whatever option happened to keep aria-current="true" from before the
+    // popover closed. Bail before preventDefault so a closed field keeps
+    // Enter's ordinary default behaviour.
+    if (!this.isOpen()) return
+
     event.preventDefault()
     const option = this.itemTargets.find(item => item.ariaCurrent === "true")
 

@@ -56,4 +56,58 @@ class Audit5ComboboxSystemTest < SystemTestCase
     end
     assert_equal "true", current["aria-selected"]
   end
+
+  # Task 4 — closed-popover keyboard state machine (APG combobox pattern):
+  # Enter must be a no-op while closed (it must not activate whatever
+  # aria-current happened to survive the close), and ArrowDown/ArrowUp on a
+  # closed combobox must reopen the popover and highlight first/last.
+  def test_enter_after_escape_does_not_activate_the_stale_highlighted_option
+    visit "/docs/combobox"
+    section = demo("Basic")
+    field = section.find(".pk-combobox-input-trigger-field")
+    field.click
+    section.assert_selector ".pk-combobox-popover:popover-open"
+
+    press(:down) # highlights the first option (aria-current="true")
+    press(:escape)
+    section.assert_no_selector ".pk-combobox-popover:popover-open"
+
+    press(:enter)
+
+    refute section.all(".pk-combobox-radio", visible: :all).any?(&:checked?),
+      "Enter on a closed combobox must not activate the stale aria-current option"
+    section.assert_no_selector ".pk-combobox-popover:popover-open"
+  end
+
+  def test_arrow_down_on_closed_combobox_reopens_and_highlights_first
+    visit "/docs/combobox"
+    section = demo("Basic")
+    field = section.find(".pk-combobox-input-trigger-field")
+    field.click
+    section.assert_selector ".pk-combobox-popover:popover-open"
+    press(:escape)
+    section.assert_no_selector ".pk-combobox-popover:popover-open"
+
+    press(:down)
+
+    section.assert_selector ".pk-combobox-popover:popover-open"
+    current = section.find(".pk-combobox-item[aria-current='true']")
+    assert_includes current.text, "Next.js"
+  end
+
+  def test_arrow_up_on_closed_combobox_reopens_and_highlights_last
+    visit "/docs/combobox"
+    section = demo("Basic")
+    field = section.find(".pk-combobox-input-trigger-field")
+    field.click
+    section.assert_selector ".pk-combobox-popover:popover-open"
+    press(:escape)
+    section.assert_no_selector ".pk-combobox-popover:popover-open"
+
+    press(:up)
+
+    section.assert_selector ".pk-combobox-popover:popover-open"
+    current = section.find(".pk-combobox-item[aria-current='true']")
+    assert_includes current.text, "Astro"
+  end
 end
