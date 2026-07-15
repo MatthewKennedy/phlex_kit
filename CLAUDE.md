@@ -41,14 +41,22 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   `--pk-*` tokens (`_tokens.css` mirrors ui.shadcn.com's live values — hover
   fills use `--pk-accent`, control borders `--pk-input`, focus rings
   `box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent)`).
-  All radii derive from `--pk-radius` (`calc(var(--pk-radius) - 2px)` etc).
+  All radii derive from `--pk-radius` (`calc(var(--pk-radius) - 2px)` etc);
+  default is 0.625rem/10px — tokenize literals with a calc offset that keeps
+  the default rendering identical (`.75rem` → `calc(var(--pk-radius) + 2px)`).
   Shadows/overlays use `color-mix(in srgb, var(--pk-shadow-color|--pk-overlay)
   N%, transparent)` — never hardcoded blacks. Direction-relative properties use
   logical equivalents (`inset-inline-*`, `text-align: start`); physical only
   for side-kwarg contracts (sheet/drawer/toast positions) and centering math.
-- Clone-based modals (alert_dialog, sheet/drawer, sidebar mobile) `inert` the
-  page behind them — restore on close, disconnect, AND `turbo:before-cache`;
-  the helper is duplicated per controller by design (no shared JS util).
+- Clone-based modals (alert_dialog, sheet/drawer, sidebar mobile, command
+  dialog) `inert` the page behind them — restore on close, disconnect, AND
+  `turbo:before-cache`; the helper is duplicated per controller by design (no
+  shared JS util). The before-cache rule is universal: ANY transient UI (open
+  dialog, flash popover, toast) must clear on `turbo:before-cache` — Turbo
+  snapshots BEFORE disconnect, so a missed listener resurrects the overlay
+  from the page cache (bit dialog and clipboard). Viewport-scoped overlays
+  (sidebar's mobile drawer) also need a matchMedia change listener to close
+  on breakpoint crossing, or their inert marks outlive the CSS showing them.
 - JS: Stimulus only, identifiers `phlex-kit--<name>`, data keys
   `phlex_kit__<name>_target`. The controller file lives in the component folder
   (`app/components/phlex_kit/<name>/<name>_controller.js`) but keeps the flat
@@ -74,18 +82,34 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
 - **Inline `style:` strings must end with `;`** — Phlex `mix` joins duplicate
   string attrs with a space, so `style: "flex-grow: 30"` + caller
   `style: "color: red"` fuses into one invalid declaration that kills BOTH
-  (bit aspect_ratio, slider, resizable_panel).
+  (bit aspect_ratio, slider, resizable_panel, sheet/dialog close wrappers).
+- **`mix` merges duplicate attrs, never overrides** — any attribute a
+  component generates itself (id, style, aria-*) must be a named kwarg, or a
+  caller's copy fuses into one invalid two-token value (bit SelectContent's
+  generated id, breaking aria-controls).
 - **System tests (Cuprite)**: use the raw-keyboard `press` helper from
   `test/system/interaction_helpers.rb` — element `send_keys` prefixes a click
   that activates focused menu items. Native `<dialog>` fires `close` as a
   queued task — poll with `wait_until`, never read scroll-lock state
   synchronously after closing. No `sleep`s; every visit installs a JS-error
-  trap that flunks the test in teardown.
+  trap that flunks the test in teardown. The dummy app runs no Turbo — test
+  before-cache behavior by dispatching `new Event("turbo:before-cache")` on
+  document. Assert timer-adjacent state synchronously via `evaluate_script`
+  (`assert_no_selector`'s wait lets a 1.5s auto-hide mask a missing
+  listener). Breakpoint tests: `page.driver.resize(w, h)` — restore the
+  1400×900 default in teardown.
 - **Manifest imports must be relative to the manifest's own directory**
   (`_tokens.css`, `button/button.css` — never `phlex_kit/…`): Propshaft
   resolves bare `url()` paths against the referencing file's dir, so a
   prefixed path doubles up and 404s. Only the `url("…")` form is
   fingerprinted. `manifest_test.rb` guards both.
+- **Stimulus target getters throw when absent** — `this.fooTarget?.x` never
+  guards anything; use `hasFooTarget` (bit message_scroller's history
+  prepend).
+- **`data-state` is the CSS styling hook** — server-render it on stateful
+  parts (`active:` etc.) AND make `connect()` honor server-marked state
+  instead of forcing a default (bit tabs: active trigger unstyled pre-JS,
+  then overridden by hydration).
 - **Stimulus fires `[target]Connected` before `connect()`** — state used by
   target callbacks must be initialized in `initialize()` (bit the toaster
   with server-rendered flash toasts).
