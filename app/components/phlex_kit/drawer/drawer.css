@@ -27,7 +27,7 @@
   bottom: 0;
   max-height: 85vh;
   border-top: 1px solid var(--pk-border);
-  border-radius: .75rem .75rem 0 0;
+  border-radius: calc(var(--pk-radius) + 2px) calc(var(--pk-radius) + 2px) 0 0;
   animation: pk-drawer-up .3s ease;
 }
 .pk-drawer.top {
@@ -35,7 +35,7 @@
   top: 0;
   max-height: 85vh;
   border-bottom: 1px solid var(--pk-border);
-  border-radius: 0 0 .75rem .75rem;
+  border-radius: 0 0 calc(var(--pk-radius) + 2px) calc(var(--pk-radius) + 2px);
   animation: pk-drawer-down .3s ease;
 }
 .pk-drawer.left,
@@ -48,13 +48,13 @@
 .pk-drawer.left {
   left: 0;
   border-right: 1px solid var(--pk-border);
-  border-radius: 0 .75rem .75rem 0;
+  border-radius: 0 calc(var(--pk-radius) + 2px) calc(var(--pk-radius) + 2px) 0;
   animation: pk-drawer-from-left .3s ease;
 }
 .pk-drawer.right {
   right: 0;
   border-left: 1px solid var(--pk-border);
-  border-radius: .75rem 0 0 .75rem;
+  border-radius: calc(var(--pk-radius) + 2px) 0 0 calc(var(--pk-radius) + 2px);
   animation: pk-drawer-from-right .3s ease;
 }
 @keyframes pk-drawer-up { from { transform: translateY(100%); } to { transform: translateY(0); } }

@@ -14,7 +14,7 @@
 .pk-message[data-align="end"] .pk-bubble { align-self: flex-end; }
 .pk-bubble-content {
   width: fit-content; max-width: 100%; min-width: 0; overflow: hidden;
-  overflow-wrap: break-word; border: 1px solid transparent; border-radius: .75rem;
+  overflow-wrap: break-word; border: 1px solid transparent; border-radius: calc(var(--pk-radius) + 2px);
   padding: .5rem .75rem; font-size: .875rem; line-height: 1.625;
 }
 .pk-bubble[data-align="end"] > .pk-bubble-content { align-self: flex-end; }

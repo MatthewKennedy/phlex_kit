@@ -5,7 +5,7 @@
 .pk-empty {
   display: flex; width: 100%; min-width: 0; flex: 1; flex-direction: column;
   align-items: center; justify-content: center; gap: 1rem;
-  border: 0 dashed var(--pk-border); border-radius: .75rem;
+  border: 0 dashed var(--pk-border); border-radius: calc(var(--pk-radius) + 2px);
   padding: 1.5rem; text-align: center; text-wrap: balance;
 }
 .pk-empty.outline { border-width: 1px; }

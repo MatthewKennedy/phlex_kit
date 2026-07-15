@@ -1,6 +1,14 @@
 /* Kit utilities used by the interactive controllers (Stimulus toggles these). */
 .pk-hidden { display: none !important; }
 
+/* Kit-wide screen-reader-only utility — used by many components
+   (breadcrumb, dialog, sheet, sidebar, …), so it lives here rather
+   than in any one component's stylesheet. */
+.pk-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
 /* Shimmer — shadcn's shimmer util: a highlight band sweeping across text, for
    loading / "thinking…" states. Pure CSS, built on currentColor: the text keeps
    its own color (any color) and the highlight derives from it via relative

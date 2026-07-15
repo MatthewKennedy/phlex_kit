@@ -66,7 +66,7 @@
   width: 100%;
   padding: .5rem .65rem;
   border: 0;
-  border-radius: 8px;
+  border-radius: calc(var(--pk-radius) - 2px);
   background: transparent;
   color: var(--pk-sidebar-text, var(--pk-text));
   font: inherit;
