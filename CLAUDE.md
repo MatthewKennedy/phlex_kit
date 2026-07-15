@@ -98,6 +98,15 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   (`assert_no_selector`'s wait lets a 1.5s auto-hide mask a missing
   listener). Breakpoint tests: `page.driver.resize(w, h)` — restore the
   1400×900 default in teardown.
+  Cuprite node refs go stale (`ObsoleteNode`) after a detach/reattach —
+  drive those flows via `execute_script` on selectors, not held elements.
+  Detach+reattach of a controller root re-runs `connect()` on markup still
+  carrying snapshot-stale attributes — the standard way to simulate a Turbo
+  cache restore (see audit6_turbo_state_system_test). Stimulus
+  `[target]Connected` fires async after a DOM insert — poll with
+  `wait_until`, never read the effect synchronously. Synthetic pointer/click
+  events aimed at dialog backdrop logic need `detail: 1` (detail 0 is
+  treated as keyboard/synthetic and ignored).
 - **Manifest imports must be relative to the manifest's own directory**
   (`_tokens.css`, `button/button.css` — never `phlex_kit/…`): Propshaft
   resolves bare `url()` paths against the referencing file's dir, so a
