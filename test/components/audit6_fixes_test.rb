@@ -63,4 +63,15 @@ class Audit6FixesTest < Minitest::Test
     node = Nokogiri::HTML5.fragment(html).at_css(".pk-command-list")
     assert_match(/\Apk-command-list-\h{8}\z/, node["id"])
   end
+
+  # --- Phase 3: slider.css strips the native outline for ALL browsers but
+  # only reinstated the kit focus ring on the -webkit thumb — Firefox
+  # keyboard users got no focus indicator at all. Cuprite can't drive
+  # Firefox, so guard the -moz rule's presence mechanically.
+  def test_slider_css_reinstates_focus_ring_on_moz_range_thumb
+    css = File.read(File.expand_path("../../app/components/phlex_kit/slider/slider.css", __dir__))
+    moz_focus = css[/\.pk-slider:focus-visible::-moz-range-thumb\s*\{[^}]*\}/m]
+    refute_nil moz_focus, "slider.css removes the native outline but has no :focus-visible::-moz-range-thumb replacement ring"
+    assert_match(/box-shadow:\s*0 0 0 3px color-mix\(in oklab, var\(--pk-ring\) 50%, transparent\)/, moz_focus)
+  end
 end

@@ -57,6 +57,12 @@
 .pk-slider:active::-moz-range-thumb {
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
+/* line 13 strips the native outline in every browser — without this arm the
+   replacement ring only existed on the -webkit thumb and Firefox keyboard
+   focus was invisible. */
+.pk-slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
 .pk-slider:disabled { opacity: .5; cursor: not-allowed; }
 /* Vertical: modern writing-mode flip (min-h-40 like theirs). */
 .pk-slider.vertical {
