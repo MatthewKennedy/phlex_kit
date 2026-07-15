@@ -10,4 +10,6 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "puma", require: false # serves the test/dummy component gallery
   gem "rouge", require: false # syntax highlighting in the test/dummy docs site (the kit itself stays plain)
+  gem "capybara", require: false # system tests (rake test:system) drive the dummy app
+  gem "cuprite", require: false # headless-Chrome CDP driver for the system tests — no selenium/webdriver
 end

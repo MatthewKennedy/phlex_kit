@@ -20,6 +20,19 @@ jobs:
           # can't merge. node --check auto-detects the ESM `import` syntax.
           find app -name "*.js" -print0 | xargs -0 -I{} -n1 node --check {}
 
+  system:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+          bundler-cache: true
+      - name: System tests (Capybara + Cuprite against test/dummy)
+        # Headless Chrome comes preinstalled on ubuntu-latest; Cuprite talks
+        # CDP directly, so no selenium/chromedriver setup is needed.
+        run: bundle exec rake test:system
+
   test:
     runs-on: ubuntu-latest
     strategy:

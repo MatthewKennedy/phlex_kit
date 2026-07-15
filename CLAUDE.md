@@ -9,7 +9,9 @@ architecture; `docs/07-TOKENS.md` for the full `--pk-*` token reference;
 ## Commands
 
 ```bash
-bundle exec rake test                 # full suite (fast, no Rails boot)
+bundle exec rake test                 # unit suite (fast, no Rails boot; excludes test/system)
+bundle exec rake test:system          # browser suite — Capybara + Cuprite (headless Chrome)
+                                      # drives /gallery + /docs/<slug>; HEADLESS=0 to watch
 node --check app/components/phlex_kit/<name>/<name>_controller.js
 bundle exec puma -p 3999 test/dummy/config.ru   # the gallery — visual validation
 gem build phlex_kit.gemspec
