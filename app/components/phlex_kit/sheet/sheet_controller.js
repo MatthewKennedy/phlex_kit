@@ -11,8 +11,19 @@ export default class extends Controller {
 
   initialize() {
     this.overlay = null
+    // Turbo snapshots synchronously right after dispatching this event —
+    // BEFORE Stimulus disconnect() runs (it fires via MutationObserver, too
+    // late to keep the snapshot from capturing an inerted, scroll-locked
+    // page). Reach into the clone's own controller and restore its state
+    // synchronously before removing it; that method is idempotent, so the
+    // content controller's own disconnect() (fired later, once the removal
+    // is observed) is a harmless no-op.
     this.clearOverlay = () => {
-      if (this.overlay?.isConnected) this.overlay.remove()
+      if (this.overlay?.isConnected) {
+        const content = this.application.getControllerForElementAndIdentifier(this.overlay, "phlex-kit--sheet-content")
+        content?.restoreImmediate()
+        this.overlay.remove()
+      }
       this.overlay = null
     }
   }

@@ -15,6 +15,7 @@ export default class extends Controller {
   static targets = ["panel"]
 
   connect() {
+    this.restored = false
     this.opener = document.activeElement
     this.previousOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"
@@ -26,6 +27,20 @@ export default class extends Controller {
   }
 
   disconnect() {
+    this.restoreImmediate()
+  }
+
+  // Synchronously undoes everything connect() did: background inert,
+  // scroll lock, and the closed-notification to the source sheet
+  // controller. Called from disconnect() (the normal removal path) AND
+  // from the source phlex-kit--sheet controller's turbo:before-cache
+  // handler, which must restore state before Turbo's synchronous snapshot
+  // — disconnect() fires via MutationObserver, too late for that snapshot.
+  // Idempotent (guarded by `this.restored`) so whichever path runs second
+  // is a harmless no-op.
+  restoreImmediate() {
+    if (this.restored) return
+    this.restored = true
     this.#restoreInert()
     document.body.style.overflow = this.previousOverflow
     if (this.opener?.isConnected) this.opener.focus()

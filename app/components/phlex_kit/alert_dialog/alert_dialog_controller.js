@@ -29,7 +29,17 @@ export default class extends Controller {
     this.previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     this.onKeydown = (event) => this.keydown(event);
-    this.beforeCache = () => this.element.remove();
+    // Turbo snapshots synchronously right after dispatching this event —
+    // BEFORE Stimulus disconnect() runs (it fires via MutationObserver, too
+    // late). Restore inert + scroll lock here so the snapshot never captures
+    // a fully-inerted, scroll-locked page; disconnect()'s later restore
+    // becomes a harmless no-op (#restoreInert clears `this.inerted`, and
+    // reassigning the same overflow value is idempotent).
+    this.beforeCache = () => {
+      this.#restoreInert();
+      document.body.style.overflow = this.previousOverflow;
+      this.element.remove();
+    };
     document.addEventListener("keydown", this.onKeydown);
     document.addEventListener("turbo:before-cache", this.beforeCache);
     this.#inertOthers();
