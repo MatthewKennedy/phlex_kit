@@ -72,6 +72,9 @@
    the viewport right edge. */
 .pk-context-menu-sub { anchor-name: --pk-context-menu-sub; anchor-scope: --pk-context-menu-sub; }
 .pk-context-menu-sub-chevron { margin-inline-start: auto; width: 1rem; height: 1rem; }
+/* Mirror the chevron in RTL (submenu opens visually LEFT). Ancestor
+   [dir="rtl"] (not :dir()) so Chrome re-styles it on a dynamic dir flip too. */
+[dir="rtl"] .pk-context-menu-sub-chevron { transform: scaleX(-1); }
 .pk-context-menu-sub-content {
   position: fixed;
   position-anchor: --pk-context-menu-sub;

@@ -156,19 +156,26 @@ export default class extends Controller {
         }
         break
       case "ArrowRight":
-        // On a sub trigger, enter the submenu (focus reveals it via
-        // :focus-within, making its rows visible to the roving nav).
-        if (document.activeElement?.matches(".pk-context-menu-sub-trigger")) {
-          e.preventDefault()
-          this.enterSub(document.activeElement)
-        }
-        break
       case "ArrowLeft": {
-        // Inside a submenu, step back to its trigger (closes it on focus-out).
-        const sub = document.activeElement?.closest(".pk-context-menu-sub-content")
-        if (sub) {
-          e.preventDefault()
-          sub.closest(".pk-context-menu-sub")?.querySelector(".pk-context-menu-sub-trigger")?.focus()
+        // Submenus open inline-end — visually LEFT in RTL — so the enter key
+        // follows visual direction: ArrowLeft enters / ArrowRight exits in RTL
+        // (and the reverse in LTR). Runtime dir check is reliable after a flip.
+        const rtl = getComputedStyle(this.element).direction === "rtl"
+        const enterKey = rtl ? "ArrowLeft" : "ArrowRight"
+        if (e.key === enterKey) {
+          // On a sub trigger, enter the submenu (focus reveals it via
+          // :focus-within, making its rows visible to the roving nav).
+          if (document.activeElement?.matches(".pk-context-menu-sub-trigger")) {
+            e.preventDefault()
+            this.enterSub(document.activeElement)
+          }
+        } else {
+          // Inside a submenu, step back to its trigger (closes it on focus-out).
+          const sub = document.activeElement?.closest(".pk-context-menu-sub-content")
+          if (sub) {
+            e.preventDefault()
+            sub.closest(".pk-context-menu-sub")?.querySelector(".pk-context-menu-sub-trigger")?.focus()
+          }
         }
         break
       }

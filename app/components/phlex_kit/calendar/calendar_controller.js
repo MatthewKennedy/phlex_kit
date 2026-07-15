@@ -287,7 +287,11 @@ export default class extends Controller {
   // boundary re-renders the grid on the target month. Enter/Space activate
   // natively (the days are real <button>s).
   onKeydown(e) {
-    const STEPS = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+    // In RTL the day grid mirrors: the physical LEFT arrow advances one day.
+    // The week steps (Up/Down) and the PageUp/Down/Home/End jumps are
+    // unaffected. Runtime dir check is reliable after a dynamic flip.
+    const rtl = getComputedStyle(this.element).direction === "rtl";
+    const STEPS = { ArrowLeft: rtl ? 1 : -1, ArrowRight: rtl ? -1 : 1, ArrowUp: -7, ArrowDown: 7 };
     const day = e.target.closest?.("[data-day]");
     if (!day) return;
 

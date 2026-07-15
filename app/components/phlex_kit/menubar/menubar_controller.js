@@ -160,10 +160,14 @@ export default class extends Controller {
         e.preventDefault()
         this.show(menu, true)
       } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        // Closed bar: left/right move focus between the triggers (APG).
+        // Closed bar: left/right move focus between the triggers (APG). In RTL
+        // the bar mirrors, so the physical LEFT arrow moves to the next
+        // trigger. Runtime dir check is reliable after a dynamic flip.
         e.preventDefault()
+        const rtl = getComputedStyle(this.element).direction === "rtl"
+        const step = (e.key === "ArrowRight" ? 1 : -1) * (rtl ? -1 : 1)
         const menus = this.menuTargets
-        const next = menus[(menus.indexOf(menu) + (e.key === "ArrowRight" ? 1 : -1) + menus.length) % menus.length]
+        const next = menus[(menus.indexOf(menu) + step + menus.length) % menus.length]
         const target = next ? this.trigger(next) : null
         target?.focus()
         if (this.roving && target) this.applyRoving(target)
@@ -203,23 +207,30 @@ export default class extends Controller {
         }
         break
       case "ArrowRight":
-        e.preventDefault()
-        // On a sub trigger, enter the submenu (focus reveals it via
-        // :focus-within) instead of jumping to the next top-level menu.
-        if (document.activeElement?.matches(".pk-menubar-sub-trigger")) {
-          this.enterSub(document.activeElement)
-        } else {
-          this.shift(1)
-        }
-        break
       case "ArrowLeft": {
         e.preventDefault()
-        // Inside a submenu, step back to its trigger instead of switching menus.
-        const sub = document.activeElement?.closest(".pk-menubar-sub-content")
-        if (sub) {
-          sub.closest(".pk-menubar-sub")?.querySelector(".pk-menubar-sub-trigger")?.focus()
+        // Both the submenu (opens inline-end = visually LEFT in RTL) and the
+        // top-level menu traversal follow visual direction: the "enter/next"
+        // key is ArrowLeft in RTL, ArrowRight in LTR. Runtime dir check is
+        // reliable after a dynamic flip.
+        const rtl = getComputedStyle(this.element).direction === "rtl"
+        const enterKey = rtl ? "ArrowLeft" : "ArrowRight"
+        if (e.key === enterKey) {
+          // On a sub trigger, enter the submenu (focus reveals it via
+          // :focus-within) instead of jumping to the next top-level menu.
+          if (document.activeElement?.matches(".pk-menubar-sub-trigger")) {
+            this.enterSub(document.activeElement)
+          } else {
+            this.shift(1)
+          }
         } else {
-          this.shift(-1)
+          // Inside a submenu, step back to its trigger instead of switching menus.
+          const sub = document.activeElement?.closest(".pk-menubar-sub-content")
+          if (sub) {
+            sub.closest(".pk-menubar-sub")?.querySelector(".pk-menubar-sub-trigger")?.focus()
+          } else {
+            this.shift(-1)
+          }
         }
         break
       }

@@ -33,14 +33,17 @@ export default class extends Controller {
     if (items.length === 0) return
     const currentIndex = items.indexOf(event.currentTarget)
     let nextIndex = currentIndex
-    switch (event.key) {
-      case "ArrowRight": case "ArrowDown": nextIndex = (currentIndex + 1) % items.length; break
-      case "ArrowLeft": case "ArrowUp": nextIndex = (currentIndex - 1 + items.length) % items.length; break
-      case "Home": nextIndex = 0; break
-      case "End": nextIndex = items.length - 1; break
-      case " ": case "Enter": event.preventDefault(); event.currentTarget.click(); return
-      default: return
-    }
+    // In RTL the horizontal arrows mirror (physical LEFT = next); Up/Down are
+    // unaffected. Runtime dir check is reliable after a dynamic flip.
+    const rtl = getComputedStyle(this.element).direction === "rtl"
+    const fwd = rtl ? "ArrowLeft" : "ArrowRight"
+    const back = rtl ? "ArrowRight" : "ArrowLeft"
+    if (event.key === fwd || event.key === "ArrowDown") nextIndex = (currentIndex + 1) % items.length
+    else if (event.key === back || event.key === "ArrowUp") nextIndex = (currentIndex - 1 + items.length) % items.length
+    else if (event.key === "Home") nextIndex = 0
+    else if (event.key === "End") nextIndex = items.length - 1
+    else if (event.key === " " || event.key === "Enter") { event.preventDefault(); event.currentTarget.click(); return }
+    else return
     event.preventDefault()
     const next = items[nextIndex]
     this.updateRovingTabindex(next)

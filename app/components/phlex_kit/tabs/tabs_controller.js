@@ -29,8 +29,14 @@ export default class extends Controller {
   // tab sets also answer to ArrowUp/ArrowDown.
   keydown(event) {
     const vertical = this.element.classList.contains("vertical")
-    const nextKeys = vertical ? ["ArrowRight", "ArrowDown"] : ["ArrowRight"]
-    const prevKeys = vertical ? ["ArrowLeft", "ArrowUp"] : ["ArrowLeft"]
+    // In RTL the tablist mirrors: the physical LEFT arrow moves to the NEXT
+    // trigger. The vertical Up/Down pair is unaffected (runtime dir check is
+    // reliable even after a dynamic flip — carousel's idiom).
+    const rtl = getComputedStyle(this.element).direction === "rtl"
+    const fwd = rtl ? "ArrowLeft" : "ArrowRight"
+    const back = rtl ? "ArrowRight" : "ArrowLeft"
+    const nextKeys = vertical ? [fwd, "ArrowDown"] : [fwd]
+    const prevKeys = vertical ? [back, "ArrowUp"] : [back]
     const triggers = this.triggerTargets.filter((el) => !el.disabled)
     if (triggers.length === 0) return
     const index = triggers.indexOf(document.activeElement)
