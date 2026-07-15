@@ -15,7 +15,7 @@ module PhlexKit
       # Caller action first, then dismiss — client-spawned actions dismiss
       # their toast after onClick (Sonner parity), so server-rendered ones
       # must too.
-      data[:action] = [ @on, "click->phlex-kit--toast#dismiss" ].compact.join(" ") if @on
+      data[:action] = [ @on, "click->phlex-kit--toast#dismiss" ].compact.join(" ")
       button(**mix({ type: :button, class: "pk-toast-action", data: data }, @attrs)) { @label }
     end
   end
