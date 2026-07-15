@@ -15,12 +15,18 @@
   position-area: block-end span-inline-end;
   margin: .25rem 0 0;
   position-try-fallbacks: flip-block;
+  flex-direction: column; gap: .125rem;
   width: 16rem;
   border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
   border-radius: var(--pk-radius); background: var(--pk-surface);
   color: var(--pk-text); padding: .625rem; font-size: .875rem;
   box-shadow: 0 8px 24px color-mix(in srgb, var(--pk-shadow-color) 30%, transparent); outline: none;
 }
+/* display must be gated on :popover-open — an unconditional author
+   `display: flex` would beat the UA's [popover] { display: none } (bit the
+   Basic docs example's inline style, which relied on this instead of the
+   component doing it). */
+.pk-hover-card-content:popover-open { display: flex; }
 .pk-hover-card-content.top { position-area: block-start span-inline-end; margin: 0 0 .25rem; }
 /* Gap margins are logical to match the logical position-area (and tooltip's
    pattern) — physical margins landed on the wrong side in RTL. */
