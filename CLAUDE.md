@@ -124,6 +124,11 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   Any mode-varying token (incl. the optional `--pk-sidebar-*` overrides) must
   be restated in BOTH light blocks (bit the neutral theme's blue
   sidebar-primary).
+- **Known RTL limitations (deliberate, audit round 5)**: sidebar is
+  physically left-pinned (no `side:` kwarg yet) and resizable's drag math
+  assumes LTR (commented at the clientX delta). Everything else uses logical
+  properties — keep it that way; physical is only for the side-kwarg
+  contracts (sheet/drawer/toast) and centering math.
 
 ## Releasing
 
