@@ -48,6 +48,12 @@ export default class extends Controller {
     // (only on elements that already carry it: plain nav links must not
     // grow an aria-expanded). Covers the trigger and CSS-revealed subs.
     menu.querySelectorAll("[aria-expanded='true']").forEach((el) => el.setAttribute("aria-expanded", "false"))
+    // Same shape for checkbox/radio rows: their `checked` DOM property
+    // survives a reconnect but a hand-edited/replayed aria-checked can drift
+    // from it — resync every row from its live input.
+    menu.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach((i) => {
+      i.closest('[role^="menuitem"]')?.setAttribute("aria-checked", i.checked)
+    })
     if (this.roving) this.applyRoving()
   }
 
@@ -107,8 +113,15 @@ export default class extends Controller {
     if (focus) (this.items(menu)[0] ?? this.trigger(menu))?.focus()
   }
 
+  // Also wired directly as the click handler on plain nav links (see
+  // navigation_menu_link.rb) — `opts` is then the click Event rather than an
+  // options hash. Guard the default href="#" (dropdown_menu_controller.js's
+  // close() does the same) so a link without a real destination doesn't
+  // scroll-to-top/append a hash; a link WITH a real href is left to navigate
+  // normally, closing whatever panel is open on the way out.
   close(opts = {}) {
     clearTimeout(this.graceTimer)
+    if (opts?.target?.closest?.('a[href="#"]')) opts.preventDefault?.()
     const menu = this.openMenu
     if (!menu) return
     const panel = this.panel(menu)

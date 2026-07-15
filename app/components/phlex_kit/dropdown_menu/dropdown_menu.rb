@@ -18,7 +18,9 @@ module PhlexKit
         data: {
           controller: "phlex-kit--dropdown-menu",
           phlex_kit__dropdown_menu_open_value: @open,
-          action: "click@window->phlex-kit--dropdown-menu#onClickOutside"
+          # focusout: tabbing (or otherwise moving real focus) out of the
+          # menu closes the open [popover=manual] panel (menubar's pattern).
+          action: "click@window->phlex-kit--dropdown-menu#onClickOutside focusout->phlex-kit--dropdown-menu#onFocusout"
         }
       }, @attrs), &block)
     end
