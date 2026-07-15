@@ -16,6 +16,8 @@ class A11yModalTest < Minitest::Test
     assert_includes html, %(tabindex="-1")
     assert_includes html, %(data-phlex-kit--sheet-content-target="panel")
     assert_includes html, "keydown->phlex-kit--sheet-content#keydown"
+    assert_includes html, "data-pk-overlay-clone"
+    assert_includes html, "mousedown->phlex-kit--sheet-content#overlayMousedown"
   end
 
   def test_drawer_content_declares_modal_dialog_semantics
@@ -25,6 +27,11 @@ class A11yModalTest < Minitest::Test
     assert_includes html, %(tabindex="-1")
     assert_includes html, %(data-phlex-kit--sheet-content-target="panel")
     assert_includes html, "keydown->phlex-kit--sheet-content#keydown"
+    # drawer_content.rb hand-duplicates sheet_content.rb's clone-root markup
+    # (same phlex-kit--sheet-content controller) — the marker and backdrop
+    # guard below must be kept in sync with sheet_content.rb, not skipped.
+    assert_includes html, "data-pk-overlay-clone"
+    assert_includes html, "mousedown->phlex-kit--sheet-content#overlayMousedown"
   end
 
   def test_dialog_content_accepts_labelledby_and_describedby

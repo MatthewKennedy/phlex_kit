@@ -50,7 +50,16 @@ export default class extends Controller {
   }
 
   disconnect() {
-    if (this.hasContentTarget) return;
+    if (this.hasContentTarget) {
+      // The source element (holding the template) can disconnect while a
+      // clone it spawned is still live in <body> — e.g. Turbo replacing this
+      // region out from under an open dialog. Remove the orphan rather than
+      // leaving a modal nothing can dismiss. Idempotent: if the clone
+      // already removed itself (Cancel, Escape, its own before-cache),
+      // this.clone is disconnected and the isConnected check no-ops.
+      if (this.clone?.isConnected) this.clone.remove();
+      return;
+    }
     document.removeEventListener("keydown", this.onKeydown);
     document.removeEventListener("turbo:before-cache", this.beforeCache);
     this.#restoreInert();
@@ -114,12 +123,15 @@ export default class extends Controller {
     }
   }
 
-  // Clones are appended as direct <body> children whose direct child is the
-  // [role="alertdialog"] panel (source elements only hold a <template>, whose
-  // content never matches querySelector). The last such clone is the topmost.
+  // Clones are appended as direct <body> children. Other clone-based overlay
+  // families (sheet/drawer content) stamp the same [data-pk-overlay-clone]
+  // marker on their own clone root, so this checks z-stacking across overlay
+  // TYPES, not just other alert dialogs — a sheet opened from inside an
+  // alert dialog (or vice versa) is a later sibling and must absorb Escape
+  // first; only the last overlay clone overall may act on it.
   #topmost() {
-    const clones = document.body.querySelectorAll(':scope > [data-controller~="phlex-kit--alert-dialog"] > [role="alertdialog"]');
-    return clones.length > 0 && clones[clones.length - 1].parentElement === this.element;
+    const clones = document.body.querySelectorAll(":scope > [data-pk-overlay-clone]");
+    return clones.length > 0 && clones[clones.length - 1] === this.element;
   }
 
   #panel() {

@@ -20,7 +20,11 @@ module PhlexKit
         # mousedown on the overlay is prevented so a stray click can't move
         # focus out of the trap. tabindex="-1" on the panel is the focus
         # fallback when the dialog has no focusable children.
-        div(data: { controller: "phlex-kit--alert-dialog" }) do
+        # data-pk-overlay-clone is a common marker read across clone-based
+        # overlay families (see #topmost in alert_dialog_controller.js) so
+        # Escape resolves to whichever overlay is actually topmost, even when
+        # a different overlay type (e.g. a Sheet) is nested/stacked on top.
+        div(data: { controller: "phlex-kit--alert-dialog", pk_overlay_clone: "" }) do
           div(class: "pk-alert-dialog-overlay", "aria-hidden": "true", data: { action: "mousedown->phlex-kit--alert-dialog#overlayMousedown" })
           div(**mix({ role: "alertdialog", "aria-modal": "true", tabindex: "-1", class: [ "pk-alert-dialog-panel", fetch_option(SIZES, @size, :size) ].compact.join(" ") }, @attrs), &block)
         end

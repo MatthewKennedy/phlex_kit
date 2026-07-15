@@ -22,7 +22,9 @@
   gap: 1rem;
   width: calc(100% - 2rem);
   max-width: 32rem;
-  max-height: 100vh;
+  /* Breathing room like dialog.css's max-height — 100vh touched the screen
+     edges and overflowed behind mobile browser chrome (dvh tracks it). */
+  max-height: calc(100dvh - 2rem);
   overflow-y: auto;
   border: 1px solid var(--pk-border);
   border-radius: var(--pk-radius);

@@ -9,8 +9,11 @@ module PhlexKit
     end
     def view_template(&block)
       template(data: { phlex_kit__sheet_target: "content" }) do
-        div(data: { controller: "phlex-kit--sheet-content", action: "keydown->phlex-kit--sheet-content#keydown" }) do
-          div(class: "pk-sheet-backdrop", data: { action: "click->phlex-kit--sheet-content#close" })
+        # data-pk-overlay-clone is a common marker read by other clone-based
+        # overlays (see alert_dialog_controller.js#topmost) to determine
+        # z-stacking across overlay families when they nest.
+        div(data: { controller: "phlex-kit--sheet-content", action: "keydown->phlex-kit--sheet-content#keydown", pk_overlay_clone: "" }) do
+          div(class: "pk-sheet-backdrop", data: { action: "click->phlex-kit--sheet-content#close mousedown->phlex-kit--sheet-content#overlayMousedown" })
           div(**mix({ class: [ "pk-sheet-content", fetch_option(SIDES, @side, :side) ].join(" "), role: "dialog", aria: { modal: "true" }, tabindex: "-1", data: { phlex_kit__sheet_content_target: "panel" } }, @attrs)) do
             block&.call
             if @show_close_button

@@ -54,9 +54,30 @@ export default class extends Controller {
     this.element.remove()
   }
 
+  // Backdrop mousedown would move focus to <body>, killing this
+  // element-scoped keydown listener (Escape after a drag-off-backdrop would
+  // stop working) — prevented here so focus stays inside the panel. The
+  // backdrop's click->close action still fires normally afterward.
+  overlayMousedown(event) {
+    event.preventDefault()
+  }
+
   keydown(event) {
+    // A native <dialog> nested inside this panel (e.g. a Dialog opened from
+    // within SheetContent) owns its own Escape handling; the keydown still
+    // bubbles through this element-scoped listener since dialog is a DOM
+    // descendant — ignore it so one Escape doesn't also close the sheet
+    // underneath.
+    if (event.key === "Escape" && event.target.closest("dialog[open]")) return
     if (event.key === "Escape") {
       event.preventDefault()
+      // Stop the keydown from reaching a lower/outer overlay's own
+      // document-level Escape listener (e.g. an alert_dialog this sheet is
+      // stacked on top of) — this element-scoped listener runs first during
+      // bubbling, and by the time a document-level listener would see it,
+      // this.close() has already removed the [data-pk-overlay-clone] marker
+      // the other overlay's #topmost() check relies on.
+      event.stopPropagation()
       this.close()
       return
     }

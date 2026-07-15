@@ -37,6 +37,9 @@ export default class extends Controller {
   }
   open(e) {
     e?.preventDefault()
+    // open: is one-shot — the reflected value sits in the Turbo snapshot, so
+    // a cache-restored reconnect would re-open a dismissed dialog.
+    this.openValue = false
     this.dialogTarget.showModal()
     // Save/restore rather than removeProperty: a host page (or another
     // component) may have set body overflow itself.

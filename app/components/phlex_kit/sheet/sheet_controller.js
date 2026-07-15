@@ -33,7 +33,11 @@ export default class extends Controller {
     // Popup semantics for AT: the trigger's real control announces that it
     // opens a dialog, and expanded state tracks the clone's lifetime (the
     // content controller signals removal via phlex-kit:sheet-content:closed).
-    this.invoker = this.element.querySelector(".pk-sheet-trigger button, .pk-sheet-trigger a, .pk-sheet-trigger [tabindex]")
+    // Drawer rides this same controller (see drawer.rb) — its trigger is
+    // marked .pk-drawer-trigger rather than .pk-sheet-trigger.
+    this.invoker = this.element.querySelector(
+      ".pk-sheet-trigger button, .pk-sheet-trigger a, .pk-sheet-trigger [tabindex], .pk-drawer-trigger button, .pk-drawer-trigger a, .pk-drawer-trigger [tabindex]"
+    )
     this.invoker?.setAttribute("aria-haspopup", "dialog")
     this.invoker?.setAttribute("aria-expanded", "false")
     this.onOverlayClosed = () => {

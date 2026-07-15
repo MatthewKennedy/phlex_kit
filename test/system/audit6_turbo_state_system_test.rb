@@ -73,6 +73,106 @@ class Audit6TurboStateSystemTest < SystemTestCase
     assert_equal 0, open_count, "dismissed alert dialog resurrected on reconnect"
   end
 
+  # Task 12, item 1: dialog_controller.js never cleared openValue after
+  # opening — a cache-restored reconnect (or any reconnect of markup that
+  # still reflects open: true) would re-open a dismissed dialog.
+  def test_dialog_open_value_is_one_shot
+    visit "/docs/dialog"
+    source_js = %(document.querySelector("[data-controller~='phlex-kit--dialog']"))
+
+    page.execute_script(<<~JS)
+      const el = #{source_js};
+      el.setAttribute("data-phlex-kit--dialog-open-value", "true");
+      const parent = el.parentElement, next = el.nextSibling;
+      el.remove();
+      parent.insertBefore(el, next);
+    JS
+    assert_selector "dialog.pk-dialog[open]"
+    open_flag = page.evaluate_script(%(#{source_js}.getAttribute("data-phlex-kit--dialog-open-value")))
+    refute_equal "true", open_flag,
+      "open: must be one-shot — a cache-restored reconnect would re-open a dismissed dialog"
+
+    page.execute_script(%(#{source_js}.querySelector("dialog.pk-dialog").close()))
+    assert_no_selector "dialog.pk-dialog[open]"
+
+    # ...and a reconnect of the (snapshot-shaped) source must NOT re-open it.
+    page.execute_script(<<~JS)
+      const el = #{source_js};
+      const parent = el.parentElement, next = el.nextSibling;
+      el.remove();
+      parent.insertBefore(el, next);
+    JS
+    assert_no_selector "dialog.pk-dialog[open]"
+  end
+
+  # Task 12, item 2: sheet_controller.js only looked for .pk-sheet-trigger,
+  # so DrawerTrigger's .pk-drawer-trigger never got an invoker — no
+  # aria-haspopup/expanded wiring for drawers.
+  def test_drawer_trigger_gets_aria_wiring
+    visit "/docs/drawer"
+    trigger = demo("Default").find(".pk-drawer-trigger button")
+    assert_equal "dialog", trigger["aria-haspopup"]
+    assert_equal "false", trigger["aria-expanded"]
+
+    trigger.click
+    assert_selector ".pk-drawer"
+    assert_equal "true", trigger["aria-expanded"]
+  end
+
+  # Task 12, item 3: alert_dialog's #topmost() used to count only
+  # alert-dialog-type clones — with a Sheet stacked on top (opened from
+  # inside the alert dialog panel), one Escape closed BOTH overlays because
+  # the alert dialog's document-level listener still thought it was
+  # topmost. The shared [data-pk-overlay-clone] marker fixes the z-stack
+  # check across overlay families.
+  def test_escape_closes_only_the_topmost_overlay_sheet_over_alert_dialog
+    visit "/docs/alert-dialog"
+    section = demo("With Nested Sheet")
+    within(section) { click_button "Show dialog" }
+    assert_selector "[role='alertdialog']"
+
+    # The alert dialog's content is now cloned into <body>, outside the
+    # original demo section — its nested sheet trigger lives there too.
+    click_button "Open nested sheet"
+    assert_selector ".pk-sheet-content"
+
+    press(:escape)
+    assert_no_selector ".pk-sheet-content"
+    # first Escape must close only the topmost overlay (the sheet)
+    assert_selector "[role='alertdialog']"
+
+    press(:escape)
+    # second Escape must close the alert dialog underneath
+    assert_no_selector "[role='alertdialog']"
+  end
+
+  # Task 12, item 3b: a native <dialog> nested inside SheetContent fires its
+  # own Escape/cancel handling, but the keydown still bubbles through the
+  # sheet clone's element-scoped keydown listener (dialog is a DOM
+  # descendant) — one Escape must close only the dialog, not the sheet.
+  def test_escape_closes_only_the_topmost_overlay_dialog_over_sheet
+    visit "/docs/sheet"
+    section = demo("With Nested Dialog")
+    within(section) { click_button "Open" }
+    assert_selector ".pk-sheet-content"
+
+    # The sheet's content is now cloned into <body>, outside the original
+    # demo section — its nested dialog trigger lives there too.
+    click_button "Open nested dialog"
+    assert_selector "dialog.pk-dialog[open]"
+
+    press(:escape)
+    wait_until("nested dialog did not close on Escape") do
+      page.evaluate_script("document.querySelectorAll('dialog.pk-dialog[open]').length") == 0
+    end
+    # Escape that closed the nested dialog must not also close the sheet
+    assert_selector ".pk-sheet-content"
+
+    press(:escape)
+    # second Escape must close the sheet underneath
+    assert_no_selector ".pk-sheet-content"
+  end
+
   def test_select_connect_normalizes_stale_expanded_state
     visit "/docs/select"
     section = demo("Default")

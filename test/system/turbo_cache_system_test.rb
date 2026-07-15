@@ -93,6 +93,25 @@ class TurboCacheSystemTest < SystemTestCase
     assert_equal "", result["overflow"], "body scroll still locked in the would-be Turbo snapshot"
   end
 
+  # Task 12, item 6: unlike sheet_controller.js (which always clears its
+  # overlay in disconnect()), alert_dialog_controller.js never removed a
+  # live clone when the SOURCE region disconnected (e.g. Turbo replacing the
+  # region an open alert dialog was triggered from) — the clone was
+  # orphaned in <body> with nothing left to dismiss it.
+  def test_alert_dialog_source_disconnect_removes_orphaned_clone
+    visit "/docs/alert-dialog"
+    within(demo("Basic")) { click_button "Show dialog" }
+    assert_selector "[role='alertdialog']"
+
+    # Simulate the source region being torn down (Turbo replacing/removing
+    # it) while the clone it spawned is still live in <body>.
+    page.execute_script(<<~JS)
+      document.querySelector("[data-controller~='phlex-kit--alert-dialog']").remove();
+    JS
+    # orphaned clone must be removed when the source region disconnects
+    assert_no_selector "[role='alertdialog']"
+  end
+
   def test_clipboard_flash_popover_hides_on_turbo_before_cache
     visit "/docs/clipboard"
     within(demo("Default")) { click_button "Copy" }
