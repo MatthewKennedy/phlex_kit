@@ -16,7 +16,9 @@ module PhlexKit
         role: "menubar",
         data: {
           controller: "phlex-kit--menubar",
-          action: "click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown"
+          # focusout: tabbing out of the bar closes the open [popover=manual]
+          # panel (which no focus trap holds open).
+          action: "click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown focusout->phlex-kit--menubar#onFocusout"
         }
       }, @attrs), &)
     end

@@ -20,7 +20,10 @@ module PhlexKit
           # focus returned to the trigger (bare #close as an action received
           # the event as `opts`, so refocus never happened — focus fell to
           # <body> when the panel hid).
-          action: "click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown mouseleave->phlex-kit--menubar#closeSoon"
+          # mouseenter->cancelClose: re-entering the nav over list padding /
+          # whitespace must cancel the pending mouseleave grace-close (only
+          # trigger/panel mouseenter did before).
+          action: "click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown mouseleave->phlex-kit--menubar#closeSoon mouseenter->phlex-kit--menubar#cancelClose"
         }
       }, @attrs), &)
     end

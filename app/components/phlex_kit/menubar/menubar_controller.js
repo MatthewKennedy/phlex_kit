@@ -28,6 +28,9 @@ export default class extends Controller {
     // set here. Roving tabindex applies only in menubar mode: a nav's
     // triggers and links stay natural tab stops.
     this.roving = this.element.dataset.hoverOpen === undefined
+    // Outstanding syncSub rAF handles — cancelled on disconnect so a queued
+    // frame never touches a torn-down menubar.
+    this.subFrames = new Set()
   }
 
   // Pair each trigger with its panel for AT (aria-controls), and fold the
@@ -48,6 +51,8 @@ export default class extends Controller {
 
   disconnect() {
     clearTimeout(this.graceTimer)
+    this.subFrames.forEach((id) => cancelAnimationFrame(id))
+    this.subFrames.clear()
   }
 
   toggle(e) {
@@ -109,6 +114,20 @@ export default class extends Controller {
 
   onClickOutside(e) {
     if (this.element.contains(e.target)) return
+    this.close()
+  }
+
+  // Tabbing out of the bar: close the open [popover=manual] panel once focus
+  // has left both the bar AND the panel (panels are top-layer popovers, but
+  // remain DOM children — check both anyway). Focus moving INTO the panel
+  // during normal navigation must not close it. relatedTarget is null when
+  // the window itself blurs — leave the menu alone then.
+  onFocusout(e) {
+    const to = e.relatedTarget
+    if (!to || this.element.contains(to)) return
+    const menu = this.openMenu
+    if (!menu) return
+    if (this.panel(menu)?.contains(to)) return
     this.close()
   }
 
@@ -215,10 +234,12 @@ export default class extends Controller {
   // state isn't settled until the event finishes dispatching.
   syncSub(e) {
     const sub = e.currentTarget
-    requestAnimationFrame(() => {
+    const id = requestAnimationFrame(() => {
+      this.subFrames.delete(id)
       sub.querySelector(":scope > [aria-haspopup]")
         ?.setAttribute("aria-expanded", sub.matches(":hover, :focus-within"))
     })
+    this.subFrames.add(id)
   }
 
   shift(dir) {

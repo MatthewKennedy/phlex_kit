@@ -6,7 +6,7 @@ module PhlexKit
   class MenubarItem < BaseComponent
     VARIANTS = { default: nil, destructive: "destructive" }.freeze
 
-    def initialize(as: :a, href: "#", shortcut: nil, variant: :default, inset: false, disabled: false, **attrs)
+    def initialize(as: :a, href: nil, shortcut: nil, variant: :default, inset: false, disabled: false, **attrs)
       @as = as.to_sym
       @href = href
       @shortcut = shortcut
@@ -24,7 +24,9 @@ module PhlexKit
         data: @disabled ? { disabled: "true" } : { action: "click->phlex-kit--menubar#close" }
       }
       base[:aria] = { disabled: "true" } if @disabled
-      base[:href] = @href unless @as == :div || @disabled
+      # No default href: "#" would make Enter/click navigate (hash change +
+      # scroll-to-top). tabindex="-1" keeps the row programmatically focusable.
+      base[:href] = @href unless @href.nil? || @as == :div || @disabled
       send(@as, **mix(base, @attrs)) do
         block&.call
         span(class: "pk-menubar-shortcut") { @shortcut } if @shortcut
