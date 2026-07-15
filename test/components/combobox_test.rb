@@ -77,7 +77,7 @@ class ComboboxTest < Minitest::Test
     assert_includes html, "pk-combobox-badge-container pk-hidden"
     assert_includes html, %(data-phlex-kit--combobox-target="badgeContainer")
     assert_includes html, %(data-phlex-kit--combobox-target="badgeInput")
-    assert_includes html, "keydown.backspace->phlex-kit--combobox#handleBadgeInputBackspace"
+    assert_includes html, "keydown->phlex-kit--combobox#handleBadgeInputBackspace"
     refute_includes html, "pk-combobox-clear-button"
   end
 
