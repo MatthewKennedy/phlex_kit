@@ -5,7 +5,12 @@ module PhlexKit
   # controller and the calendar's outlet points at its id, so picking a day
   # writes the formatted date into the field. Upstream's popover_options
   # (hover trigger via @floating-ui) are gone — the kit popover is click-only,
-  # CSS-positioned. Tailwind → vanilla `.pk-date-picker*` (date_picker.css).
+  # CSS-positioned. The phlex-kit--date-picker controller on the root div
+  # listens for the calendar's change event and closes the popover once a
+  # selection is COMPLETE (single: any pick; range: the second end only;
+  # multiple: never), returning focus to the input — see
+  # date_picker_controller.js and popover_controller.js#close.
+  # Tailwind → vanilla `.pk-date-picker*` (date_picker.css).
   class DatePicker < BaseComponent
     def initialize(
       id: nil,
@@ -45,7 +50,13 @@ module PhlexKit
     end
 
     def view_template
-      div(**mix({ class: "pk-date-picker" }, @attrs)) do
+      div(**mix({
+        class: "pk-date-picker",
+        data: {
+          controller: "phlex-kit--date-picker",
+          action: "phlex-kit--calendar:change->phlex-kit--date-picker#onCalendarChange"
+        }
+      }, @attrs)) do
         render Popover.new do
           render PopoverTrigger.new(**trigger_attrs) do
             div(class: "pk-date-picker-field") do

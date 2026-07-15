@@ -24,6 +24,7 @@ import ContextMenuController from "phlex_kit/controllers/context_menu_controller
 import DataTableController from "phlex_kit/controllers/data_table_controller"
 import DataTableColumnVisibilityController from "phlex_kit/controllers/data_table_column_visibility_controller"
 import DataTableSearchController from "phlex_kit/controllers/data_table_search_controller"
+import DatePickerController from "phlex_kit/controllers/date_picker_controller"
 import DialogController from "phlex_kit/controllers/dialog_controller"
 import DropdownMenuController from "phlex_kit/controllers/dropdown_menu_controller"
 import FormFieldController from "phlex_kit/controllers/form_field_controller"
@@ -65,6 +66,7 @@ export function registerPhlexKitControllers(application) {
   application.register("phlex-kit--data-table", DataTableController)
   application.register("phlex-kit--data-table-column-visibility", DataTableColumnVisibilityController)
   application.register("phlex-kit--data-table-search", DataTableSearchController)
+  application.register("phlex-kit--date-picker", DatePickerController)
   application.register("phlex-kit--dialog", DialogController)
   application.register("phlex-kit--dropdown-menu", DropdownMenuController)
   application.register("phlex-kit--form-field", FormFieldController)
