@@ -26,7 +26,9 @@ module PhlexKit
           class: "pk-combobox-search-input",
           data: {
             phlex_kit__combobox_target: "searchInput",
-            action: "keyup->phlex-kit--combobox#filterItems search->phlex-kit--combobox#filterItems"
+            # `input` covers context-menu paste and IME composition, which
+            # fire no keyup/search (mirrors ComboboxInputTrigger).
+            action: "keyup->phlex-kit--combobox#filterItems input->phlex-kit--combobox#filterItems search->phlex-kit--combobox#filterItems"
           }
         }, @attrs))
       end

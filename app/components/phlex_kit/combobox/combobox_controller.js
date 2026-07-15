@@ -174,6 +174,11 @@ export default class extends Controller {
     this.inputTargets.forEach((input) => {
       input.parentElement.setAttribute("aria-selected", input.checked ? "true" : "false")
     })
+    // The toggle-all row is an option too (first row inside the listbox) —
+    // keep its aria-selected in step with its checkbox.
+    if (this.hasToggleAllTarget && this.toggleAllTarget.parentElement.getAttribute("role") === "option") {
+      this.toggleAllTarget.parentElement.setAttribute("aria-selected", this.toggleAllTarget.checked ? "true" : "false")
+    }
   }
 
   renderBadges(checked) {
@@ -284,7 +289,7 @@ export default class extends Controller {
     // aria-activedescendant holds an element id; on close it must be removed,
     // not left pointing at a hidden option.
     this.clearActiveDescendant()
-    if (this.popoverTarget.matches(":popover-open")) this.popoverTarget.hidePopover()
+    if (this.hasPopoverTarget && this.popoverTarget.matches(":popover-open")) this.popoverTarget.hidePopover()
     this.updateTriggerContent() // reflect the selection into an input trigger
 
     if (focusWasInside) {
@@ -398,20 +403,23 @@ export default class extends Controller {
   }
 
   focusSelectedInput() {
-    const visibleInputs = this.inputTargets.filter(input => !input.parentElement.classList.contains("pk-hidden"))
-    if (visibleInputs.length === 0) return
+    // Walk the option rows themselves, not the inner selection inputs: the
+    // toggle-all row is an option without an "input" target and must be
+    // arrow-reachable like any other option.
+    const visibleItems = this.itemTargets.filter(item => !item.classList.contains("pk-hidden"))
+    if (visibleItems.length === 0) return
 
-    this.wrapSelectedInputIndex(visibleInputs.length)
+    this.wrapSelectedInputIndex(visibleItems.length)
 
-    visibleInputs.forEach((input, index) => {
+    visibleItems.forEach((item, index) => {
       if (index == this.selectedItemIndex) {
-        input.parentElement.ariaCurrent = "true"
+        item.ariaCurrent = "true"
         // Focus stays in the filter field; the highlighted option is exposed
         // via aria-activedescendant (option ids come from generateItemIds).
-        this.setActiveDescendant(input.parentElement.id)
-        input.parentElement.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' })
+        this.setActiveDescendant(item.id)
+        item.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' })
       } else {
-        input.parentElement.ariaCurrent = "false"
+        item.ariaCurrent = "false"
       }
     })
   }

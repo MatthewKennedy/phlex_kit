@@ -152,7 +152,7 @@
   margin: 0;
   accent-color: var(--pk-brand);
 }
-.pk-combobox-checkbox { border-radius: .125rem; }
+.pk-combobox-checkbox { border-radius: calc(var(--pk-radius) - 8px); }
 .pk-combobox-checkbox:disabled, .pk-combobox-radio:disabled { cursor: not-allowed; opacity: .5; }
 .pk-combobox-checkbox:focus-visible, .pk-combobox-radio:focus-visible {
   outline: none;
@@ -296,7 +296,7 @@
   width: .875rem;
   height: .875rem;
   border: 0;
-  border-radius: .125rem;
+  border-radius: calc(var(--pk-radius) - 8px);
   padding: 0;
   background: transparent;
   color: var(--pk-muted);
@@ -318,7 +318,7 @@
   flex: none;
   margin-inline-start: auto;
   border: 0;
-  border-radius: .125rem;
+  border-radius: calc(var(--pk-radius) - 8px);
   padding: 0;
   background: transparent;
   color: var(--pk-muted);
