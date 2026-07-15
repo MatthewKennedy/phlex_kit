@@ -40,7 +40,7 @@
   width: 356px;
   max-width: 100%;
   border: 1px solid var(--pk-border);
-  border-radius: 1rem;
+  border-radius: calc(var(--pk-radius) + 6px); /* 1rem at the default 0.625rem token */
   background: var(--pk-surface);
   color: var(--pk-text);
   padding: 1rem;

@@ -17,6 +17,7 @@ export default class extends Controller {
 
   connect() {
     this._timer = null
+    this._unmountTimer = null
     this._startedAt = 0
     this._remaining = this.durationValue
     this._paused = false
@@ -66,6 +67,10 @@ export default class extends Controller {
 
   disconnect() {
     this._clearTimer()
+    // Don't let a pending 200ms unmount fire after teardown (e.g. into a
+    // Turbo-cached copy of the page).
+    if (this._unmountTimer) clearTimeout(this._unmountTimer)
+    this._unmountTimer = null
     this.element.removeEventListener("pointerdown", this._onPointerDown)
     this.element.removeEventListener("pointerenter", this._onPointerEnter)
     this.element.removeEventListener("pointerleave", this._onPointerLeave)
@@ -89,7 +94,7 @@ export default class extends Controller {
     this.element.dataset.state = "closing"
     this.element.dispatchEvent(new CustomEvent(reason === "auto" ? "phlex-kit:toast:auto-close" : "phlex-kit:toast:dismiss", { bubbles: true, detail: { id: this.element.id } }))
     this._invokeCallback(reason === "auto" ? this.onAutoCloseValue : this.onDismissValue)
-    setTimeout(() => this.element.remove(), TIME_BEFORE_UNMOUNT)
+    this._unmountTimer = setTimeout(() => this.element.remove(), TIME_BEFORE_UNMOUNT)
   }
 
   // on_dismiss:/on_auto_close: name a global function (Sonner-style callback

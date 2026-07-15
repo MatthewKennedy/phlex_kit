@@ -1,11 +1,11 @@
 /* Co-located with toggle_group.rb. Theme tokens from the global stylesheet. */
 .pk-toggle-group { display: inline-flex; width: fit-content; align-items: center; border-radius: var(--pk-radius); }
 .pk-toggle-group.vertical { flex-direction: column; align-items: stretch; }
-.pk-toggle-group.spaced { gap: .25rem; }
+/* spacing: N stamps --pk-toggle-group-gap inline (N × .25rem). */
+.pk-toggle-group.spaced { gap: var(--pk-toggle-group-gap, .25rem); }
 /* Joined (default, unspaced): square the inner corners, tighten padding. */
-.pk-toggle-group:not(.spaced) .pk-toggle-group-item { padding-inline: .5rem; }
-.pk-toggle-group:not(.spaced) .pk-toggle-group-item { border-radius: 0; }
-.pk-toggle-group:not(.spaced):not(.vertical) .pk-toggle-group-item:first-of-type { border-top-left-radius: var(--pk-radius); border-bottom-left-radius: var(--pk-radius); }
-.pk-toggle-group:not(.spaced):not(.vertical) .pk-toggle-group-item:last-of-type { border-top-right-radius: var(--pk-radius); border-bottom-right-radius: var(--pk-radius); }
-.pk-toggle-group.vertical:not(.spaced) .pk-toggle-group-item:first-of-type { border-top-left-radius: var(--pk-radius); border-top-right-radius: var(--pk-radius); }
-.pk-toggle-group.vertical:not(.spaced) .pk-toggle-group-item:last-of-type { border-bottom-left-radius: var(--pk-radius); border-bottom-right-radius: var(--pk-radius); }
+.pk-toggle-group:not(.spaced) .pk-toggle-group-item { padding-inline: .5rem; border-radius: 0; }
+.pk-toggle-group:not(.spaced):not(.vertical) .pk-toggle-group-item:first-of-type { border-start-start-radius: var(--pk-radius); border-end-start-radius: var(--pk-radius); }
+.pk-toggle-group:not(.spaced):not(.vertical) .pk-toggle-group-item:last-of-type { border-start-end-radius: var(--pk-radius); border-end-end-radius: var(--pk-radius); }
+.pk-toggle-group.vertical:not(.spaced) .pk-toggle-group-item:first-of-type { border-start-start-radius: var(--pk-radius); border-start-end-radius: var(--pk-radius); }
+.pk-toggle-group.vertical:not(.spaced) .pk-toggle-group-item:last-of-type { border-end-start-radius: var(--pk-radius); border-end-end-radius: var(--pk-radius); }

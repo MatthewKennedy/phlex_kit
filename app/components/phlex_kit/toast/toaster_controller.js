@@ -50,6 +50,7 @@ export default class extends Controller {
     this._heights = new Map()
     this._resizeObservers = new WeakMap()
     this._expanded = false
+    this._paused = false
   }
 
   connect() {
@@ -59,8 +60,11 @@ export default class extends Controller {
     registerStreamAction()
     if (!this._listEl) return
 
-    this._onPointerEnter = () => this._setExpanded(true)
-    this._onPointerLeave = () => { if (!this.expandValue) this._setExpanded(false) }
+    // Pause/resume tracks the POINTER, not the expand transition: an
+    // expand:true region is born expanded, and tying the pause dispatch to
+    // _setExpanded's state change left auto-dismiss running under the cursor.
+    this._onPointerEnter = () => { this._setPaused(true); this._setExpanded(true) }
+    this._onPointerLeave = () => { this._setPaused(false); if (!this.expandValue) this._setExpanded(false) }
     this._onWindowToast = (e) => this._spawn(e.detail || {})
     this._onWindowDismissAll = () => this._dismissById(null)
     this._onKey = this._onKey.bind(this)
@@ -82,6 +86,10 @@ export default class extends Controller {
     this._listEl?.removeEventListener("pointerenter", this._onPointerEnter)
     this._listEl?.removeEventListener("pointerleave", this._onPointerLeave)
     document.removeEventListener("keydown", this._onKey)
+    // Drop the global API if it still closes over this controller — after
+    // region teardown it would touch a stale _listEl. A replacement region
+    // re-registers its own on connect.
+    if (window.PhlexKit?.toast === this._api) delete window.PhlexKit.toast
   }
 
   toastTargetConnected(el) {
@@ -178,13 +186,18 @@ export default class extends Controller {
     return tpl.content.firstElementChild.cloneNode(true)
   }
 
-  _setExpanded(value) {
-    if (this._expanded === value) return
-    this._expanded = value
+  _setPaused(value) {
+    if (this._paused === value) return
+    this._paused = value
     // Mirror the pause state onto the DOM so toasts spawned while the stack
     // is already hovered can arm paused (the pause event predates them).
     this._listEl?.toggleAttribute("data-pk-toasts-paused", value)
     document.dispatchEvent(new CustomEvent(value ? "phlex-kit:toast:pause" : "phlex-kit:toast:resume"))
+  }
+
+  _setExpanded(value) {
+    if (this._expanded === value) return
+    this._expanded = value
     this._reflow()
   }
 
@@ -303,6 +316,7 @@ export default class extends Controller {
     }
 
     window.PhlexKit = window.PhlexKit || {}
+    this._api = api
     window.PhlexKit.toast = api
   }
 

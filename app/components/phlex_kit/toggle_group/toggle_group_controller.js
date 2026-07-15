@@ -17,6 +17,14 @@ export default class extends Controller {
     }
     this.rebuildInputs()
     this.updateRovingTabindex(item)
+    // Parity with Toggle: announce the selection as
+    // "phlex-kit--toggle-group:change" — single carries the one selected
+    // value (radiogroup semantics: no deselect), multiple the pressed array.
+    const values = this.itemTargets.filter((el) => this.isPressed(el)).map((el) => el.dataset.value)
+    this.dispatch("change", {
+      detail: this.typeValue === "single" ? { value: values[0] ?? null } : { value: values },
+      bubbles: true
+    })
   }
 
   navigate(event) {
