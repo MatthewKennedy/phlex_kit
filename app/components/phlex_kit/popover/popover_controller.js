@@ -17,14 +17,23 @@ export default class extends Controller {
     if (invoker) {
       invoker.popoverTargetElement = this.contentTarget
     } else {
+      // Button-less fallback: keyboard toggling and popup semantics don't
+      // come for free like they do with popoverTargetElement — wire Enter
+      // (and Space, off text-entry controls) plus aria-haspopup/-expanded
+      // onto the focusable child so AT users can discover and open it.
+      this.fallbackInvoker = this.triggerTarget.querySelector("input, a[href], select, textarea, [tabindex]") || this.triggerTarget
+      this.fallbackInvoker.setAttribute("aria-haspopup", "dialog")
+      this.fallbackInvoker.setAttribute("aria-expanded", this.contentTarget.matches(":popover-open") ? "true" : "false")
       this.triggerTarget.addEventListener("pointerdown", this.armToggle)
       this.triggerTarget.addEventListener("click", this.toggle)
+      this.triggerTarget.addEventListener("keydown", this.keyToggle)
     }
   }
 
   disconnect() {
     this.triggerTarget.removeEventListener("pointerdown", this.armToggle)
     this.triggerTarget.removeEventListener("click", this.toggle)
+    this.triggerTarget.removeEventListener("keydown", this.keyToggle)
   }
 
   armToggle = () => { this.wasOpen = this.contentTarget.matches(":popover-open") }
@@ -32,12 +41,25 @@ export default class extends Controller {
     if (this.wasOpen) { this.wasOpen = false; return }
     this.contentTarget.togglePopover()
   }
+  keyToggle = (e) => {
+    const textEntry = /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)
+    if (e.key !== "Enter" && !(e.key === " " && !textEntry)) return
+    e.preventDefault()
+    this.contentTarget.togglePopover()
+  }
 
   // One stable handler added/removed symmetrically — an anonymous listener
   // here would pile up a duplicate on every target reconnect.
-  syncState = (e) => { e.target.dataset.state = e.newState === "open" ? "open" : "closed" }
+  syncState = (e) => {
+    e.target.dataset.state = e.newState === "open" ? "open" : "closed"
+    this.fallbackInvoker?.setAttribute("aria-expanded", e.newState === "open" ? "true" : "false")
+  }
 
   contentTargetConnected(el) {
+    // A Turbo snapshot serializes data-state="open" but :popover-open does
+    // not survive the restore — resync before listening so host CSS keyed
+    // on the state hook doesn't misfire.
+    el.dataset.state = el.matches(":popover-open") ? "open" : "closed"
     el.addEventListener("toggle", this.syncState)
   }
 

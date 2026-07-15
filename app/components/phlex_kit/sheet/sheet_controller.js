@@ -19,17 +19,32 @@ export default class extends Controller {
 
   connect() {
     document.addEventListener("turbo:before-cache", this.clearOverlay)
+    // Popup semantics for AT: the trigger's real control announces that it
+    // opens a dialog, and expanded state tracks the clone's lifetime (the
+    // content controller signals removal via phlex-kit:sheet-content:closed).
+    this.invoker = this.element.querySelector(".pk-sheet-trigger button, .pk-sheet-trigger a, .pk-sheet-trigger [tabindex]")
+    this.invoker?.setAttribute("aria-haspopup", "dialog")
+    this.invoker?.setAttribute("aria-expanded", "false")
+    this.onOverlayClosed = () => {
+      if (!this.overlay?.isConnected) this.invoker?.setAttribute("aria-expanded", "false")
+    }
+    document.addEventListener("phlex-kit:sheet-content:closed", this.onOverlayClosed)
     if (this.openValue) this.open()
   }
 
   disconnect() {
     document.removeEventListener("turbo:before-cache", this.clearOverlay)
+    document.removeEventListener("phlex-kit:sheet-content:closed", this.onOverlayClosed)
     this.clearOverlay()
   }
 
   open() {
     if (this.overlay?.isConnected) return
+    // open: is one-shot — the reflected value sits in the Turbo snapshot, so
+    // a cache-restored reconnect would re-open a dismissed sheet.
+    this.openValue = false
     document.body.insertAdjacentHTML("beforeend", this.contentTarget.innerHTML)
     this.overlay = document.body.lastElementChild
+    this.invoker?.setAttribute("aria-expanded", "true")
   }
 }

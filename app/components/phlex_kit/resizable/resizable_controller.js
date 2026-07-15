@@ -36,6 +36,9 @@ export default class extends Controller {
     const next = handle.nextElementSibling
     if (!prev || !next) return
     e.preventDefault()
+    // preventDefault suppresses mouse-driven focus — hand it to the handle
+    // so a drag can be fine-tuned with the arrow keys immediately.
+    handle.focus({ preventScroll: true })
 
     const horizontal = this.directionValue === "horizontal"
     const sizeOf = (el) => horizontal ? el.getBoundingClientRect().width : el.getBoundingClientRect().height

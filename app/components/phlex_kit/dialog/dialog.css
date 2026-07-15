@@ -11,7 +11,9 @@
   --pk-dialog-spacing: 1rem;
   position: fixed; z-index: 50; width: 100%;
   max-width: min(24rem, calc(100% - 2rem));
-  max-height: 100vh;
+  /* Breathing room like the horizontal inset — 100vh touched the screen
+     edges and overflowed behind mobile browser chrome (dvh tracks it). */
+  max-height: calc(100dvh - 2rem);
   overflow-y: auto; gap: 1rem;
   border: 1px solid color-mix(in oklab, var(--pk-text) 10%, transparent);
   border-radius: calc(var(--pk-radius) + 2px); background: var(--pk-surface); color: var(--pk-text);

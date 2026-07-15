@@ -11,9 +11,14 @@ module PhlexKit
       div(**mix({
         class: "pk-attachment-group",
         role: "group",
+        # at-start + at-end = no edge fades. Server-rendered so a group that
+        # FITS shows no false "more content" fade pre-hydration / with JS off;
+        # the controller's first update() removes them when there's overflow.
         data: {
           controller: "phlex-kit--scroll-fade",
-          phlex_kit__scroll_fade_axis_value: "x"
+          phlex_kit__scroll_fade_axis_value: "x",
+          at_start: "",
+          at_end: ""
         }
       }, @attrs), &)
     end

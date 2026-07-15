@@ -9,6 +9,19 @@ export default class extends Controller {
   static targets = ["trigger", "content", "input", "value", "item"];
   static values = { open: Boolean };
 
+  initialize() {
+    // Stimulus fires [target]Connected before connect(): state used by
+    // itemTargetConnected must be initialized here.
+    this.itemIdCounter = 0;
+  }
+
+  // Per-item, not a connect()-time sweep: options injected later (Turbo
+  // stream/frame) must still get ids or aria-activedescendant would point
+  // at nothing — and a caller-provided id is left alone, not clobbered.
+  itemTargetConnected(item) {
+    if (!item.id) item.id = `${this.contentTarget.id}-${this.itemIdCounter++}`;
+  }
+
   connect() {
     // A Turbo snapshot serializes aria-expanded / aria-activedescendant /
     // aria-current even though :popover-open does not survive the restore —
@@ -184,10 +197,12 @@ export default class extends Controller {
   generateItemsIds() {
     const contentId = this.contentTarget.getAttribute("id");
     this.triggerTarget.setAttribute("aria-controls", contentId);
-
-    this.itemTargets.forEach((item, index) => {
-      item.id = `${contentId}-${index}`;
-    });
+    // Name the listbox from the trigger (Radix wires it the same way) —
+    // an unnamed role=listbox is announced as an anonymous list.
+    if (!this.triggerTarget.id) this.triggerTarget.id = `${contentId}-trigger`;
+    if (!this.contentTarget.hasAttribute("aria-labelledby")) {
+      this.contentTarget.setAttribute("aria-labelledby", this.triggerTarget.id);
+    }
   }
 
   setAriaCurrentAndActiveDescendant(currentIndex) {

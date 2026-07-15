@@ -9,10 +9,21 @@ import { Controller } from "@hotwired/stimulus";
 // back to the browser's validationMessage.
 // Connects to data-controller="phlex-kit--form-field"
 export default class extends Controller {
-  static targets = ["input", "error"];
+  static targets = ["input", "error", "hint"];
   static values = { shouldValidate: false };
 
   connect() {
+    // Hints are static description text — wire them onto every control's
+    // aria-describedby up front (errors join/leave dynamically via
+    // #describeBy, which preserves foreign tokens like these).
+    this.hintTargets.forEach((hint) => {
+      if (!hint.id) return;
+      this.inputTargets.forEach((input) => {
+        const tokens = (input.getAttribute("aria-describedby") || "").split(/\s+/).filter(Boolean);
+        if (!tokens.includes(hint.id)) tokens.push(hint.id);
+        input.setAttribute("aria-describedby", tokens.join(" "));
+      });
+    });
     if (this.hasErrorTarget) {
       if (this.errorTarget.textContent.trim()) {
         this.shouldValidateValue = true;
@@ -36,6 +47,16 @@ export default class extends Controller {
     // form gave zero feedback and never submitted.
     if (!this.hasErrorTarget) return;
     error.preventDefault();
+
+    // preventDefault also cancels the browser's focus-first-invalid — restore
+    // it for the first invalid control of the submit pass (all invalid events
+    // fire in the same task, so the microtask reset scopes "first" correctly).
+    if (!this._focusedInvalid) {
+      this._focusedInvalid = true;
+      queueMicrotask(() => { this._focusedInvalid = false; });
+      error.target.focus({ preventScroll: true });
+      error.target.scrollIntoView({ block: "nearest" });
+    }
 
     this.shouldValidateValue = true;
     this.#setErrorMessage(error);

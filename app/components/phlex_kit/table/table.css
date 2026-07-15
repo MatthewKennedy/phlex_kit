@@ -5,9 +5,10 @@
 .pk-table-wrapper { position: relative; width: 100%; overflow: auto; }
 .pk-table { width: 100%; border-collapse: collapse; caption-side: bottom; font-size: .875rem; }
 
-.pk-table-header .pk-table-row { border-bottom: 1px solid var(--pk-border); }
 .pk-table-body .pk-table-row:last-child { border-bottom: 0; }
 .pk-table-footer { border-top: 1px solid var(--pk-border); font-weight: 500; background: color-mix(in oklab, var(--pk-surface-2) 50%, transparent); }
+/* shadcn parity: the totals row doesn't draw a stray line under the table. */
+.pk-table-footer .pk-table-row:last-child { border-bottom: 0; }
 
 .pk-table-row { border-bottom: 1px solid var(--pk-border); transition: background-color .12s ease; }
 .pk-table-row:hover { background: color-mix(in oklab, var(--pk-surface-2) 50%, transparent); }

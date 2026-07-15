@@ -12,7 +12,10 @@ module PhlexKit
 
     def view_template
       data = { slot: "action" }
-      data[:action] = @on if @on
+      # Caller action first, then dismiss — client-spawned actions dismiss
+      # their toast after onClick (Sonner parity), so server-rendered ones
+      # must too.
+      data[:action] = [ @on, "click->phlex-kit--toast#dismiss" ].compact.join(" ") if @on
       button(**mix({ type: :button, class: "pk-toast-action", data: data }, @attrs)) { @label }
     end
   end

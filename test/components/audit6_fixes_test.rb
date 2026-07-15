@@ -262,4 +262,150 @@ class Audit6FixesTest < Minitest::Test
     node = Nokogiri::HTML5.fragment(html).at_css(".pk-dropdown-menu-sub")
     assert_includes node["data-action"].to_s, "syncSub"
   end
+
+  # --- Phase 8: ToastRegion dead config. offset:/dir: are now implemented;
+  # theme:/rich_colors: fail loud instead of silently no-oping.
+  def test_toast_region_offset_becomes_a_custom_property
+    html = render(PhlexKit::ToastRegion.new(offset: 40))
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-toast-region")
+    assert_includes node["style"].to_s, "--pk-toast-offset: 40px;"
+  end
+
+  def test_toast_region_css_consumes_the_offset_property
+    css = File.read(File.expand_path("../../app/components/phlex_kit/toast/toast.css", __dir__))
+    assert_match(/\.pk-toast-region\s*\{[^}]*var\(--pk-toast-offset/m, css)
+  end
+
+  def test_toast_region_dir_renders_the_dir_attribute
+    html = render(PhlexKit::ToastRegion.new(dir: :rtl))
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-toast-region")
+    assert_equal "rtl", node["dir"]
+
+    html = render(PhlexKit::ToastRegion.new)
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-toast-region")
+    assert_nil node["dir"], "default ltr must not stamp a dir attribute"
+  end
+
+  def test_toast_region_unsupported_theme_and_rich_colors_fail_loud
+    assert_raises(ArgumentError) { PhlexKit::ToastRegion.new(theme: :dark) }
+    assert_raises(ArgumentError) { PhlexKit::ToastRegion.new(rich_colors: true) }
+  end
+
+  # --- Phase 9/10: accessible-name defaults, dead attrs, API gaps.
+  def test_codeblock_defaults_an_accessible_name_and_caller_label_wins
+    html = render(PhlexKit::Codeblock.new(code: "x", syntax: :ruby))
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-codeblock")
+    assert_equal "ruby code", node["aria-label"]
+
+    html = render(PhlexKit::Codeblock.new(code: "x", aria: { label: "Setup script" }))
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-codeblock")
+    assert_equal "Setup script", node["aria-label"]
+  end
+
+  def test_chart_canvas_announces_as_an_image
+    html = render(PhlexKit::Chart.new)
+    node = Nokogiri::HTML5.fragment(html).at_css("canvas.pk-chart")
+    assert_equal "img", node["role"]
+    assert_equal "Chart", node["aria-label"]
+
+    html = render(PhlexKit::Chart.new(aria: { label: "Revenue by month" }))
+    node = Nokogiri::HTML5.fragment(html).at_css("canvas.pk-chart")
+    assert_equal "Revenue by month", node["aria-label"]
+  end
+
+  def test_avatar_badge_label_renders_sr_only_text
+    html = render(PhlexKit::AvatarBadge.new(label: "Online"))
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-avatar-badge .pk-sr-only")
+    assert_equal "Online", node.text
+  end
+
+  def test_form_field_hint_carries_id_and_target
+    html = render(PhlexKit::FormFieldHint.new { "We never share it." })
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-form-field-hint")
+    assert_match(/\Apk-form-field-hint-\h{8}\z/, node["id"])
+    assert_equal "hint", node["data-phlex-kit--form-field-target"]
+
+    html = render(PhlexKit::FormFieldHint.new(id: "my-hint") { "Hi" })
+    assert_equal "my-hint", Nokogiri::HTML5.fragment(html).at_css(".pk-form-field-hint")["id"]
+  end
+
+  def test_native_select_integer_size_passes_through_natively
+    html = render(PhlexKit::NativeSelect.new(size: 5) { })
+    node = Nokogiri::HTML5.fragment(html).at_css("select")
+    assert_equal "5", node["size"]
+    assert_includes node["class"], "pk-native-select-field"
+  end
+
+  def test_table_wrapper_kwarg_reaches_the_scroll_container
+    html = render(PhlexKit::Table.new(wrapper: { class: "max-h-96", id: "tw" }) { })
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-table-wrapper")
+    assert_includes node["class"], "max-h-96"
+    assert_equal "tw", node["id"]
+  end
+
+  def test_field_separator_drops_dead_data_content
+    html = render(PhlexKit::FieldSeparator.new { "or" })
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-field-separator")
+    assert_nil node["data-content"]
+  end
+
+  def test_attachment_group_server_renders_no_false_edge_fade
+    html = render(PhlexKit::AttachmentGroup.new { })
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-attachment-group")
+    refute_nil node["data-at-start"], "group must start fade-free (at-start) pre-hydration"
+    refute_nil node["data-at-end"], "group must start fade-free (at-end) pre-hydration"
+  end
+
+  def test_typography_list_component_owns_pk_list
+    html = render(PhlexKit::List.new { })
+    assert_includes html, %(<ul class="pk-list")
+
+    html = render(PhlexKit::List.new(as: :ol) { })
+    assert_includes html, %(<ol class="pk-list")
+
+    assert_raises(ArgumentError) { PhlexKit::List.new(as: :div) }
+  end
+
+  # --- Item family render coverage (six parts previously untested).
+  def test_item_parts_render
+    assert_includes render(PhlexKit::ItemTitle.new { "T" }), "pk-item-title"
+    assert_includes render(PhlexKit::ItemDescription.new { "D" }), "pk-item-description"
+    assert_includes render(PhlexKit::ItemActions.new { "A" }), "pk-item-actions"
+    assert_includes render(PhlexKit::ItemHeader.new { "H" }), "pk-item-header"
+    assert_includes render(PhlexKit::ItemFooter.new { "F" }), "pk-item-footer"
+    assert_includes render(PhlexKit::ItemMedia.new { "M" }), "pk-item-media"
+  end
+
+  def test_item_media_variant_fails_loud
+    assert_raises(KeyError) { render(PhlexKit::ItemMedia.new(variant: :bad) { }) }
+  end
+
+  # --- Stragglers: server-rendered orientation/expanded state and the
+  # date_picker input_attrs id trap.
+  def test_tabs_list_server_renders_vertical_orientation
+    html = render(PhlexKit::TabsList.new(orientation: :vertical) { })
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-tabs-list")
+    assert_equal "vertical", node["aria-orientation"]
+
+    html = render(PhlexKit::TabsList.new { })
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-tabs-list")
+    assert_nil node["aria-orientation"]
+  end
+
+  def test_context_menu_sub_trigger_server_renders_aria_expanded_false
+    html = render(PhlexKit::ContextMenuSubTrigger.new { "More" })
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-context-menu-sub-trigger")
+    assert_equal "false", node["aria-expanded"]
+  end
+
+  def test_context_menu_sub_wires_sync_actions
+    html = render(PhlexKit::ContextMenuSub.new { })
+    node = Nokogiri::HTML5.fragment(html).at_css(".pk-context-menu-sub")
+    assert_includes node["data-action"].to_s, "syncSub"
+  end
+
+  def test_date_picker_rejects_id_via_input_attrs
+    error = assert_raises(ArgumentError) { PhlexKit::DatePicker.new(input_attrs: { id: "x" }) }
+    assert_match(/top-level kwarg/, error.message)
+  end
 end

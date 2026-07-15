@@ -16,8 +16,10 @@
 }
 .pk-sheet-content.right { inset-block: 0; right: 0; height: 100%; width: 75%; max-width: 24rem; border-left: 1px solid var(--pk-border); }
 .pk-sheet-content.left  { inset-block: 0; left: 0;  height: 100%; width: 75%; max-width: 24rem; border-right: 1px solid var(--pk-border); }
-.pk-sheet-content.top    { inset-inline: 0; top: 0;    border-bottom: 1px solid var(--pk-border); }
-.pk-sheet-content.bottom { inset-inline: 0; bottom: 0; border-top: 1px solid var(--pk-border); }
+/* max-height: without it a tall top/bottom panel grows past the viewport and
+   overflow:auto never engages (footer/close unreachable). */
+.pk-sheet-content.top    { inset-inline: 0; top: 0;    max-height: 100dvh; border-bottom: 1px solid var(--pk-border); }
+.pk-sheet-content.bottom { inset-inline: 0; bottom: 0; max-height: 100dvh; border-top: 1px solid var(--pk-border); }
 .pk-sheet-header { display: flex; flex-direction: column; gap: .125rem; padding: 1rem; }
 .pk-sheet-footer { display: flex; flex-direction: column-reverse; gap: .5rem; padding: 1rem; margin-top: auto; }
 .pk-sheet-title { font-size: 1rem; font-weight: 500; line-height: 1; color: var(--pk-text); }

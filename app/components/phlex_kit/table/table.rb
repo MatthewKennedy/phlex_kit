@@ -22,12 +22,15 @@ module PhlexKit
   #
   # Tailwind → vanilla `.pk-table-*` (table.css), palette from the global tokens.
   class Table < BaseComponent
-    def initialize(**attrs)
+    def initialize(wrapper: {}, **attrs)
+      @wrapper = wrapper
       @attrs = attrs
     end
 
     def view_template(&block)
-      div(class: "pk-table-wrapper") do
+      # Caller attrs land on the <table>; wrapper: reaches the scroll
+      # container (e.g. to cap its height) — same escape hatch as Switch.
+      div(**mix({ class: "pk-table-wrapper" }, @wrapper)) do
         table(**mix({ class: "pk-table" }, @attrs), &block)
       end
     end

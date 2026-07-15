@@ -9,7 +9,9 @@ module PhlexKit
         # -1: roving focus reaches it via arrows (focus-within opens the sub);
         # tabindex 0 made it a stray tab stop inside the menu.
         tabindex: "-1",
-        aria: { haspopup: "menu" },
+        # expanded starts false and is mirrored live by the controller's
+        # syncSub (the reveal itself is pure CSS :hover/:focus-within).
+        aria: { haspopup: "menu", expanded: "false" },
         data: { phlex_kit__context_menu_target: "menuItem" }
       }, @attrs)) do
         block&.call

@@ -46,8 +46,11 @@ export default class extends Controller {
     this.element.addEventListener("keydown", this._onKeyDown)
     this.element.addEventListener("phlex-kit:toast:force-dismiss", this._onForceDismiss)
     this.element.addEventListener("phlex-kit:toast:restart", this._onRestart)
-    document.addEventListener("phlex-kit:toast:pause", this._onRegionPause)
-    document.addEventListener("phlex-kit:toast:resume", this._onRegionResume)
+    // Region-scoped: the toaster dispatches pause/resume on its own list, so
+    // another region's hover can't freeze (or resume) this toast's timer.
+    this._regionList = this.element.closest(".pk-toast-list") || document
+    this._regionList.addEventListener("phlex-kit:toast:pause", this._onRegionPause)
+    this._regionList.addEventListener("phlex-kit:toast:resume", this._onRegionResume)
 
     requestAnimationFrame(() => {
       this.element.dataset.state = "open"
@@ -79,8 +82,8 @@ export default class extends Controller {
     this.element.removeEventListener("keydown", this._onKeyDown)
     this.element.removeEventListener("phlex-kit:toast:force-dismiss", this._onForceDismiss)
     this.element.removeEventListener("phlex-kit:toast:restart", this._onRestart)
-    document.removeEventListener("phlex-kit:toast:pause", this._onRegionPause)
-    document.removeEventListener("phlex-kit:toast:resume", this._onRegionResume)
+    this._regionList?.removeEventListener("phlex-kit:toast:pause", this._onRegionPause)
+    this._regionList?.removeEventListener("phlex-kit:toast:resume", this._onRegionResume)
   }
 
   dismiss(e) {

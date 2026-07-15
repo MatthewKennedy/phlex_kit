@@ -3,13 +3,11 @@ module PhlexKit
   # the child BubbleContent via a data-slot selector; align: :end flips it to the
   # trailing edge. Compose Bubble > BubbleContent (+ BubbleReactions).
   class Bubble < BaseComponent
-    VARIANTS = %i[default secondary muted tinted outline ghost destructive].freeze
-    ALIGNS = %i[start end].freeze
+    VARIANTS = %i[default secondary muted tinted outline ghost destructive].to_h { |v| [ v, v ] }.freeze
+    ALIGNS = %i[start end].to_h { |v| [ v, v ] }.freeze
     def initialize(variant: :default, align: :start, **attrs)
-      @variant = variant.to_sym
-      raise KeyError, "unknown Bubble variant #{@variant}" unless VARIANTS.include?(@variant)
-      @align = align.to_sym
-      raise KeyError, "unknown Bubble align #{@align}" unless ALIGNS.include?(@align)
+      @variant = fetch_option(VARIANTS, variant.to_sym, :variant)
+      @align = fetch_option(ALIGNS, align.to_sym, :align)
       @attrs = attrs
     end
     def view_template(&)

@@ -159,7 +159,9 @@ export default class extends Controller {
 
   toggleMultipleDay(iso) {
     const day = this.isoDate(this.parseDate(iso));
-    const current = [...this.selectedDatesValue];
+    // Normalized copy: server-supplied entries may be datetime strings
+    // (Time#to_s) — indexOf against the bare isoDate must still match.
+    const current = this.normalizeDates(this.selectedDatesValue);
     const index = current.indexOf(day);
     if (index >= 0) {
       current.splice(index, 1);
@@ -303,8 +305,18 @@ export default class extends Controller {
     }
     e.preventDefault();
 
-    const iso = this.isoDate(target);
-    if (this.isDateDisabled(iso)) return; // min/max/booked boundary: stay put
+    let iso = this.isoDate(target);
+    if (this.isDateDisabled(iso)) {
+      // A min/max boundary holds focus in place; an isolated booked date is
+      // SKIPPED in the travel direction (APG date-grid) — arrows only, the
+      // month/row jumps (PageUp/Home/End) still stay put.
+      if (!(e.key in STEPS) || this.outOfRange(target)) return;
+      do {
+        target.setDate(target.getDate() + STEPS[e.key]);
+        if (this.outOfRange(target)) return;
+      } while (this.isBooked(target));
+      iso = this.isoDate(target);
+    }
 
     if (target.getMonth() !== this.viewDate().getMonth() || target.getFullYear() !== this.viewDate().getFullYear()) {
       this.viewDateValue = iso; // re-renders the grid on the target month
@@ -412,7 +424,7 @@ export default class extends Controller {
       );
     }
     if (this.modeValue === "multiple") {
-      return this.selectedDatesValue.includes(this.isoDate(day));
+      return this.normalizeDates(this.selectedDatesValue).includes(this.isoDate(day));
     }
     const selectedDate = this.selectedDate();
     return selectedDate && day.toDateString() === selectedDate.toDateString();
@@ -428,7 +440,17 @@ export default class extends Controller {
   }
 
   isBooked(day) {
-    return this.disabledDatesValue.includes(this.isoDate(day));
+    return this.normalizeDates(this.disabledDatesValue).includes(this.isoDate(day));
+  }
+
+  // disabled_dates / selected_dates entries may be Time#to_s or datetime ISO
+  // strings — every other date input tolerates those via parseDate, so the
+  // membership arrays must be normalized the same way (exact string equality
+  // silently no-oped for anything but bare yyyy-MM-dd).
+  normalizeDates(values) {
+    return values
+      .map((d) => { const parsed = this.parseDate(d); return parsed ? this.isoDate(parsed) : null; })
+      .filter(Boolean);
   }
 
   monthAndYear() {
@@ -575,14 +597,16 @@ export default class extends Controller {
   isDateDisabled(date) {
     const candidate = this.parseDate(date);
     if (!candidate) return false;
+    return this.outOfRange(candidate) || this.isBooked(candidate);
+  }
 
+  // min/max bounds only (not booked entries) — the keyboard skip needs to
+  // distinguish a hard boundary from a hole in the middle of the grid.
+  outOfRange(candidate) {
     const minDate = this.minDate();
     if (minDate && this.startOfDay(candidate) < this.startOfDay(minDate)) return true;
-
     const maxDate = this.maxDate();
-    if (maxDate && this.startOfDay(candidate) > this.startOfDay(maxDate)) return true;
-
-    return this.disabledDatesValue.includes(this.isoDate(candidate));
+    return !!(maxDate && this.startOfDay(candidate) > this.startOfDay(maxDate));
   }
 
   parseDate(value) {

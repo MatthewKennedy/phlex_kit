@@ -3,7 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="phlex-kit--clipboard". Copies the source text and
 // flashes a success/error popover (CSS-positioned, no @floating-ui). Ported from ruby_ui.
 export default class extends Controller {
-  static targets = ["trigger", "source", "successPopover", "errorPopover"]
+  // No "trigger" target: the click->#copy action alone wires the trigger.
+  static targets = ["source", "successPopover", "errorPopover"]
 
   connect() {
     // Turbo snapshots at turbo:before-cache, BEFORE disconnect — hide the
@@ -28,10 +29,16 @@ export default class extends Controller {
     // A source usually wraps one element (input/code/…), but bare text is
     // legal too — fall back to the source's own text instead of erroring.
     const el = this.sourceTarget.children[0]
+    // TEXTAREA reads .value like INPUT — innerText would return the initial
+    // content, not the user-edited value.
     const text = el
-      ? (el.tagName === "INPUT" ? el.value : el.innerText)
+      ? (["INPUT", "TEXTAREA"].includes(el.tagName) ? el.value : el.innerText)
       : this.sourceTarget.textContent.trim()
     if (!text) { this.show(this.errorPopoverTarget); return }
+    // navigator.clipboard is undefined in insecure contexts (plain-HTTP
+    // hosts, some webviews) — that's the error popover's job, not an
+    // unhandled TypeError's.
+    if (!navigator.clipboard) { this.show(this.errorPopoverTarget); return }
     navigator.clipboard.writeText(text)
       .then(() => this.show(this.successPopoverTarget))
       .catch(() => this.show(this.errorPopoverTarget))

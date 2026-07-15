@@ -7,7 +7,8 @@
 .pk-toast-region {
   position: fixed;
   z-index: 100;
-  padding: 1.5rem;
+  /* --pk-toast-offset is stamped inline by ToastRegion(offset:). */
+  padding: var(--pk-toast-offset, 1.5rem);
   pointer-events: none;
 }
 .pk-toast-region[data-position="top-left"] { top: 0; left: 0; }

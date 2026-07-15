@@ -29,6 +29,10 @@ export default class extends Controller {
     this.#restoreInert()
     document.body.style.overflow = this.previousOverflow
     if (this.opener?.isConnected) this.opener.focus()
+    // Tell the source phlex-kit--sheet controller the clone is gone so it
+    // can flip the trigger's aria-expanded back (removal happens by many
+    // paths: close button, Escape, backdrop, before-cache).
+    document.dispatchEvent(new CustomEvent("phlex-kit:sheet-content:closed"))
   }
 
   close() {

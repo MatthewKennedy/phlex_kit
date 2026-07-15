@@ -30,5 +30,18 @@ module PhlexKit
                         "valid: #{map.keys.map(&:inspect).join(", ")}"
       end
     end
+
+    # True when the caller supplied an accessible name in @attrs — via the
+    # aria: hash or flat aria_label/aria-label(ledby) keys. Components with a
+    # generated default label must skip it then: `mix` merges duplicate string
+    # attrs ("pagination Résultats") instead of overriding.
+    def aria_labelled?
+      aria = @attrs[:aria] || @attrs["aria"]
+      if aria.is_a?(Hash)
+        return true if %i[label labelledby].any? { |k| aria[k] || aria[k.to_s] }
+      end
+      [ :aria_label, "aria_label", "aria-label",
+        :aria_labelledby, "aria_labelledby", "aria-labelledby" ].any? { |k| @attrs[k] }
+    end
   end
 end

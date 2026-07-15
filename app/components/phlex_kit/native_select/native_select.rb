@@ -21,20 +21,29 @@ module PhlexKit
       sm: "sm"
     }.freeze
 
+    # An Integer size: is the NATIVE <select size> (multi-row list box) and
+    # passes straight through — the kit's visual sizes stay symbols.
     def initialize(size: :default, **attrs)
-      @size = size.to_sym
+      if size.is_a?(Integer)
+        @native_size = size
+        @size = :default
+      else
+        @size = size.to_sym
+      end
       @attrs = attrs
     end
 
     def view_template(&block)
       div(class: "pk-native-select") do
-        select(**mix({
+        base = {
           class: classes,
           data: {
             phlex_kit__form_field_target: "input",
             action: "change->phlex-kit--form-field#onChange invalid->phlex-kit--form-field#onInvalid"
           }
-        }, @attrs), &block)
+        }
+        base[:size] = @native_size if @native_size
+        select(**mix(base, @attrs), &block)
         render PhlexKit::NativeSelectIcon.new
       end
     end

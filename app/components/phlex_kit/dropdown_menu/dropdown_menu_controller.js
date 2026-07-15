@@ -24,6 +24,10 @@ export default class extends Controller {
     this.invoker = this.triggerTarget.querySelector("button, a, [tabindex]") || this.triggerTarget;
     this.invoker.setAttribute("aria-haspopup", "menu");
     this.invoker.setAttribute("aria-expanded", "false");
+    // Associate trigger and menu for AT (the dialog controller wires its
+    // ids the same way).
+    if (!this.contentTarget.id) this.contentTarget.id = `pk-dropdown-menu-${Math.random().toString(36).slice(2, 8)}`;
+    this.invoker.setAttribute("aria-controls", this.contentTarget.id);
     // Turbo snapshots BEFORE disconnect — an open menu (reflected in the
     // open value) would be resurrected from the page cache on restore.
     this.boundBeforeCache = () => this.close();

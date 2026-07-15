@@ -15,7 +15,7 @@
   overflow: hidden;
   white-space: nowrap;
   height: 1.25rem;
-  border-radius: 2rem;
+  border-radius: 999px; /* fully-round pill (matches avatar/progress), not a --pk-radius derivative */
   border: 1px solid transparent;
   padding: .125rem .5rem;
   font-size: .75rem;

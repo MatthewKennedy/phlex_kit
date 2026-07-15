@@ -21,7 +21,7 @@ module PhlexKit
 
     def view_template(&block)
       div(**mix(group_default_attrs, @attrs)) do
-        yield(self)
+        yield(self) if block
         render_hidden_inputs
       end
     end

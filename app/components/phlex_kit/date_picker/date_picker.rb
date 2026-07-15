@@ -31,6 +31,12 @@ module PhlexKit
       # until the first interaction.
       @value = value || format_selected_date
       @placeholder = placeholder
+      # An id smuggled through input_attrs would MERGE with the generated one
+      # (mix fuses duplicate string attrs), breaking label[for] and the
+      # calendar outlet selector — the top-level id: kwarg is the one path.
+      if input_attrs.key?(:id) || input_attrs.key?("id")
+        raise ArgumentError, "DatePicker: pass id: as the top-level kwarg, not input_attrs[:id]"
+      end
       @input_attrs = input_attrs
       @calendar_attrs = calendar_attrs
       @trigger_attrs = trigger_attrs

@@ -1,0 +1,9 @@
+/* Co-located with icon.rb — PhlexKit::Icon. The .pk-icon class was emitted
+   with no rule anywhere (audit round 6): the bare SVG inherited the UA's
+   inline/baseline layout (descender gap under icons) and could be squashed
+   inside height-constrained flex scroll panes. */
+.pk-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex: none;
+}

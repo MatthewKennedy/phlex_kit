@@ -152,7 +152,41 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   physically left-pinned (no `side:` kwarg yet) and resizable's drag math
   assumes LTR (commented at the clientX delta). Everything else uses logical
   properties — keep it that way; physical is only for the side-kwarg
-  contracts (sheet/drawer/toast) and centering math.
+  contracts (sheet/drawer/toast) and centering math. Round 6 made carousel
+  (direction-aware geometry + keyNext/keyPrev), switch/slider/progress
+  (`:dir(rtl)` arms) and hover_card/dropdown/select (logical gap
+  margins/paddings) RTL-correct — new work must not regress them.
+- **Chrome doesn't re-style `:dir()` on a dynamic `dir` flip** — existing
+  elements keep the old evaluation inside `:dir()`-compound selectors until
+  they're reattached, even though `el.matches(":dir(rtl)")` says true. Pages
+  that LOAD as RTL are fine. In browser probes, detach/reattach after
+  flipping `document.dir`; the Cuprite RTL system tests are the real gate.
+- **Generated attrs must be named kwargs** (round 6, extends the `mix`-merge
+  rule): TabsTrigger/TabsContent/ComboboxList/CommandList/FormFieldError/
+  FormFieldHint ids, Marker `type:`, Progress `value_text:`, Pagination
+  `label:` — a caller copy would fuse. For generated *defaults* the caller
+  may override (icon width/aria-hidden, scroll_area role/tabindex, codeblock/
+  chart aria-label), check `@attrs` first (`BaseComponent#aria_labelled?`).
+- **`open:` values are one-shot** on clone-based overlays (alert_dialog,
+  sheet): clear `openValue` when the clone spawns, or the reflected value in
+  the Turbo snapshot re-opens a dismissed overlay on restore. Popover-based
+  menus close on `turbo:before-cache` (dropdown/context) or normalize stale
+  `aria-expanded`/`aria-activedescendant` in `connect()` (select/combobox/
+  menubar) — a snapshot serializes those even though `:popover-open` dies.
+- **"backspace" is NOT a Stimulus key filter** — `keydown.backspace->` throws
+  "unknown key filter" on every keystroke and the action never runs (bit the
+  combobox badge chips). Bind bare `keydown` and guard `e.key` in the method.
+- **The system-test JS-error trap needs BOTH halves** (round 6): Cuprite's
+  `Runtime.evaluate` must pass `returnByValue: true` (arrays come back as
+  remote references, so the trap silently never flunked), and Stimulus
+  catches action-handler exceptions and reports via `console.error` — the
+  trap hooks it; `window.onerror` alone misses them.
+- **ToastRegion `theme:`/`rich_colors:` raise by design** — tokens are
+  :root-scoped and the kit has no status palette; don't "implement" them
+  casually. `offset:` is `--pk-toast-offset`; `dir:` is a real dir attribute;
+  pause/resume events are dispatched on the region's own list, not document.
+- **macOS Option-chords compose `e.key`** (Option+T → "†") — hotkey matching
+  must accept `e.code` (`KeyT`) or alt+ hotkeys never fire on Mac.
 
 ## Releasing
 

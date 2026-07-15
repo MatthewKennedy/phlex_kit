@@ -4,12 +4,19 @@ module PhlexKit
   # svg glyph (hidden automatically on xs/sm avatars). Recolor via style/class
   # — defaults to the brand fill. See avatar.rb.
   class AvatarBadge < BaseComponent
-    def initialize(**attrs)
+    # label: gives the color-only presence dot an accessible alternative
+    # (a .pk-sr-only span, like AttachmentAction's). No default — a purely
+    # decorative dot stays silent.
+    def initialize(label: nil, **attrs)
+      @label = label
       @attrs = attrs
     end
 
     def view_template(&block)
-      span(**mix({ class: "pk-avatar-badge" }, @attrs), &block)
+      span(**mix({ class: "pk-avatar-badge" }, @attrs)) do
+        span(class: "pk-sr-only") { @label } if @label
+        block&.call
+      end
     end
   end
 end

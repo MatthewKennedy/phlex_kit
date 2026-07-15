@@ -378,6 +378,9 @@ export default class extends Controller {
       button.setAttribute("data-active", active ? "true" : "false");
       // Remove the inert button from the tab order so there are no ghost stops.
       button.setAttribute("tabindex", active ? "0" : "-1");
+      // opacity-only hiding leaves it in the accessibility tree — a SR
+      // virtual cursor would still find a phantom jump button.
+      button.setAttribute("aria-hidden", active ? "false" : "true");
     });
   }
 }

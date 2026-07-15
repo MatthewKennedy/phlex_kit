@@ -57,7 +57,7 @@ class ToastTest < Minitest::Test
   def test_parts_carry_slots_and_dismiss_actions
     assert_includes render(PhlexKit::ToastTitle.new { "T" }), %(data-slot="title")
     assert_includes render(PhlexKit::ToastDescription.new { "D" }), %(data-slot="description")
-    assert_includes render(PhlexKit::ToastAction.new(label: "Undo", on: "click->x#y")), %(data-action="click->x#y")
+    assert_includes render(PhlexKit::ToastAction.new(label: "Undo", on: "click->x#y")), %(data-action="click->x#y click->phlex-kit--toast#dismiss")
     assert_includes render(PhlexKit::ToastCancel.new(label: "Cancel")), "click->phlex-kit--toast#dismiss"
     assert_includes render(PhlexKit::ToastClose.new), "pk-sr-only"
   end

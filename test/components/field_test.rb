@@ -41,10 +41,9 @@ class FieldTest < Minitest::Test
 
   def test_separator_with_and_without_content
     plain = render(PhlexKit::FieldSeparator.new)
-    assert_includes plain, %(data-content="false")
     refute_includes plain, "pk-field-separator-content"
     labeled = render(PhlexKit::FieldSeparator.new { "Or continue with" })
-    assert_includes labeled, %(data-content="true")
+    assert_includes labeled, "pk-field-separator-content"
     assert_includes labeled, "Or continue with"
   end
 

@@ -6,7 +6,7 @@ module PhlexKit
     def initialize(**attrs) = (@attrs = attrs)
 
     def view_template(&block)
-      div(**mix({ class: "pk-field-separator", data: { content: block ? "true" : "false" } }, @attrs)) do
+      div(**mix({ class: "pk-field-separator" }, @attrs)) do
         render Separator.new(class: "pk-field-separator-line")
         span(class: "pk-field-separator-content", &block) if block
       end

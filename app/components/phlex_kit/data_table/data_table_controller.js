@@ -20,7 +20,11 @@ export default class extends Controller {
   toggleAll(event) {
     const checked = event.target.checked;
     this.rowCheckboxTargets.forEach((cb) => {
+      if (cb.checked === checked) return;
       cb.checked = checked;
+      // Programmatic .checked flips fire no event — hosts (and the
+      // form-field wiring on PhlexKit::Checkbox) must still hear select-all.
+      cb.dispatchEvent(new Event("change", { bubbles: true }));
     });
     this.updateState();
   }

@@ -18,11 +18,25 @@ export default class extends Controller {
       if (!this.storedTheme()) this.applyTheme("system")
     }
     this._media.addEventListener("change", this._onMediaChange)
+    // Multiple toggles on one page (header + mobile menu): each instance
+    // observes :root[data-theme] so a change applied by ANY of them (or by
+    // host code) re-syncs every toggle's pressed state — without this the
+    // stale one showed the wrong state and its first click was eaten by the
+    // echo guard in apply().
+    this._rootObserver = new MutationObserver(() => this.syncPressed())
+    this._rootObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] })
     this.applyTheme(this.storedTheme() || "system")
   }
 
   disconnect() {
     this._media?.removeEventListener("change", this._onMediaChange)
+    this._rootObserver?.disconnect()
+  }
+
+  syncPressed() {
+    const theme = document.documentElement.getAttribute("data-theme") || "system"
+    const dark = theme === "system" ? this._media.matches : theme === "dark"
+    this.element.setAttribute("data-phlex-kit--toggle-pressed-value", dark ? "true" : "false")
   }
 
   apply(e) {

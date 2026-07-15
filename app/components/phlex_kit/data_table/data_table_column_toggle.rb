@@ -27,7 +27,10 @@ module PhlexKit
               # invalid ARIA. The change event bubbles from the hidden checkbox
               # to this row, where our toggle action picks it up.
               render DropdownMenuCheckboxItem.new(
-                checked: true,
+                # visible: false starts the menu row unchecked for a column
+                # the host server-renders hidden (pk-hidden on its cells) —
+                # checked: true hardcoded meant the two could never agree.
+                checked: col.fetch(:visible, true),
                 data: {
                   column_key: col[:key].to_s,
                   action: "change->phlex-kit--data-table-column-visibility#toggle"

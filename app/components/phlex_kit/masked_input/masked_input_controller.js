@@ -26,13 +26,27 @@ export default class extends Controller {
   apply() {
     const el = this.element
     // The whole value is rewritten below, which throws the caret to the end —
-    // remember how many maskable chars sit before it and re-seat it after
-    // the same count in the masked output (mid-field edits keep their place).
+    // re-seat it after the same number of TOKEN-filled (user) characters.
+    // Counting is done in token space, not "any alphanumeric" space: mask
+    // literals can themselves be alphanumeric (the "1" in "+1 (###) ###-####"),
+    // and counting them as user input reordered every subsequent keystroke.
     const caret = el.selectionStart ?? el.value.length
-    const rawBefore = this.maskable(el.value.slice(0, caret)).length
+    const filledBefore = this.maskFill(this.maskable(el.value.slice(0, caret))).tokenPos.length
 
-    const raw = this.maskable(el.value)
+    const { out, tokenPos } = this.maskFill(this.maskable(el.value))
+    el.value = out
+
+    if (document.activeElement === el) {
+      const pos = filledBefore === 0 ? 0 : tokenPos[filledBefore - 1] + 1
+      el.setSelectionRange(pos, pos)
+    }
+  }
+
+  // Fill the mask from `raw`, returning the output and the output indices
+  // that were filled from user input (vs emitted as mask literals).
+  maskFill(raw) {
     let out = "", i = 0
+    const tokenPos = []
     for (const t of this.mask) {
       if (i >= raw.length) break
       if (t === "#" || t === "A" || t === "*") {
@@ -41,19 +55,11 @@ export default class extends Controller {
         const re = t === "#" ? /\d/ : t === "A" ? /[A-Za-z]/ : /[0-9A-Za-z]/
         while (i < raw.length && !re.test(raw[i])) i++
         if (i >= raw.length) break
+        tokenPos.push(out.length)
         out += raw[i++]
       } else { out += t; if (raw[i] === t) i++ }
     }
-    el.value = out
-
-    if (document.activeElement === el) {
-      let pos = 0, seen = 0
-      while (pos < out.length && seen < rawBefore) {
-        if (/[0-9A-Za-z]/.test(out[pos])) seen++
-        pos++
-      }
-      el.setSelectionRange(pos, pos)
-    }
+    return { out, tokenPos }
   }
   // Transliterate full-width digits (０-９, U+FF10–FF19 — common IME numeric
   // output) to ASCII before the charset filter would silently drop them.

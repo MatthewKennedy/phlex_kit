@@ -41,11 +41,22 @@ module PhlexKit
       @duration = duration
       @gap = gap
       @offset = offset
+      # theme:/rich_colors: are Sonner API surface the kit deliberately does
+      # not implement (tokens are :root-scoped; there is no status palette) —
+      # fail loud rather than silently no-op (audit round 6).
       @theme = theme.to_sym
-      @rich_colors = rich_colors
+      unless @theme == :system
+        raise ArgumentError, "ToastRegion theme: only :system is supported — toasts follow the page theme (:root[data-theme])"
+      end
+      if rich_colors
+        raise ArgumentError, "ToastRegion rich_colors: is not supported — the kit has no status color palette (toasts follow --pk-* tokens)"
+      end
       @close_button = close_button
       @hotkey = hotkey
-      @dir = dir
+      @dir = dir.to_sym
+      unless %i[ltr rtl auto].include?(@dir)
+        raise ArgumentError, "ToastRegion dir: must be :ltr, :rtl or :auto"
+      end
       @flash = flash
       # Base id for the <ol> stack; the wrapper takes "#{id}-region". Defaults
       # keep the historical "pk-toaster"/"pk-toaster-region" pair — pass a
@@ -105,10 +116,12 @@ module PhlexKit
     end
 
     def region_attrs
-      {
+      base = {
         id: "#{@id}-region",
         role: "region",
         class: "pk-toast-region",
+        # offset: viewport-edge padding, consumed by toast.css.
+        style: "--pk-toast-offset: #{@offset.is_a?(Numeric) ? "#{@offset}px" : @offset};",
         # No aria-live here: each toast item is its own live region
         # (role="status"/"alert"); a live wrapper would double-announce.
         aria: { label: "Notifications" },
@@ -122,14 +135,11 @@ module PhlexKit
           phlex_kit__toaster_max_value: @max.to_s,
           phlex_kit__toaster_duration_value: @duration.to_s,
           phlex_kit__toaster_gap_value: @gap.to_s,
-          phlex_kit__toaster_offset_value: @offset.to_s,
-          phlex_kit__toaster_theme_value: @theme.to_s,
-          phlex_kit__toaster_rich_colors_value: @rich_colors.to_s,
-          phlex_kit__toaster_close_button_value: @close_button.to_s,
-          phlex_kit__toaster_hotkey_value: Array(@hotkey).join("+"),
-          phlex_kit__toaster_dir_value: @dir.to_s
+          phlex_kit__toaster_hotkey_value: Array(@hotkey).join("+")
         }
       }
+      base[:dir] = @dir.to_s unless @dir == :ltr
+      base
     end
   end
 end

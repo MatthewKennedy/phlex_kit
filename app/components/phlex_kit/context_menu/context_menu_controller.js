@@ -23,12 +23,37 @@ export default class extends Controller {
       this.close()
     }
     this.onKey = (e) => this.keydown(e)
+    // Turbo snapshots BEFORE disconnect — close now or the snapshot keeps a
+    // stale data-state="open" (the panel itself can't resurrect, but host
+    // CSS keyed on the state hook would misfire after a restore).
+    this.onBeforeCache = () => {
+      if (this.contentTarget.matches(":popover-open")) this.close()
+    }
+    document.addEventListener("turbo:before-cache", this.onBeforeCache)
+    // Outstanding syncSub rAF handles — cancelled on disconnect (menubar's
+    // pattern).
+    this.subFrames = new Set()
   }
 
   disconnect() {
     document.removeEventListener("click", this.onDoc)
     document.removeEventListener("contextmenu", this.onDoc)
     document.removeEventListener("keydown", this.onKey)
+    document.removeEventListener("turbo:before-cache", this.onBeforeCache)
+    this.subFrames.forEach((id) => cancelAnimationFrame(id))
+    this.subFrames.clear()
+  }
+
+  // Mirrors the CSS-driven submenu state (:hover / :focus-within) onto the
+  // sub trigger's aria-expanded — same wiring as dropdown_menu/menubar.
+  syncSub(e) {
+    const sub = e.currentTarget
+    const id = requestAnimationFrame(() => {
+      this.subFrames.delete(id)
+      sub.querySelector(":scope > [aria-haspopup]")
+        ?.setAttribute("aria-expanded", sub.matches(":hover, :focus-within"))
+    })
+    this.subFrames.add(id)
   }
 
   open(e) {

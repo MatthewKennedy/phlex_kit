@@ -45,11 +45,15 @@ export default class extends Controller {
     const next = items[nextIndex]
     this.updateRovingTabindex(next)
     next.focus()
+    // APG radio-group keyboard model: with role="radio", arrows move focus
+    // AND check the landed-on item (Home/End included).
+    if (next !== event.currentTarget) next.click()
   }
 
   reconcile() {
     if (this.typeValue === "single") {
-      const pressed = this.itemTargets.find((el) => this.isPressed(el))
+      // A disabled button can't take focus — never hand it the tab stop.
+      const pressed = this.itemTargets.find((el) => this.isPressed(el) && !el.disabled)
       const first = pressed || this.enabledItems()[0]
       this.itemTargets.forEach((el) => el.setAttribute("tabindex", el === first ? "0" : "-1"))
     } else {

@@ -14,13 +14,5 @@ module PhlexKit
       base[:aria] = { label: @label } unless aria_labelled?
       nav(**mix(base, @attrs), &)
     end
-
-    private
-
-    def aria_labelled?
-      aria = @attrs[:aria] || @attrs["aria"]
-      (aria.is_a?(Hash) && (aria[:label] || aria["label"])) ||
-        [ :aria_label, "aria_label", "aria-label" ].any? { |k| @attrs[k] }
-    end
   end
 end

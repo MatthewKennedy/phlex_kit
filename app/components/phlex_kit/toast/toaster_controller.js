@@ -34,12 +34,10 @@ export default class extends Controller {
     max: { type: Number, default: 3 },
     duration: { type: Number, default: 4000 },
     gap: { type: Number, default: 14 },
-    offset: { type: Number, default: 24 },
-    theme: { type: String, default: "system" },
-    richColors: { type: Boolean, default: false },
-    closeButton: { type: Boolean, default: false },
+    // offset is a CSS custom property (--pk-toast-offset) and dir a real
+    // dir attribute, both stamped by ToastRegion; theme/richColors are
+    // unsupported (region raises) — none of them are controller state.
     hotkey: { type: String, default: "alt+t" },
-    dir: { type: String, default: "ltr" },
   }
 
   // State the target callbacks touch lives here, NOT in connect(): Stimulus
@@ -192,7 +190,10 @@ export default class extends Controller {
     // Mirror the pause state onto the DOM so toasts spawned while the stack
     // is already hovered can arm paused (the pause event predates them).
     this._listEl?.toggleAttribute("data-pk-toasts-paused", value)
-    document.dispatchEvent(new CustomEvent(value ? "phlex-kit:toast:pause" : "phlex-kit:toast:resume"))
+    // Region-scoped, not document-global: on multi-region pages one region's
+    // hover must not pause (or worse, RESUME under the pointer) another's
+    // toasts. Toasts listen on their own list element.
+    this._listEl.dispatchEvent(new CustomEvent(value ? "phlex-kit:toast:pause" : "phlex-kit:toast:resume"))
   }
 
   _setExpanded(value) {
@@ -277,7 +278,14 @@ export default class extends Controller {
     const wantCtrl = parts.includes("ctrl")
     const wantMeta = parts.includes("meta")
     const wantShift = parts.includes("shift")
-    if (e.key.toLowerCase() !== key.toLowerCase()) return
+    // Match e.code as well as e.key: with Option held, macOS reports the
+    // COMPOSED character (Option+T → "†"), so alt+ hotkeys never match on
+    // e.key alone (Sonner matches event.code for the same reason).
+    const code = (e.code || "").toLowerCase()
+    const keyMatches = e.key.toLowerCase() === key.toLowerCase()
+      || code === `key${key.toLowerCase()}`
+      || code === `digit${key.toLowerCase()}`
+    if (!keyMatches) return
     if (wantAlt !== e.altKey) return
     if (wantCtrl !== e.ctrlKey) return
     if (wantMeta !== e.metaKey) return

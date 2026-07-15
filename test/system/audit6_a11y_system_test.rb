@@ -139,6 +139,78 @@ class Audit6A11ySystemTest < SystemTestCase
     combobox.assert_selector ".pk-combobox-badge", count: 1
   end
 
+  # Insecure contexts have no navigator.clipboard — the error popover must
+  # show instead of an unhandled TypeError.
+  def test_clipboard_shows_error_popover_when_clipboard_api_missing
+    visit "/docs/clipboard"
+    section = demo("Default")
+    page.execute_script(%(Object.defineProperty(navigator, "clipboard", { value: undefined })))
+    within(section) { click_button "Copy" }
+    section.assert_selector ".pk-clipboard-popover-error:not(.pk-hidden), .pk-clipboard-popover:not(.pk-hidden)"
+  end
+
+  # The select listbox must carry an accessible name, and options injected
+  # after connect() must still receive ids for aria-activedescendant.
+  def test_select_listbox_is_labelled_and_late_items_get_ids
+    visit "/docs/select"
+    section = demo("Default")
+    trigger = section.find("button[role='combobox']")
+    content = section.find(".pk-select-content", visible: :all)
+    assert_equal trigger["id"], content["aria-labelledby"]
+
+    page.execute_script(<<~JS)
+      const viewport = document.querySelector("section.docs-demo:has(h2#default) .pk-select-viewport");
+      const item = document.createElement("div");
+      item.className = "pk-select-item";
+      item.dataset.value = "late";
+      item.setAttribute("data-phlex-kit--select-target", "item");
+      viewport.appendChild(item);
+    JS
+    # itemTargetConnected fires async (MutationObserver) — poll for the id.
+    wait_until("late-added select item never received an id") do
+      page.evaluate_script(<<~JS).to_s != ""
+        document.querySelector("section.docs-demo:has(h2#default) .pk-select-item[data-value='late']")?.id
+      JS
+    end
+  end
+
+  # APG radio-group model: in single mode the arrows both move focus AND
+  # select the landed-on item.
+  def test_toggle_group_single_arrows_select
+    visit "/docs/toggle-group"
+    section = demo("Default")
+    items = section.all(".pk-toggle-group-item")
+    page.execute_script("arguments[0].focus()", items[0])
+    items[0].click if items[0]["aria-checked"] == "false"
+    press(:right)
+    assert_equal "true", items[1]["aria-checked"], "ArrowRight moved focus without selecting"
+    assert_equal "false", items[0]["aria-checked"]
+  end
+
+  # Two theme toggles on one page must stay in sync — the stale one showed
+  # the wrong state and its first click was swallowed by the echo guard.
+  def test_theme_toggles_stay_in_sync_across_instances
+    visit "/docs/theme-toggle"
+    section = demo("Default")
+    page.execute_script(<<~JS)
+      const original = document.querySelector("section.docs-demo:has(h2#default) [data-controller~='phlex-kit--theme-toggle']");
+      const clone = original.cloneNode(true);
+      clone.id = "pk-theme-clone";
+      original.parentElement.appendChild(clone);
+    JS
+    original = section.find("[data-controller~='phlex-kit--theme-toggle']", match: :first)
+    original.find("button", match: :first).click
+    wait_until("cloned theme toggle never synced its pressed state") do
+      page.evaluate_script(<<~JS)
+        (() => {
+          const a = document.querySelector("section.docs-demo:has(h2#default) [data-controller~='phlex-kit--theme-toggle']");
+          const b = document.getElementById("pk-theme-clone");
+          return a.getAttribute("data-phlex-kit--toggle-pressed-value") === b.getAttribute("data-phlex-kit--toggle-pressed-value");
+        })()
+      JS
+    end
+  end
+
   # Enter after the highlighted item was removed (turbo stream re-render)
   # must not throw — the page's JS-error trap flunks the test if it does.
   def test_command_enter_survives_dynamic_item_removal

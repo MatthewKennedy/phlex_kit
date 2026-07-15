@@ -1,6 +1,12 @@
 module PhlexKit
   class ToggleGroupItem < Toggle
     def initialize(value:, group_context:, variant: nil, size: nil, **attrs)
+      # Toggle kwargs this item renders no markup for — inheriting them
+      # silently discarded the caller's input.
+      unsupported = attrs.keys & %i[wrapper name unpressed_value]
+      if unsupported.any?
+        raise ArgumentError, "ToggleGroupItem does not support #{unsupported.join(", ")} (group items render a bare button)"
+      end
       @item_value = value.to_s
       @group_context = group_context
       pressed = group_context[:selected_values].include?(@item_value)
@@ -26,7 +32,9 @@ module PhlexKit
       if @group_context[:type] == :single
         a[:role] = "radio"
         a[:aria] = { checked: @pressed.to_s }
-        a[:tabindex] = @pressed ? "0" : "-1"
+        # A disabled button can't take focus — giving the tab stop to a
+        # pressed-but-disabled item made the whole group Tab-unreachable.
+        a[:tabindex] = (@pressed && !@disabled) ? "0" : "-1"
       else
         a[:aria] = { pressed: @pressed.to_s }
         a[:tabindex] = "0"
