@@ -35,8 +35,16 @@ function fuzzyScore(query, value) {
 export default class extends Controller {
   static targets = ["input", "group", "item", "empty", "separator", "list", "liveRegion"];
 
-  connect() {
+  initialize() {
+    // Stimulus fires [target]Connected before connect(): anything
+    // itemTargetConnected uses must be initialized here (mirrors
+    // combobox_controller.js).
+    this.itemIdCounter = 0;
+    this.searchEntries = [];
     this.selectedIndex = -1;
+  }
+
+  connect() {
     // Remember what had focus before the palette grabbed it (for a cloned
     // dialog this is the element focused when the overlay was inserted), so
     // dismiss() can hand focus back instead of dropping it on <body>.
@@ -50,7 +58,6 @@ export default class extends Controller {
     // Only the cloned dialog overlay grabs focus on connect — an inline
     // palette connecting at page load must not steal it.
     if (this.isDialogClone()) this.inputTarget.focus();
-    this.searchIndex = this.buildSearchIndex();
     this.toggleVisibility(this.emptyTargets, false);
   }
 
@@ -60,23 +67,46 @@ export default class extends Controller {
     return this.element.hasAttribute("data-phlex-kit--command-dialog-instance");
   }
 
-  // ARIA plumbing: every result gets an id derived from the listbox id so the
-  // input can point aria-activedescendant at the keyboard highlight, and
-  // aria-controls is wired to the listbox (mirrors select_controller.js).
+  // ARIA plumbing: aria-controls is wired to the listbox (mirrors
+  // select_controller.js); the per-result ids come from itemTargetConnected.
   generateItemIds() {
+    this.inputTarget.setAttribute("aria-controls", this.listId());
+  }
+
+  listId() {
     const list = this.hasListTarget ? this.listTarget : this.element;
     if (!list.id) list.id = `pk-command-list-${Math.random().toString(36).slice(2, 10)}`;
+    return list.id;
+  }
 
-    this.itemTargets.forEach((item, index) => {
-      if (!item.id) item.id = `${list.id}-${index}`;
+  // Every result gets an id derived from the listbox id so the input can
+  // point aria-activedescendant at the keyboard highlight, and a search-index
+  // entry so filtering can find it. A target callback (not a connect() loop)
+  // so items rendered in by the host after load are id'd and findable too.
+  // Counter-based, so a removed item's id is never reissued to a later
+  // arrival (mirrors combobox_controller.js).
+  itemTargetConnected(item) {
+    if (!item.id) item.id = `${this.listId()}-${this.itemIdCounter++}`;
+    this.searchEntries.push({
+      value: (item.dataset.value || "").toLowerCase(),
+      text: (item.dataset.text || "").toLowerCase(),
+      element: item,
     });
+  }
 
-    this.inputTarget.setAttribute("aria-controls", list.id);
+  itemTargetDisconnected(item) {
+    this.searchEntries = this.searchEntries.filter(
+      (entry) => entry.element !== item,
+    );
   }
 
   dismiss() {
     // Cloned dialog overlay: tear the clone down and hand focus back.
     if (this.isDialogClone()) {
+      // Dispatched BEFORE teardown: the command-dialog controller listens on
+      // the overlay and un-inerts the page here — focus() below would be a
+      // silent no-op while previouslyFocused sits under an inert ancestor.
+      this.dispatch("dismiss");
       // allow scroll on body
       document.body.style.removeProperty("overflow");
       const previous = this.previouslyFocused;
@@ -157,7 +187,7 @@ export default class extends Controller {
 
     this.toggleVisibility(this.itemTargets, false);
 
-    const results = this.searchIndex.search(query);
+    const results = this.searchItems(query);
     results.forEach((result) =>
       this.toggleVisibility([result.item.element], true),
     );
@@ -201,31 +231,24 @@ export default class extends Controller {
     this.toggleVisibility(this.emptyTargets, false);
   }
 
-  // Upstream builds a Fuse index here; this keeps the same search() shape —
-  // [{ item }] sorted best-match-first — using the fuzzy scorer above.
-  // Both data-value and data-text are searchable (an item's `text:` was
-  // rendered but never indexed); the better of the two scores wins.
-  buildSearchIndex() {
-    const items = this.itemTargets.map((el) => ({
-      value: (el.dataset.value || "").toLowerCase(),
-      text: (el.dataset.text || "").toLowerCase(),
-      element: el,
-    }));
-    return {
-      search(query) {
-        const q = query.toLowerCase();
-        return items
-          .map((item) => {
-            const scores = [item.value, item.text]
-              .filter(Boolean)
-              .map((field) => fuzzyScore(q, field))
-              .filter((score) => score !== null);
-            return { item, score: scores.length ? Math.max(...scores) : null };
-          })
-          .filter((result) => result.score !== null)
-          .sort((a, b) => b.score - a.score);
-      },
-    };
+  // Upstream builds a Fuse index here; this keeps the same result shape —
+  // [{ item }] sorted best-match-first — using the fuzzy scorer above over
+  // the live searchEntries (maintained by itemTargetConnected/Disconnected,
+  // so host-rendered items are searchable). Both data-value and data-text are
+  // searchable (an item's `text:` was rendered but never indexed); the better
+  // of the two scores wins.
+  searchItems(query) {
+    const q = query.toLowerCase();
+    return this.searchEntries
+      .map((item) => {
+        const scores = [item.value, item.text]
+          .filter(Boolean)
+          .map((field) => fuzzyScore(q, field))
+          .filter((score) => score !== null);
+        return { item, score: scores.length ? Math.max(...scores) : null };
+      })
+      .filter((result) => result.score !== null)
+      .sort((a, b) => b.score - a.score);
   }
 
   handleKeydown(e) {

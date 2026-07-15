@@ -5,6 +5,9 @@ module PhlexKit
   class CommandGroup < BaseComponent
     def initialize(title: nil, **attrs)
       @title = title
+      # Names the role="group" items wrapper via aria-labelledby → heading id
+      # (matches cmdk/shadcn; id pattern mirrors CommandList).
+      @heading_id = "pk-command-group-heading-#{SecureRandom.hex(4)}" if title
       @attrs = attrs
     end
 
@@ -22,11 +25,11 @@ module PhlexKit
     private
 
     def render_header
-      div(group_heading: @title) { @title }
+      div(id: @heading_id, group_heading: @title) { @title }
     end
 
     def render_items(&)
-      div(group_items: "", role: "group", &)
+      div(group_items: "", role: "group", aria_labelledby: @heading_id, &)
     end
   end
 end
