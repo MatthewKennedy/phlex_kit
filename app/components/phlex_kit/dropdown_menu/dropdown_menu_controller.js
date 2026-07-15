@@ -21,12 +21,17 @@ export default class extends Controller {
     this.invoker = this.triggerTarget.querySelector("button, a, [tabindex]") || this.triggerTarget;
     this.invoker.setAttribute("aria-haspopup", "menu");
     this.invoker.setAttribute("aria-expanded", "false");
+    // Turbo snapshots BEFORE disconnect — an open menu (reflected in the
+    // open value) would be resurrected from the page cache on restore.
+    this.boundBeforeCache = () => this.close();
+    document.addEventListener("turbo:before-cache", this.boundBeforeCache);
     // `open:` on the Ruby side renders the value — start open (same
     // kwarg -> value -> connect flow as Collapsible).
     if (this.openValue) this.#open();
   }
 
   disconnect() {
+    document.removeEventListener("turbo:before-cache", this.boundBeforeCache);
     this.#removeEventListeners();
   }
 

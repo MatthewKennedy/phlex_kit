@@ -10,6 +10,14 @@ export default class extends Controller {
   static values = { open: Boolean };
 
   connect() {
+    // A Turbo snapshot serializes aria-expanded / aria-activedescendant /
+    // aria-current even though :popover-open does not survive the restore —
+    // normalize here so a restored page doesn't announce an open listbox
+    // over a closed select (same mitigation as dropdown_menu's connect).
+    this.openValue = false;
+    this.triggerTarget.setAttribute("aria-expanded", "false");
+    this.triggerTarget.removeAttribute("aria-activedescendant");
+    this.itemTargets.forEach((item) => item.removeAttribute("aria-current"));
     this.generateItemsIds();
   }
 

@@ -42,6 +42,12 @@ export default class extends Controller {
       if (!panel.id) panel.id = `pk-menu-panel-${++uid}`
       trigger.setAttribute("aria-controls", panel.id)
     }
+    // A Turbo snapshot serializes aria-expanded="true" even though the
+    // panel's :popover-open does not survive the restore — no panel can be
+    // open at connect time, so stamp every expanded marker back to false
+    // (only on elements that already carry it: plain nav links must not
+    // grow an aria-expanded). Covers the trigger and CSS-revealed subs.
+    menu.querySelectorAll("[aria-expanded='true']").forEach((el) => el.setAttribute("aria-expanded", "false"))
     if (this.roving) this.applyRoving()
   }
 

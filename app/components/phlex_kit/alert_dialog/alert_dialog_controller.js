@@ -52,6 +52,9 @@ export default class extends Controller {
     // Double-open guard: Enter+click (or a double-click) on the trigger must
     // not stack a second clone over the first.
     if (this.clone?.isConnected) return;
+    // open: is one-shot — the reflected value sits in the Turbo snapshot, so
+    // a cache-restored reconnect would re-open a dialog the user dismissed.
+    this.openValue = false;
     document.body.insertAdjacentHTML("beforeend", this.contentTarget.innerHTML);
     this.clone = document.body.lastElementChild;
   }

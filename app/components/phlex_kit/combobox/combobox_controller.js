@@ -45,6 +45,11 @@ export default class extends Controller {
   }
 
   connect() {
+    // A Turbo snapshot serializes aria-expanded / aria-activedescendant even
+    // though :popover-open does not survive the restore — normalize here so
+    // a restored page doesn't announce an open listbox over a closed combobox.
+    this.setExpanded(false)
+    this.clearActiveDescendant()
     this.generateItemIds()
     this.updateTriggerContent()
   }
