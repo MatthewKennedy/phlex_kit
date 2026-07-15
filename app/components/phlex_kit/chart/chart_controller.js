@@ -26,7 +26,7 @@ export default class extends Controller {
   }
 
   disconnect() {
-    this.themeObserver?.disconnect()
+    this.disconnectThemeObservers()
     this.chart?.destroy()
     if (!this.chart) {
       this.dispatch("disconnect", { detail: { canvas: this.element } })
@@ -44,9 +44,14 @@ export default class extends Controller {
   }
 
   // Kit tokens are plain color values (hex / color-mix results), not the hsl
-  // triplets ruby_ui reads — return them as-is.
+  // triplets ruby_ui reads — return them as-is. Resolved from this.element,
+  // not document.documentElement: a .pk-dark island (_tokens.css:123-129)
+  // sets the --pk-* custom properties at the SUBTREE root, and per-element
+  // getComputedStyle correctly picks up the nearest ancestor's values —
+  // reading from the document root would ignore the island and always
+  // return the page-level theme.
   getThemeColor(name) {
-    return getComputedStyle(document.documentElement).getPropertyValue(`--${name}`).trim()
+    return getComputedStyle(this.element).getPropertyValue(`--${name}`).trim()
   }
 
   // shadcn-style series colors: dataset N takes --pk-chart-(N%5 + 1). Line/area
@@ -80,6 +85,13 @@ export default class extends Controller {
 
   setDefaultColorsForChart() {
     const Chart = this.chartLibrary()
+    // Chart.defaults is a library-wide singleton (chart.js has no per-instance
+    // defaults object), so it can only ever reflect ONE theme — the
+    // documented caveat. It's resolved from the document root, not
+    // this.element: a chart inside a .pk-dark island still gets per-dataset
+    // colors from the island (getThemeColor/seriesColor, above), just not
+    // these library-global defaults (grid/tooltip/legend chrome).
+    //
     // One computed-style resolve for all nine tokens (this runs on every
     // connect; assigning identical values to Chart.defaults is free — charts
     // read defaults at construction — so the style resolves are the only cost
@@ -122,20 +134,37 @@ export default class extends Controller {
   // unrelated class flip is the expensive path.
   initThemeObserver() {
     this._themeKey = this.currentThemeKey()
-    this.themeObserver = new MutationObserver(() => {
+    const onMutate = () => {
       const key = this.currentThemeKey()
       if (key === this._themeKey) return
       this._themeKey = key
       this.refreshChart()
-    })
+    }
+    this.themeObserver = new MutationObserver(onMutate)
     this.themeObserver.observe(document.documentElement, { attributeFilter: ["data-theme", "class"] })
+
+    // A .pk-dark island (_tokens.css:123-129) re-themes a subtree without
+    // touching the document root, so the root-only observer above misses it.
+    // Watch the nearest island ancestor too, if this chart lives inside one.
+    const island = this.element.closest(".pk-dark")
+    if (island && island !== document.documentElement) {
+      this.islandObserver = new MutationObserver(onMutate)
+      this.islandObserver.observe(island, { attributeFilter: ["data-theme", "class"] })
+    }
+  }
+
+  disconnectThemeObservers() {
+    this.themeObserver?.disconnect()
+    this.islandObserver?.disconnect()
   }
 
   // Cheap fingerprint of the resolved theme: two tokens that differ between
-  // every light/dark pair. One style resolve per mutation vs a full chart
-  // rebuild.
+  // every light/dark pair. Resolved from this.element (island-aware, see
+  // getThemeColor) so a mutation on an ancestor .pk-dark island is detected
+  // even though the document root never changes. One style resolve per
+  // mutation vs a full chart rebuild.
   currentThemeKey() {
-    const styles = getComputedStyle(document.documentElement)
+    const styles = getComputedStyle(this.element)
     return `${styles.getPropertyValue("--pk-bg")}|${styles.getPropertyValue("--pk-text")}`
   }
 

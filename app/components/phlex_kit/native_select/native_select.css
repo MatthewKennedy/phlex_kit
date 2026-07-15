@@ -33,6 +33,20 @@
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-native-select-field:disabled { cursor: not-allowed; opacity: .5; }
+/* [size] (a multi-row list box, NativeSelect.new(size: N)) or [multiple]
+   renders as a scrollable option list, not a single-line control — the fixed
+   2rem row height squashes it and there's no single line for the absolute
+   chevron to sit in, so auto-height the field and hide the chevron.
+   Note: [size="1"] is a single-line dropdown, not a list box — exclude it. */
+.pk-native-select-field[size]:not([size="1"]),
+.pk-native-select-field[multiple] {
+  height: auto;
+  padding-inline-end: .625rem;
+}
+.pk-native-select:has(.pk-native-select-field[size]:not([size="1"])) .pk-native-select-icon,
+.pk-native-select:has(.pk-native-select-field[multiple]) .pk-native-select-icon {
+  display: none;
+}
 .pk-native-select-field.sm {
   height: 1.75rem;
   padding-top: .125rem;
