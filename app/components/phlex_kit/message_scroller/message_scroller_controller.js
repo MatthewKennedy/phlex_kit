@@ -141,7 +141,8 @@ export default class extends Controller {
     if (this.animationFrame) cancelAnimationFrame(this.animationFrame);
     this.programmatic = false;
     this.element.removeAttribute("data-autoscrolling");
-    this.viewportTarget?.removeAttribute("data-autoscrolling");
+    // Stimulus target getters throw when missing — guard, don't optional-chain.
+    if (this.hasViewportTarget) this.viewportTarget.removeAttribute("data-autoscrolling");
     this.following = false;
     this.updateButton();
   }
@@ -184,14 +185,16 @@ export default class extends Controller {
           // flex row gap each prepended row introduces, or the preserved row
           // drifts down by one gap per insertion.
           prependedHeight += (node.offsetHeight || 0) + gap;
-        } else {
-          // Inserted at (or after) the end → new turn.
+        } else if (record.nextSibling === null) {
+          // Inserted at the end → new turn.
           appended = node;
         }
+        // Both siblings present → inserted between existing rows. Neither
+        // history nor a new turn — don't yank a following reader to the end.
       }
     }
 
-    if (prependedHeight > 0 && this.preserveOnPrependValue) {
+    if (prependedHeight > 0 && this.preserveOnPrependValue && this.hasViewportTarget) {
       // Keep the reader's current row fixed while history loads in above.
       this.viewportTarget.scrollTop += prependedHeight;
     }
@@ -307,7 +310,8 @@ export default class extends Controller {
   finishScroll() {
     this.programmatic = false;
     this.element.removeAttribute("data-autoscrolling");
-    this.viewportTarget?.removeAttribute("data-autoscrolling");
+    // Stimulus target getters throw when missing — guard, don't optional-chain.
+    if (this.hasViewportTarget) this.viewportTarget.removeAttribute("data-autoscrolling");
     this.following = this.isAtEnd();
     this.updateButton();
   }
