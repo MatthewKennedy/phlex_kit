@@ -40,6 +40,39 @@ class PickersSystemTest < SystemTestCase
     assert active_element.matches_css?("button[role='combobox']"), "Escape should refocus the trigger"
   end
 
+  # Audit round 5: listbox typeahead — typing while open jumps the highlight
+  # to the first option matching the accumulated buffer.
+  def test_select_typeahead_moves_highlight_to_matching_option
+    visit "/docs/select"
+    section = demo("Default")
+    section.find("button[role='combobox']").click
+    assert_selector ".pk-select-content:popover-open"
+    assert_equal "Apple", active_element.text
+
+    press("g")
+    assert_equal "Grapes", active_element.text
+
+    # Multi-char buffer: "b" + "l" within the buffer window → Blueberry, not Banana.
+    press("b", "l")
+    assert_equal "Blueberry", active_element.text
+  end
+
+  # Audit round 5: Space must select the focused option (listbox pattern
+  # expects Space alongside Enter).
+  def test_select_space_selects_focused_option
+    visit "/docs/select"
+    section = demo("Default")
+    trigger = section.find("button[role='combobox']")
+    trigger.click
+    press(:down) # Apple -> Banana
+    assert_equal "Banana", active_element.text
+
+    press(:space)
+    assert_no_selector ".pk-select-content:popover-open"
+    assert_equal "Banana", trigger.text
+    assert_equal "banana", section.find("input.pk-select-input", visible: :all).value
+  end
+
   def test_command_dialog_filters_unlocks_scroll_and_restores_focus_on_escape
     visit "/docs/command"
     trigger = find("button", text: "Open command palette")

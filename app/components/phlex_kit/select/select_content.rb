@@ -5,8 +5,11 @@ module PhlexKit
   # inner `.pk-select-viewport` is the bordered, scrollable box.
   # Holds SelectGroup / SelectLabel / SelectItem children. See select.rb.
   class SelectContent < BaseComponent
-    def initialize(**attrs)
-      @id = "pk-select-content-#{SecureRandom.hex(4)}"
+    # id: is a named kwarg (not left in **attrs) because `mix` would *merge* a
+    # caller id with the generated one into an invalid two-token id, breaking
+    # aria-controls and the generated item ids.
+    def initialize(id: nil, **attrs)
+      @id = id || "pk-select-content-#{SecureRandom.hex(4)}"
       @attrs = attrs
     end
 
@@ -17,7 +20,10 @@ module PhlexKit
         tabindex: "-1",
         class: "pk-select-content",
         popover: "manual",
-        data: { phlex_kit__select_target: "content" }
+        data: {
+          phlex_kit__select_target: "content",
+          action: "keydown->phlex-kit--select#typeahead"
+        }
       }, @attrs)) do
         div(class: "pk-select-viewport", &block)
       end

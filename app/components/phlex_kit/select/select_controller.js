@@ -21,6 +21,9 @@ export default class extends Controller {
     // document-scoped outlet: outlets match `.pk-select-item` page-wide and
     // clobbered every other Select's aria-selected.
     const item = event.currentTarget;
+    // A malformed (hand-written) item without data-value must never submit
+    // the literal string "undefined". SelectItem itself fails loud on nil.
+    if (item.dataset.value === undefined) return;
     this.itemTargets.forEach((el) => {
       el.setAttribute("aria-selected", el === item ? "true" : "false");
     });
@@ -36,7 +39,7 @@ export default class extends Controller {
   }
 
   onClick() {
-    this.toogleContent();
+    this.toggleContent();
 
     if (this.openValue) {
       this.setFocusAndCurrent();
@@ -127,8 +130,35 @@ export default class extends Controller {
   // Open/close derive from the live :popover-open state, never a stored
   // flag — a stale flag is how a close on an already-closed panel becomes
   // an open (bit the popover's keyboard toggle).
-  toogleContent() {
+  toggleContent() {
     this.contentTarget.matches(":popover-open") ? this.#hide() : this.#show();
+  }
+
+  // Listbox typeahead: printable keys accumulate into a short-lived buffer
+  // and move the highlight to the first option whose text starts with it.
+  typeahead(event) {
+    if (event.metaKey || event.ctrlKey || event.altKey) return;
+    if (event.key.length !== 1 || event.key === " ") return; // Space selects
+    clearTimeout(this.typeaheadTimer);
+    this.typeaheadBuffer = (this.typeaheadBuffer || "") + event.key.toLowerCase();
+    this.typeaheadTimer = setTimeout(() => { this.typeaheadBuffer = ""; }, 500);
+
+    let index = this.itemTargets.findIndex((item) =>
+      item.innerText.trim().toLowerCase().startsWith(this.typeaheadBuffer));
+    if (index < 0) {
+      // Buffer stopped matching — restart it from this keystroke (APG
+      // typeahead: a failed prefix shouldn't dead-end until the timer clears).
+      this.typeaheadBuffer = event.key.toLowerCase();
+      index = this.itemTargets.findIndex((item) =>
+        item.innerText.trim().toLowerCase().startsWith(this.typeaheadBuffer));
+    }
+    if (index < 0) return;
+    this.resetCurrent();
+    this.setAriaCurrentAndActiveDescendant(index);
+  }
+
+  disconnect() {
+    clearTimeout(this.typeaheadTimer);
   }
 
   #show() {

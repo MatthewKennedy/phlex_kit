@@ -11,6 +11,7 @@ module Docs
         demo Docs::Examples::Tabs::Vertical, title: "Vertical"
         demo Docs::Examples::Tabs::Disabled, title: "Disabled"
         demo Docs::Examples::Tabs::Icons, title: "Icons"
+        demo Docs::Examples::Tabs::ServerActive, title: "Server-marked active tab"
       end
     end
   end

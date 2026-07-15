@@ -22,7 +22,6 @@
   white-space: nowrap;
   border-radius: var(--pk-radius);
   border: 1px solid var(--pk-input);
-  background: transparent;
   color: var(--pk-text);
   padding: .25rem .5rem .25rem .625rem;
   gap: .375rem;

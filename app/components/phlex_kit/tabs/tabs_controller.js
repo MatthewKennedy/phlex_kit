@@ -13,7 +13,10 @@ export default class extends Controller {
       this.listTarget.setAttribute("aria-orientation", "vertical")
     }
     if (!this.hasActiveValue && this.triggerTargets.length > 0) {
-      this.activeValue = this.triggerTargets[0].dataset.value
+      // Honor a server-marked TabsTrigger(active: true) before falling back
+      // to the first trigger — hydration must not contradict the markup.
+      const marked = this.triggerTargets.find((el) => el.dataset.state === "active")
+      this.activeValue = (marked || this.triggerTargets[0]).dataset.value
     } else {
       this.sync()
     }

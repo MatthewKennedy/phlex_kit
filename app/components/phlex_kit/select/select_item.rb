@@ -7,7 +7,10 @@ module PhlexKit
   # repeated attribute rather than override it.
   # See select.rb.
   class SelectItem < BaseComponent
-    def initialize(value: nil, selected: false, **attrs)
+    def initialize(value:, selected: false, **attrs)
+      # nil would render no data-value at all and the controller would submit
+      # the literal string "undefined" — fail loud instead.
+      raise ArgumentError, "SelectItem requires a value:" if value.nil?
       @value = value
       @selected = selected
       @attrs = attrs
@@ -25,6 +28,7 @@ module PhlexKit
         data: {
           value: @value,
           action: "click->phlex-kit--select#selectItem keydown.enter->phlex-kit--select#selectItem " \
+                  "keydown.space->phlex-kit--select#selectItem " \
                   "keydown.down->phlex-kit--select#handleKeyDown keydown.up->phlex-kit--select#handleKeyUp " \
                   "keydown.home->phlex-kit--select#handleHome keydown.end->phlex-kit--select#handleEnd " \
                   "keydown.esc->phlex-kit--select#handleEsc",

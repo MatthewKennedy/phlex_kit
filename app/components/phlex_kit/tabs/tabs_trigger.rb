@@ -17,7 +17,10 @@ module PhlexKit
         aria_selected: @active ? "true" : "false",
         aria_controls: "pk-tabs-panel-#{@value}",
         tabindex: @active ? "0" : "-1",
-        data: { phlex_kit__tabs_target: "trigger", action: "click->phlex-kit--tabs#show", value: @value }
+        # data-state is the only hook tabs.css styles the active trigger by —
+        # it must be server-rendered or the active tab looks inactive pre-JS.
+        data: { phlex_kit__tabs_target: "trigger", action: "click->phlex-kit--tabs#show", value: @value,
+                state: @active ? "active" : "inactive" }
       }
       if @as == :a
         a(**mix(base, @attrs), &)

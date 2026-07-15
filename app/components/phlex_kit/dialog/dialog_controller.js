@@ -10,6 +10,9 @@ export default class extends Controller {
 
   connect() {
     this.dialogTarget.addEventListener("close", this.handleClose)
+    // Turbo snapshots at turbo:before-cache, BEFORE disconnect — close now or
+    // the cached page restores a non-modal <dialog open> with scroll locked.
+    document.addEventListener("turbo:before-cache", this.beforeCache)
     this.#wireAria("aria-labelledby", ".pk-dialog-title")
     this.#wireAria("aria-describedby", ".pk-dialog-description")
     if (this.openValue) this.open()
@@ -24,7 +27,13 @@ export default class extends Controller {
   }
   disconnect() {
     this.dialogTarget.removeEventListener("close", this.handleClose)
+    document.removeEventListener("turbo:before-cache", this.beforeCache)
     if (this.dialogTarget.open) this.handleClose()
+  }
+  beforeCache = () => {
+    if (!this.dialogTarget.open) return
+    this.dialogTarget.close()
+    this.handleClose() // the close event is a queued task — too late for the snapshot
   }
   open(e) {
     e?.preventDefault()

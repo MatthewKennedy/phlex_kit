@@ -4,7 +4,7 @@ module PhlexKit
   class SheetClose < BaseComponent
     def initialize(**attrs) = (@attrs = attrs)
     def view_template(&)
-      span(**mix({ style: "display: contents", data: { action: "click->phlex-kit--sheet-content#close" } }, @attrs), &)
+      span(**mix({ style: "display: contents;", data: { action: "click->phlex-kit--sheet-content#close" } }, @attrs), &)
     end
   end
 end

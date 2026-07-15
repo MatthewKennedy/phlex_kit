@@ -25,11 +25,21 @@ export default class extends Controller {
   static COOKIE = "pk_sidebar_state"
 
   connect() {
+    // Crossing to desktop while the mobile drawer is open would strand the
+    // page inert: the scrim/drawer CSS stops applying at >=768px but the
+    // inert marks (and data-open) would survive. Close on breakpoint change.
+    this.mql = window.matchMedia(this.constructor.MOBILE)
+    this.onBreakpoint = () => {
+      if (!this.mql.matches) this.closeMobile()
+      this.#syncExpanded()
+    }
+    this.mql.addEventListener("change", this.onBreakpoint)
     this.#wireAriaControls()
     this.#syncExpanded()
   }
 
   disconnect() {
+    this.mql.removeEventListener("change", this.onBreakpoint)
     this.#restoreInert()
   }
 

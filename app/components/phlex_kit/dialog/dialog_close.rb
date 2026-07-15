@@ -7,7 +7,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      span(**mix({ style: "display: contents", data: { action: "click->phlex-kit--dialog#dismiss" } }, @attrs), &)
+      span(**mix({ style: "display: contents;", data: { action: "click->phlex-kit--dialog#dismiss" } }, @attrs), &)
     end
   end
 end

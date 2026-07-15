@@ -44,7 +44,7 @@
   border-color: transparent;
   box-shadow: none;
 }
-.pk-tabs-trigger::after {
+.pk-tabs-list.line .pk-tabs-trigger::after {
   content: "";
   position: absolute;
   inset-inline: 0;
@@ -54,7 +54,7 @@
   opacity: 0;
   transition: opacity .15s ease;
 }
-.pk-tabs.vertical .pk-tabs-trigger::after {
+.pk-tabs.vertical .pk-tabs-list.line .pk-tabs-trigger::after {
   inset-inline: auto;
   inset-block: 0;
   inset-inline-end: -.25rem;
