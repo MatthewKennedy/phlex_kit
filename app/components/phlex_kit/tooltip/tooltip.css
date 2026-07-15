@@ -64,11 +64,11 @@
 }
 .pk-tooltip-content.bottom { position-area: block-end; margin: 6px 0 0; }
 .pk-tooltip-content.left {
-  position-area: inline-start; margin: 0 6px 0 0;
+  position-area: inline-start; margin: 0; margin-inline-end: 6px;
   position-try-fallbacks: flip-inline;
 }
 .pk-tooltip-content.right {
-  position-area: inline-end; margin: 0 0 0 6px;
+  position-area: inline-end; margin: 0; margin-inline-start: 6px;
   position-try-fallbacks: flip-inline;
 }
 /* Hover reveal only on devices that actually hover (a touch tap must not

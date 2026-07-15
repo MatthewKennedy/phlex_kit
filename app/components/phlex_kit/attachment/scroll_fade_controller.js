@@ -29,8 +29,13 @@ export default class extends Controller {
   update() {
     const el = this.element
     if (this.axisValue === "x") {
-      el.toggleAttribute("data-at-start", el.scrollLeft <= 1)
-      el.toggleAttribute("data-at-end", el.scrollLeft + el.clientWidth >= el.scrollWidth - 1)
+      // Math.abs: in RTL scrollLeft runs 0..negative, so the raw value would
+      // read as permanently "at start" — abs tracks the logical inline start.
+      const scrolled = Math.abs(el.scrollLeft)
+      // <= 2, not <= 1: scroll-snap + the 2px ring padding leave the group
+      // resting at scrollLeft 2, which must still count as "at start".
+      el.toggleAttribute("data-at-start", scrolled <= 2)
+      el.toggleAttribute("data-at-end", scrolled + el.clientWidth >= el.scrollWidth - 1)
     } else {
       el.toggleAttribute("data-at-start", el.scrollTop <= 1)
       el.toggleAttribute("data-at-end", el.scrollTop + el.clientHeight >= el.scrollHeight - 1)

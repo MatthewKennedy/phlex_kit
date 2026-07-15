@@ -18,12 +18,12 @@
 }
 .pk-input-otp-slot:not(:first-child) { margin-inline-start: -1px; }
 .pk-input-otp-group .pk-input-otp-slot:first-child {
-  border-top-left-radius: var(--pk-radius);
-  border-bottom-left-radius: var(--pk-radius);
+  border-start-start-radius: var(--pk-radius);
+  border-end-start-radius: var(--pk-radius);
 }
 .pk-input-otp-group .pk-input-otp-slot:last-child {
-  border-top-right-radius: var(--pk-radius);
-  border-bottom-right-radius: var(--pk-radius);
+  border-start-end-radius: var(--pk-radius);
+  border-end-end-radius: var(--pk-radius);
 }
 .pk-input-otp-slot:focus {
   position: relative;

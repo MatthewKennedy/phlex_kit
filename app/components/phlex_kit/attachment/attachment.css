@@ -142,21 +142,24 @@
 /* Scrollable, snapping row with an edge fade (horizontal scroll-fade). */
 .pk-attachment-group {
   --pk-scroll-fade-size: 2rem;
+  /* Gradient directions can't be logical — follow the inline axis by hand. */
+  --pk-scroll-fade-dir: to right;
   display: flex;
   gap: .5rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   padding: 2px; /* room for card rings */
-  mask-image: linear-gradient(to right,
+  mask-image: linear-gradient(var(--pk-scroll-fade-dir),
     transparent 0, black var(--pk-scroll-fade-size),
     black calc(100% - var(--pk-scroll-fade-size)), transparent 100%);
 }
+.pk-attachment-group:dir(rtl) { --pk-scroll-fade-dir: to left; }
 .pk-attachment-group[data-at-start] {
-  mask-image: linear-gradient(to right,
+  mask-image: linear-gradient(var(--pk-scroll-fade-dir),
     black calc(100% - var(--pk-scroll-fade-size)), transparent 100%);
 }
 .pk-attachment-group[data-at-end] {
-  mask-image: linear-gradient(to right, transparent 0, black var(--pk-scroll-fade-size));
+  mask-image: linear-gradient(var(--pk-scroll-fade-dir), transparent 0, black var(--pk-scroll-fade-size));
 }
 .pk-attachment-group[data-at-start][data-at-end] { mask-image: none; }
 .pk-attachment-group > .pk-attachment { flex: none; scroll-snap-align: start; }

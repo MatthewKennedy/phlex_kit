@@ -16,14 +16,14 @@
   transition: transform .3s ease;
   will-change: transform;
 }
-.pk-carousel.is-horizontal .pk-carousel-track { margin-left: -1rem; }
+.pk-carousel.is-horizontal .pk-carousel-track { margin-inline-start: -1rem; }
 .pk-carousel.is-vertical .pk-carousel-track { flex-direction: column; margin-top: -1rem; }
 
 .pk-carousel-item {
   min-width: 0;
   flex: 0 0 100%;
 }
-.pk-carousel.is-horizontal .pk-carousel-item { padding-left: 1rem; }
+.pk-carousel.is-horizontal .pk-carousel-item { padding-inline-start: 1rem; }
 .pk-carousel.is-vertical .pk-carousel-item { padding-top: 1rem; }
 
 /* Edge buttons (an outline icon .pk-button; same specificity, later in the
@@ -34,8 +34,8 @@
   height: 2rem;
   border-radius: 9999px;
 }
-.pk-carousel.is-horizontal .pk-carousel-previous { left: -3rem; top: 50%; transform: translateY(-50%); }
-.pk-carousel.is-horizontal .pk-carousel-next { right: -3rem; top: 50%; transform: translateY(-50%); }
+.pk-carousel.is-horizontal .pk-carousel-previous { inset-inline-start: -3rem; top: 50%; transform: translateY(-50%); }
+.pk-carousel.is-horizontal .pk-carousel-next { inset-inline-end: -3rem; top: 50%; transform: translateY(-50%); }
 .pk-carousel.is-vertical .pk-carousel-previous { top: -3rem; left: 50%; transform: translateX(-50%) rotate(90deg); }
 .pk-carousel.is-vertical .pk-carousel-next { bottom: -3rem; left: 50%; transform: translateX(-50%) rotate(90deg); }
 .pk-carousel-previous svg, .pk-carousel-next svg { width: 1rem; height: 1rem; }

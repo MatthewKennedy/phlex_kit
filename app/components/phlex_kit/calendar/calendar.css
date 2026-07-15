@@ -155,6 +155,14 @@
   background: var(--pk-accent);
 }
 .pk-calendar-cell:has(> .range-cap) { background: var(--pk-accent); }
-.pk-calendar-cell:has(> .range-start.range-cap) { border-radius: var(--pk-cell-radius) 0 0 var(--pk-cell-radius); }
-.pk-calendar-cell:has(> .range-end.range-cap) { border-radius: 0 var(--pk-cell-radius) var(--pk-cell-radius) 0; }
+.pk-calendar-cell:has(> .range-start.range-cap) {
+  border-radius: 0;
+  border-start-start-radius: var(--pk-cell-radius);
+  border-end-start-radius: var(--pk-cell-radius);
+}
+.pk-calendar-cell:has(> .range-end.range-cap) {
+  border-radius: 0;
+  border-start-end-radius: var(--pk-cell-radius);
+  border-end-end-radius: var(--pk-cell-radius);
+}
 .pk-calendar-cell:has(> .range-start.range-end) { border-radius: var(--pk-cell-radius); }
