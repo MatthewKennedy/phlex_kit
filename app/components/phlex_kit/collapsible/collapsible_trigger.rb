@@ -4,8 +4,11 @@ module PhlexKit
   # control (a <button>, e.g. PhlexKit::Button) inside it for keyboard
   # operability and semantics, the same composition pattern as
   # AttachmentTrigger. Pass `open:` matching the parent Collapsible's so
-  # aria-expanded is correct before JS; the controller keeps it in sync and
-  # wires aria-controls to the content's id in connect().
+  # aria-expanded is correct before JS. The wrapper carries the server-rendered
+  # aria-expanded only because the component can't reach into its block; on
+  # connect the controller relocates it (plus aria-controls) onto the nested
+  # focusable control — AT reads state from the focused element, not the
+  # wrapper — falling back to the wrapper when no control is nested.
   class CollapsibleTrigger < BaseComponent
     def initialize(open: false, **attrs)
       @open = open

@@ -6,7 +6,7 @@ module Docs
       class Horizontal < Phlex::HTML
         def view_template
           div(class: "w-sm", style: "border: 1px solid var(--pk-border); border-radius: calc(var(--pk-radius) - 2px);") do
-            render PhlexKit::ScrollArea.new do
+            render PhlexKit::ScrollArea.new(aria: { label: "Artworks" }) do
               div(style: "display: flex; gap: 1rem; padding: 1rem; width: max-content;") do
                 8.times do |i|
                   figure(style: "margin: 0; flex: none;") do

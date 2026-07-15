@@ -16,6 +16,13 @@ export default class extends Controller {
     if (this.hasErrorTarget) {
       if (this.errorTarget.textContent.trim()) {
         this.shouldValidateValue = true;
+        // A server-rendered error is already visible — give the control(s)
+        // the same aria wiring onInvalid applies, instead of leaving
+        // aria-invalid/aria-describedby unset until the first input/change.
+        this.inputTargets.forEach((input) => {
+          input.setAttribute("aria-invalid", "true");
+          this.#describeBy(input, true);
+        });
       } else {
         this.errorTarget.classList.add("pk-hidden");
       }

@@ -35,13 +35,15 @@ class FormsSystemTest < SystemTestCase
     # Wait for connect (it stamps the closed state).
     section.assert_selector ".pk-collapsible[data-state='closed']"
 
+    # aria-expanded lives on the nested focusable button (what AT reads),
+    # not the plain trigger wrapper — the controller relocates it on connect.
     section.click_button "Product details"
-    section.assert_selector ".pk-collapsible-trigger[aria-expanded='true']"
+    section.assert_selector ".pk-collapsible-trigger button[aria-expanded='true']"
     section.assert_selector ".pk-collapsible-content:not(.pk-hidden)"
     section.assert_text "This panel can be expanded or collapsed"
 
     section.click_button "Product details"
-    section.assert_selector ".pk-collapsible-trigger[aria-expanded='false']"
+    section.assert_selector ".pk-collapsible-trigger button[aria-expanded='false']"
     section.assert_selector ".pk-collapsible-content.pk-hidden", visible: :all
   end
 

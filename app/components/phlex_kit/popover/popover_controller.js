@@ -33,7 +33,15 @@ export default class extends Controller {
     this.contentTarget.togglePopover()
   }
 
+  // One stable handler added/removed symmetrically — an anonymous listener
+  // here would pile up a duplicate on every target reconnect.
+  syncState = (e) => { e.target.dataset.state = e.newState === "open" ? "open" : "closed" }
+
   contentTargetConnected(el) {
-    el.addEventListener("toggle", (e) => { el.dataset.state = e.newState === "open" ? "open" : "closed" })
+    el.addEventListener("toggle", this.syncState)
+  }
+
+  contentTargetDisconnected(el) {
+    el.removeEventListener("toggle", this.syncState)
   }
 }

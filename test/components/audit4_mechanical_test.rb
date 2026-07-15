@@ -185,13 +185,19 @@ class Audit4MechanicalTest < Minitest::Test
     assert_raises(KeyError) { render(PhlexKit::Link.new(variant: :nope) { "x" }) }
   end
 
-  # --- Finding 14: ScrollArea's unconditional tabindex needs a role so the
-  # focus stop announces as something.
-  def test_scroll_area_focus_stop_announces_as_region
+  # --- Finding 14 (revised by audit round 5): the focus stop keeps its
+  # unconditional tabindex, but role=region is now conditional on an
+  # accessible name — a NAMELESS region is itself AT noise, so an unlabelled
+  # ScrollArea omits the role while a labelled one announces as a region.
+  def test_scroll_area_focus_stop_announces_as_region_only_when_named
     html = render(PhlexKit::ScrollArea.new { "x" })
     doc = Nokogiri::HTML5.fragment(html)
     area = doc.at_css(".pk-scroll-area")
     assert_equal "0", area["tabindex"]
-    assert_equal "region", area["role"]
+    assert_nil area["role"]
+
+    named = Nokogiri::HTML5.fragment(render(PhlexKit::ScrollArea.new(aria: { label: "Tags" }) { "x" })).at_css(".pk-scroll-area")
+    assert_equal "0", named["tabindex"]
+    assert_equal "region", named["role"]
   end
 end
