@@ -3,6 +3,7 @@
 require "json" # Carousel serializes its options value standalone (no Rails to_json)
 require "securerandom" # DatePicker generates a default input id
 require "cgi" # DataTable sort/pagination build query strings standalone
+require "date" # Phlex 2.4's attribute type-dispatch references Date on every render
 # phlex-rails references ActiveSupport::SafeBuffer at require time; in a Rails
 # app it's already loaded, but a bare `require "phlex_kit"` (script/console)
 # crashes with "uninitialized constant Phlex::ActiveSupport" without these.

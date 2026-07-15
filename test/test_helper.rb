@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require "minitest/autorun"
-require "date" # Phlex's attribute type-dispatch references Date; Rails loads it, standalone doesn't
 # ActiveSupport must load before phlex-rails (which references
 # ActiveSupport::SafeBuffer at require time). In a Rails app this is already
 # loaded; the standalone unit suite loads it explicitly.
