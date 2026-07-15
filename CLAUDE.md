@@ -42,6 +42,13 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   fills use `--pk-accent`, control borders `--pk-input`, focus rings
   `box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent)`).
   All radii derive from `--pk-radius` (`calc(var(--pk-radius) - 2px)` etc).
+  Shadows/overlays use `color-mix(in srgb, var(--pk-shadow-color|--pk-overlay)
+  N%, transparent)` — never hardcoded blacks. Direction-relative properties use
+  logical equivalents (`inset-inline-*`, `text-align: start`); physical only
+  for side-kwarg contracts (sheet/drawer/toast positions) and centering math.
+- Clone-based modals (alert_dialog, sheet/drawer, sidebar mobile) `inert` the
+  page behind them — restore on close, disconnect, AND `turbo:before-cache`;
+  the helper is duplicated per controller by design (no shared JS util).
 - JS: Stimulus only, identifiers `phlex-kit--<name>`, data keys
   `phlex_kit__<name>_target`. The controller file lives in the component folder
   (`app/components/phlex_kit/<name>/<name>_controller.js`) but keeps the flat
@@ -64,6 +71,16 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
 
 ## Gotchas that have already bitten
 
+- **Inline `style:` strings must end with `;`** — Phlex `mix` joins duplicate
+  string attrs with a space, so `style: "flex-grow: 30"` + caller
+  `style: "color: red"` fuses into one invalid declaration that kills BOTH
+  (bit aspect_ratio, slider, resizable_panel).
+- **System tests (Cuprite)**: use the raw-keyboard `press` helper from
+  `test/system/interaction_helpers.rb` — element `send_keys` prefixes a click
+  that activates focused menu items. Native `<dialog>` fires `close` as a
+  queued task — poll with `wait_until`, never read scroll-lock state
+  synchronously after closing. No `sleep`s; every visit installs a JS-error
+  trap that flunks the test in teardown.
 - **Manifest imports must be relative to the manifest's own directory**
   (`_tokens.css`, `button/button.css` — never `phlex_kit/…`): Propshaft
   resolves bare `url()` paths against the referencing file's dir, so a
