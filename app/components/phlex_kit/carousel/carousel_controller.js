@@ -10,6 +10,11 @@ const DEFAULT_OPTIONS = {
 const DRAG_DISTANCE_THRESHOLD = 0.25;
 const DRAG_VELOCITY_THRESHOLD = 0.5;
 
+// Subpixel slop when comparing the current offset to the max scrollable
+// offset — layout rounding can leave a fraction of a px short of the true
+// max, which would otherwise read as "can still scroll".
+const OFFSET_EPSILON = 0.5;
+
 // Ported from ruby_ui's carousel controller with the embla-carousel dependency
 // removed: a minimal translate-based engine (scrollNext/scrollPrev, loop, x/y
 // axis from the options value) moves the track directly, so only
@@ -36,6 +41,7 @@ export default class extends Controller {
     this._onPointerMove = this._onPointerMove.bind(this);
     this._onPointerUp = this._onPointerUp.bind(this);
     this._onClickCapture = this._onClickCapture.bind(this);
+    this._onDragStart = this._onDragStart.bind(this);
     window.addEventListener("resize", this._onResize);
     // window resize misses container-only resizes (flex/grid reflow,
     // sidebar toggles) — observe the viewport itself.
@@ -45,6 +51,10 @@ export default class extends Controller {
     }
     this.viewportTarget.addEventListener("pointerdown", this._onPointerDown);
     this.viewportTarget.addEventListener("click", this._onClickCapture, true);
+    // Firefox starts a native image drag on pointerdown-over-<img>, which
+    // cancels the pointer sequence mid-swipe; -webkit-user-drag (CSS) is
+    // WebKit-only, so suppress it here for every browser.
+    this.viewportTarget.addEventListener("dragstart", this._onDragStart);
     this._update();
   }
 
@@ -54,6 +64,7 @@ export default class extends Controller {
     this._resizeObserver = null;
     this.viewportTarget.removeEventListener("pointerdown", this._onPointerDown);
     this.viewportTarget.removeEventListener("click", this._onClickCapture, true);
+    this.viewportTarget.removeEventListener("dragstart", this._onDragStart);
     // a disconnect mid-drag must drop the move/up listeners and drag state
     this.viewportTarget.removeEventListener("pointermove", this._onPointerMove);
     this.viewportTarget.removeEventListener("pointerup", this._onPointerUp);
@@ -66,6 +77,14 @@ export default class extends Controller {
   }
 
   scrollNext() {
+    // Non-loop multi-up: the track can hit its max scrollable offset before
+    // the index reaches the last slide (_offsetOf clamps). Once there, index
+    // still has room to climb but there's nothing left to reveal — bail so
+    // neither clicks (button already disables via _update) nor ArrowRight
+    // (keyNext, which routes here) produce dead no-op advances.
+    if (!this.options.loop && this._offsetOf(this.index) >= this._maxOffset() - OFFSET_EPSILON) {
+      return;
+    }
     this._goTo(this.index + 1);
   }
 
@@ -105,8 +124,13 @@ export default class extends Controller {
 
   _update() {
     this._applyTransform();
-    const last = this.slides.length - 1;
-    const canNext = this.options.loop ? this.slides.length > 1 : this.index < last;
+    const canNext = this.options.loop
+      ? this.slides.length > 1
+      // Offset-based, not index-based: with multi-up layouts the track
+      // reaches its max scrollable offset (_maxOffset) before this.index
+      // reaches the last slide, and _offsetOf clamps to that max — an
+      // index-based check left Next enabled for several dead clicks.
+      : this._offsetOf(this.index) < this._maxOffset() - OFFSET_EPSILON;
     const canPrev = this.options.loop ? this.slides.length > 1 : this.index > 0;
     this.nextButtonTargets.forEach((button) => (button.disabled = !canNext));
     this.prevButtonTargets.forEach((button) => (button.disabled = !canPrev));
@@ -187,6 +211,16 @@ export default class extends Controller {
     this.suppressClick = false;
     e.preventDefault();
     e.stopPropagation();
+  }
+
+  // Firefox-only: a pointer drag that starts on an <img> slide fires a
+  // native HTML5 dragstart, which cancels the in-flight pointer sequence
+  // (pointercancel) and aborts the swipe. Chrome/Safari never fire it here
+  // because carousel.css already sets -webkit-user-drag: none.
+  _onDragStart(e) {
+    if (e.target.closest("img")) {
+      e.preventDefault();
+    }
   }
 
   // --- geometry ---
