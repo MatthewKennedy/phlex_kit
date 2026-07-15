@@ -47,15 +47,21 @@ export default class extends Controller {
       // constant: normalizing to 2 rescaled the pair against untouched
       // siblings, so in a 25/25/50 group the 50 panel ballooned on first drag.
       pairGrow: this.growOf(prev) + this.growOf(next) || 2,
+      // Snapshot the group's total grow: min/max-size percentages are shares
+      // of the WHOLE group, and untouched siblings keep their grow mid-drag.
+      groupGrow: this.groupGrow(),
     }
     try { handle.setPointerCapture(e.pointerId) } catch {}
 
     const onMove = (ev) => {
+      // LTR assumption: clientX grows toward the trailing panel; RTL drag
+      // inversion is a documented limitation.
       const delta = (horizontal ? ev.clientX : ev.clientY) - drag.startPos
       const total = drag.prevSize + drag.nextSize
       const prevSize = Math.min(Math.max(drag.prevSize + delta, 0), total)
-      prev.style.flexGrow = (prevSize / total) * drag.pairGrow
-      next.style.flexGrow = ((total - prevSize) / total) * drag.pairGrow
+      const prevGrow = this.clampPrevGrow(prev, next, (prevSize / total) * drag.pairGrow, drag.pairGrow, drag.groupGrow)
+      prev.style.flexGrow = prevGrow
+      next.style.flexGrow = drag.pairGrow - prevGrow
       this.syncValuenow(handle)
     }
     const onUp = () => {
@@ -71,7 +77,8 @@ export default class extends Controller {
   }
 
   // Arrow keys resize by 5% of the pair per press (matching the drag axis);
-  // Home/End collapse the leading panel to its min/max.
+  // Home/End collapse the leading panel to its min/max (clamped to any
+  // per-panel min-size/max-size bounds, same as drags).
   keydown(e) {
     const handle = e.currentTarget
     const prev = handle.previousElementSibling
@@ -96,14 +103,51 @@ export default class extends Controller {
     }
     e.preventDefault()
 
-    prev.style.flexGrow = share * pairGrow
-    next.style.flexGrow = (1 - share) * pairGrow
+    const prevGrow = this.clampPrevGrow(prev, next, share * pairGrow, pairGrow, this.groupGrow())
+    prev.style.flexGrow = prevGrow
+    next.style.flexGrow = pairGrow - prevGrow
     this.syncValuenow(handle)
   }
 
   growOf(el) {
     const g = parseFloat(getComputedStyle(el).flexGrow)
     return Number.isFinite(g) ? g : 1
+  }
+
+  // Clamp the leading panel's proposed flex-grow to both panels' optional
+  // min-size/max-size percentages. Bounds are shares of the whole group
+  // (grow / groupGrow), and the pair's combined grow is fixed, so a bound on
+  // one panel implies the complementary bound on its neighbour. Without any
+  // bounds this collapses to the historical [0, pairGrow] clamp.
+  clampPrevGrow(prev, next, prevGrow, pairGrow, groupGrow) {
+    const pb = this.boundsOf(prev)
+    const nb = this.boundsOf(next)
+    let lo = 0
+    let hi = pairGrow
+    if (pb.min !== null) lo = Math.max(lo, pb.min * groupGrow)
+    if (nb.max !== null) lo = Math.max(lo, pairGrow - nb.max * groupGrow)
+    if (pb.max !== null) hi = Math.min(hi, pb.max * groupGrow)
+    if (nb.min !== null) hi = Math.min(hi, pairGrow - nb.min * groupGrow)
+    if (lo > hi) return Math.min(Math.max(prevGrow, 0), pairGrow) // unsatisfiable bounds: ignore them
+    return Math.min(Math.max(prevGrow, lo), hi)
+  }
+
+  // A panel's declared size bounds as fractions of the group, or nulls.
+  boundsOf(el) {
+    const min = parseFloat(el.getAttribute("data-phlex-kit--resizable-min-size"))
+    const max = parseFloat(el.getAttribute("data-phlex-kit--resizable-max-size"))
+    return {
+      min: Number.isFinite(min) ? min / 100 : null,
+      max: Number.isFinite(max) ? max / 100 : null,
+    }
+  }
+
+  // Combined flex-grow of this group's own panels (direct children only —
+  // panels of a nested group belong to that group's own controller).
+  groupGrow() {
+    return [...this.element.children]
+      .filter((el) => el.matches('[data-phlex-kit--resizable-target~="panel"]'))
+      .reduce((sum, el) => sum + this.growOf(el), 0) || 2
   }
 
   syncValuenow(handle) {

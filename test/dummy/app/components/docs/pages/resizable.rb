@@ -9,6 +9,7 @@ module Docs
         demo Docs::Examples::Resizable::Horizontal, title: "Default"
         demo Docs::Examples::Resizable::Vertical, title: "Vertical"
         demo Docs::Examples::Resizable::WithHandle, title: "Handle"
+        demo Docs::Examples::Resizable::MinMax, title: "Min and max sizes"
       end
     end
   end
