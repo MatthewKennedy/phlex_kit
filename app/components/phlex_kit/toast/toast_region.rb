@@ -10,6 +10,12 @@ module PhlexKit
   class ToastRegion < BaseComponent
     SKELETON_VARIANTS = %i[default success error warning info loading].freeze
 
+    # Sentinel default for dir: — distinguishes "caller didn't pass dir:" (omit
+    # the attribute, inherit from the page) from an explicit dir: :ltr (must
+    # render dir="ltr"), which a plain `:ltr` default can't tell apart.
+    DIR_UNSET = Object.new.freeze
+    private_constant :DIR_UNSET
+
     POSITIONS = {
       top_left: "top-left",
       top_center: "top-center",
@@ -30,7 +36,7 @@ module PhlexKit
       rich_colors: false,
       close_button: false,
       hotkey: %w[alt t],
-      dir: :ltr,
+      dir: DIR_UNSET,
       flash: nil,
       id: "pk-toaster",
       **attrs
@@ -53,7 +59,8 @@ module PhlexKit
       end
       @close_button = close_button
       @hotkey = hotkey
-      @dir = dir.to_sym
+      @dir_explicit = !dir.equal?(DIR_UNSET)
+      @dir = (@dir_explicit ? dir : :ltr).to_sym
       unless %i[ltr rtl auto].include?(@dir)
         raise ArgumentError, "ToastRegion dir: must be :ltr, :rtl or :auto"
       end
@@ -138,7 +145,9 @@ module PhlexKit
           phlex_kit__toaster_hotkey_value: Array(@hotkey).join("+")
         }
       }
-      base[:dir] = @dir.to_s unless @dir == :ltr
+      # Only an explicit dir: renders the attribute — the true default (no
+      # dir: passed) omits it so the toast inherits the page's direction.
+      base[:dir] = @dir.to_s if @dir_explicit
       base
     end
   end

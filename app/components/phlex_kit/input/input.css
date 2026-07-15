@@ -38,7 +38,6 @@
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
 }
 .pk-input:disabled {
-  pointer-events: none;
   cursor: not-allowed;
   opacity: .5;
   background: color-mix(in oklab, var(--pk-input) 80%, transparent);

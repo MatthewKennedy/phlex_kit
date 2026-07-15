@@ -11,6 +11,9 @@ module PhlexKit
       unless AS_TAGS.include?(@as)
         raise ArgumentError, "unknown AttachmentTrigger as: #{@as.inspect} (use one of #{AS_TAGS.join(", ")})"
       end
+      if @as == :a && href.nil?
+        raise ArgumentError, "AttachmentTrigger requires href: when as: :a"
+      end
       @href = href
       @attrs = attrs
     end

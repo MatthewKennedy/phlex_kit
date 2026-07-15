@@ -70,7 +70,10 @@ module PhlexKit
     def edge_item(disabled:, href:, label:, name:)
       if disabled
         li do
-          span(class: "pk-data-table-page-disabled", aria: { disabled: "true", label: name }) { label }
+          # role-less span + aria-label is invalid ARIA (aria-label on a
+          # role-less element is not perceivable) — role + aria-disabled
+          # mirrors BreadcrumbPage's disabled-control pattern.
+          span(class: "pk-data-table-page-disabled", role: "link", aria: { disabled: "true", label: name }) { label }
         end
       else
         render PaginationItem.new(href: href, aria: { label: name }) { label }

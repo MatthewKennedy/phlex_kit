@@ -1,19 +1,27 @@
 module PhlexKit
   class ToggleGroupItem < Toggle
     def initialize(value:, group_context:, variant: nil, size: nil, **attrs)
-      # Toggle kwargs this item renders no markup for — inheriting them
-      # silently discarded the caller's input.
-      unsupported = attrs.keys & %i[wrapper name unpressed_value]
+      # Toggle kwargs this item renders no markup for, or that the group
+      # derives itself (pressed: comes from the group's selected_values) —
+      # inheriting them silently discarded the caller's input.
+      unsupported = attrs.keys & %i[wrapper name unpressed_value pressed]
       if unsupported.any?
         raise ArgumentError, "ToggleGroupItem does not support #{unsupported.join(", ")} (group items render a bare button)"
       end
       @item_value = value.to_s
       @group_context = group_context
       pressed = group_context[:selected_values].include?(@item_value)
+      item_disabled = attrs.key?(:disabled) ? attrs.delete(:disabled) : group_context[:disabled]
+      # Roving tabindex initial stop: when nothing is selected yet, the first
+      # enabled item claims tabindex="0" (see ToggleGroup#claim_tab_stop).
+      # group_context[:group] is nil for a hand-built context (bypassing
+      # ToggleGroup#item_context) — treat that as "no tab-stop claim" rather
+      # than raising, since standalone tests construct contexts by hand.
+      @is_first_tab_stop = group_context[:group]&.claim_tab_stop(item_disabled) || false
       super(pressed: pressed, name: nil, value: @item_value,
             variant: variant || group_context[:variant],
             size: size || group_context[:size],
-            disabled: group_context[:disabled], **attrs)
+            disabled: item_disabled, **attrs)
     end
 
     def view_template(&block)
@@ -34,7 +42,9 @@ module PhlexKit
         a[:aria] = { checked: @pressed.to_s }
         # A disabled button can't take focus — giving the tab stop to a
         # pressed-but-disabled item made the whole group Tab-unreachable.
-        a[:tabindex] = (@pressed && !@disabled) ? "0" : "-1"
+        # When nothing is selected, the first enabled item claims the initial
+        # roving-tabindex stop instead of every item defaulting to -1.
+        a[:tabindex] = (@pressed && !@disabled) || @is_first_tab_stop ? "0" : "-1"
       else
         a[:aria] = { pressed: @pressed.to_s }
         a[:tabindex] = "0"

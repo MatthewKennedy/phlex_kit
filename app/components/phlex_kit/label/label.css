@@ -9,4 +9,4 @@
   line-height: 1;
   user-select: none;
 }
-.pk-label:has(+ :disabled), .pk-label:has(:disabled) { cursor: not-allowed; opacity: .5; }
+.pk-label:has(+ :disabled), .pk-label:has(:disabled), :disabled + .pk-label { cursor: not-allowed; opacity: .5; }

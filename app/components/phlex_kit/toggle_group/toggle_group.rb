@@ -28,11 +28,26 @@ module PhlexKit
 
     def item_context
       { type: @type, variant: @variant, size: @size, disabled: @disabled,
-        selected_values: selected_values, spacing: @spacing, orientation: @orientation }
+        selected_values: selected_values, spacing: @spacing, orientation: @orientation,
+        group: self }
     end
 
     def ToggleGroupItem(**kwargs, &block)
       render PhlexKit::ToggleGroupItem.new(group_context: item_context, **kwargs), &block
+    end
+
+    # Roving-tabindex initial stop (single-type, nothing selected): the FIRST
+    # enabled item claims tabindex="0" server-side, mirroring what
+    # toggle_group_controller.js's reconcile() computes at runtime
+    # (`pressed || enabledItems()[0]`). Items call this once each, in render
+    # order, as they're constructed — a single-threaded sequential claim, not
+    # a lookahead over siblings not yet rendered.
+    def claim_tab_stop(item_disabled)
+      return false unless selected_values.empty?
+      return false if item_disabled
+      return false if @tab_stop_claimed
+      @tab_stop_claimed = true
+      true
     end
 
     private
