@@ -1,9 +1,13 @@
 module PhlexKit
   class TabsTrigger < BaseComponent
-    def initialize(value:, as: :button, active: false, **attrs)
+    # id: is a named kwarg (not left in **attrs) because `mix` would *merge* a
+    # caller id with the deterministic one into an invalid two-token id,
+    # breaking the aria pairing pre-JS (and scopeIds' caller-id detection).
+    def initialize(value:, as: :button, active: false, id: nil, **attrs)
       @value = value
       @as = as.to_sym
       @active = active
+      @id = id || "pk-tabs-trigger-#{value}"
       @attrs = attrs
     end
     def view_template(&)
@@ -13,7 +17,7 @@ module PhlexKit
       # aria-selected and the roving tabindex are kept in sync by the
       # controller's activeValueChanged.
       base = {
-        class: "pk-tabs-trigger", role: "tab", id: "pk-tabs-trigger-#{@value}",
+        class: "pk-tabs-trigger", role: "tab", id: @id,
         aria_selected: @active ? "true" : "false",
         aria_controls: "pk-tabs-panel-#{@value}",
         tabindex: @active ? "0" : "-1",
