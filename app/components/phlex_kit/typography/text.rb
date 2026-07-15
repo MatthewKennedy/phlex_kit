@@ -27,9 +27,15 @@ module PhlexKit
       bold: "pk-text-bold",
       muted: "pk-text-muted"
     }.freeze
+    # `as:` is dispatched dynamically (send) — whitelist so it can't reach
+    # arbitrary (including private) methods. Mirrors Separator/Marker.
+    AS_TAGS = %i[p span div label small strong em].freeze
 
     def initialize(as: :p, size: "3", weight: :regular, **attrs)
-      @as = as
+      @as = as.to_sym
+      unless AS_TAGS.include?(@as)
+        raise ArgumentError, "unknown Text as: #{@as.inspect} (use one of #{AS_TAGS.join(", ")})"
+      end
       @size = size.to_s
       @weight = weight.to_sym
       @attrs = attrs

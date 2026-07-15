@@ -3,9 +3,14 @@ module PhlexKit
     # id: is a named kwarg (not left in **attrs) because `mix` would *merge* a
     # caller id with the deterministic one into an invalid two-token id,
     # breaking the aria pairing pre-JS (and scopeIds' caller-id detection).
+    AS_TAGS = %i[button a].freeze
+
     def initialize(value:, as: :button, active: false, id: nil, **attrs)
       @value = value
       @as = as.to_sym
+      unless AS_TAGS.include?(@as)
+        raise ArgumentError, "unknown TabsTrigger as: #{@as.inspect} (use one of #{AS_TAGS.join(", ")})"
+      end
       @active = active
       @id = id || "pk-tabs-trigger-#{value}"
       @attrs = attrs

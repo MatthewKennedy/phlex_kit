@@ -12,7 +12,7 @@ class CarouselTest < Minitest::Test
     assert_includes html, "phlex-kit--carousel"
     assert_includes html, "pk-carousel is-horizontal"
     assert_includes html, %(aria-roledescription="carousel")
-    assert_includes html, "keydown.right->phlex-kit--carousel#scrollNext:prevent"
+    assert_includes html, "keydown.right->phlex-kit--carousel#keyNext:prevent"
     assert_includes html, "&quot;axis&quot;:&quot;x&quot;"
   end
 

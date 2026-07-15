@@ -21,7 +21,7 @@ module PhlexKit
       aria = {}
       aria[:labelledby] = @labelledby if @labelledby
       aria[:describedby] = @describedby if @describedby
-      dialog(**mix({ class: cls, aria: aria, data: { phlex_kit__dialog_target: "dialog", action: "click->phlex-kit--dialog#backdropClick" } }, @attrs)) do
+      dialog(**mix({ class: cls, aria: aria, data: { phlex_kit__dialog_target: "dialog", action: "pointerdown->phlex-kit--dialog#backdropPointerdown click->phlex-kit--dialog#backdropClick" } }, @attrs)) do
         yield
         if @show_close_button
           button(type: "button", class: "pk-overlay-close", data: { action: "click->phlex-kit--dialog#dismiss" }) do

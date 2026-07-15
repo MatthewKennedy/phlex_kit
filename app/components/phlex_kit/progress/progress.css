@@ -14,4 +14,12 @@
   width: 100%;
   background: var(--pk-brand);
   transition: transform .3s ease;
+  /* value% − 100%: slides the full-width indicator into view from the
+     inline-start edge. --pk-progress-value is a unitless 0–100 set inline
+     by progress.rb. */
+  transform: translateX(calc((var(--pk-progress-value, 0) - 100) * 1%));
+}
+/* RTL: the bar fills from the right, so travel flips. */
+.pk-progress:dir(rtl) .pk-progress-indicator {
+  transform: translateX(calc((100 - var(--pk-progress-value, 0)) * 1%));
 }

@@ -18,6 +18,15 @@
     var(--pk-brand) var(--pk-slider-progress, 50%),
     var(--pk-surface-2) var(--pk-slider-progress, 50%));
 }
+/* Chrome mirrors the native range input in RTL but the gradient stays
+   physical — repaint the fill from the right. (:dir() reads document
+   directionality, so .vertical's internal `direction: rtl` flip below
+   doesn't match; its own `to top` gradient also comes later and wins.) */
+.pk-slider:dir(rtl)::-webkit-slider-runnable-track {
+  background: linear-gradient(to left,
+    var(--pk-brand) var(--pk-slider-progress, 50%),
+    var(--pk-surface-2) var(--pk-slider-progress, 50%));
+}
 .pk-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: .75rem;

@@ -44,15 +44,26 @@ export default class extends Controller {
     document.body.style.overflow = "hidden"
   }
   dismiss() { this.dialogTarget.close() }
+  // Only a press that STARTED on the backdrop may dismiss: a drag-select
+  // beginning inside the panel and released over the backdrop fires the
+  // click on <dialog> with outside coordinates — that must not close it
+  // (Radix guards on pointerdown origin the same way).
+  backdropPointerdown(e) {
+    this.pressStartedOutside = e.target === this.dialogTarget && !this.#insideBox(e)
+  }
   // Only a click on the ::backdrop dismisses. e.target is the <dialog> for
   // backdrop clicks, but ALSO for clicks on the dialog's own padding/flex
   // gaps — disambiguate by testing the click point against the dialog's box.
   backdropClick(e) {
     if (e.target !== this.dialogTarget) return
     if (e.detail === 0) return // synthetic/keyboard click — no coordinates
+    if (!this.pressStartedOutside) return
+    this.pressStartedOutside = false
+    if (!this.#insideBox(e)) this.dismiss()
+  }
+  #insideBox(e) {
     const r = this.dialogTarget.getBoundingClientRect()
-    const inside = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom
-    if (!inside) this.dismiss()
+    return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom
   }
   handleClose = () => { document.body.style.overflow = this.previousOverflow ?? "" }
 }

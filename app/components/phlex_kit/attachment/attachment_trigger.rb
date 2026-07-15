@@ -4,8 +4,13 @@ module PhlexKit
   # stay independently clickable. Give it an aria-label; pass `as: :a` +
   # `href:` for a link. See attachment.rb.
   class AttachmentTrigger < BaseComponent
+    AS_TAGS = %i[button a].freeze
+
     def initialize(as: :button, href: nil, **attrs)
       @as = as.to_sym
+      unless AS_TAGS.include?(@as)
+        raise ArgumentError, "unknown AttachmentTrigger as: #{@as.inspect} (use one of #{AS_TAGS.join(", ")})"
+      end
       @href = href
       @attrs = attrs
     end

@@ -23,7 +23,10 @@ module PhlexKit
           # mouseenter->cancelClose: re-entering the nav over list padding /
           # whitespace must cancel the pending mouseleave grace-close (only
           # trigger/panel mouseenter did before).
-          action: "click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown mouseleave->phlex-kit--menubar#closeSoon mouseenter->phlex-kit--menubar#cancelClose"
+          # focusout->onFocusout: a keyboard user tabbing past the panel's
+          # last link must close it (menubar wires the same handler; closeSoon
+          # is pointer-only and never fires for this path).
+          action: "click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown focusout->phlex-kit--menubar#onFocusout mouseleave->phlex-kit--menubar#closeSoon mouseenter->phlex-kit--menubar#cancelClose"
         }
       }, @attrs), &)
     end

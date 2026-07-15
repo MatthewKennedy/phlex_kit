@@ -5,8 +5,15 @@ module PhlexKit
   # primary). Kwarg rather than attr for the same mix-merge reason as
   # SidebarMenuButton. See sidebar.rb.
   class SidebarMenuSubButton < BaseComponent
+    # `as:` is dispatched dynamically (send) — whitelist, matching
+    # SidebarMenuButton.
+    AS_TAGS = %i[a button].freeze
+
     def initialize(as: :a, active: false, **attrs)
-      @as = as
+      @as = as.to_sym
+      unless AS_TAGS.include?(@as)
+        raise ArgumentError, "unknown SidebarMenuSubButton as: #{@as.inspect} (use one of #{AS_TAGS.join(", ")})"
+      end
       @active = active
       @attrs = attrs
     end

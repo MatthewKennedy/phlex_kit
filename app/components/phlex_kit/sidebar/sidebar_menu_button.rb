@@ -11,8 +11,16 @@ module PhlexKit
   # untouched — keep the label in a real element there. Attrs pass through via
   # mix. See sidebar.rb.
   class SidebarMenuButton < BaseComponent
+    # `as:` is dispatched dynamically (send) — whitelist so it can't reach
+    # arbitrary (including private) methods; to_sym so a String "a" still
+    # earns aria-current when active.
+    AS_TAGS = %i[button a].freeze
+
     def initialize(as: :button, active: false, tooltip: nil, **attrs)
-      @as = as
+      @as = as.to_sym
+      unless AS_TAGS.include?(@as)
+        raise ArgumentError, "unknown SidebarMenuButton as: #{@as.inspect} (use one of #{AS_TAGS.join(", ")})"
+      end
       @active = active
       @tooltip = tooltip
       @attrs = attrs

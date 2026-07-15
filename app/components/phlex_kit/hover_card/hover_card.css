@@ -22,12 +22,14 @@
   box-shadow: 0 8px 24px color-mix(in srgb, var(--pk-shadow-color) 30%, transparent); outline: none;
 }
 .pk-hover-card-content.top { position-area: block-start span-inline-end; margin: 0 0 .25rem; }
+/* Gap margins are logical to match the logical position-area (and tooltip's
+   pattern) — physical margins landed on the wrong side in RTL. */
 .pk-hover-card-content.left {
-  position-area: inline-start; margin: 0 .25rem 0 0;
+  position-area: inline-start; margin: 0; margin-inline-end: .25rem;
   position-try-fallbacks: flip-inline;
 }
 .pk-hover-card-content.right {
-  position-area: inline-end; margin: 0 0 0 .25rem;
+  position-area: inline-end; margin: 0; margin-inline-start: .25rem;
   position-try-fallbacks: flip-inline;
 }
 /* Hiding must survive author display values (a host class like

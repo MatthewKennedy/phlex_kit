@@ -10,13 +10,20 @@ module PhlexKit
     # unknown values used to fall through silently to <div> — fail loud instead.
     AS_TAGS = %i[div button].freeze
 
-    def initialize(variant: :default, href: nil, as: :div, **attrs)
+    # type: is a named kwarg (not a mix default) because `mix` would *fuse* a
+    # caller type: "submit" with the generated "button" into an invalid
+    # two-token value the browser resolves back to submit.
+    def initialize(variant: :default, href: nil, as: :div, type: :button, **attrs)
       @variant = variant.to_sym
       @href = href
       @as = as.to_sym
       unless AS_TAGS.include?(@as)
         raise ArgumentError, "unknown Marker as: #{@as.inspect} (use one of #{AS_TAGS.join(", ")})"
       end
+      if @href && @as != :div
+        raise ArgumentError, "Marker href: renders an <a> — it can't combine with as: #{@as.inspect}"
+      end
+      @type = type
       @attrs = attrs
     end
 
@@ -25,7 +32,7 @@ module PhlexKit
       if @href
         a(**mix({ class: classes, href: @href }, @attrs), &)
       elsif @as == :button
-        button(**mix({ class: classes, type: "button" }, @attrs), &)
+        button(**mix({ class: classes, type: @type }, @attrs), &)
       else
         div(**mix({ class: classes }, @attrs), &)
       end

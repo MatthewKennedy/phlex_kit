@@ -49,6 +49,11 @@
   transform: translateX(calc(100% - 2px));
   background: var(--pk-brand-ink);
 }
+/* RTL: the resting thumb sits at the physical right — checked travel must
+   slide it left or it leaves the track. */
+.pk-switch:dir(rtl):has(.pk-switch-input:checked) .pk-switch-thumb {
+  transform: translateX(calc(-100% + 2px));
+}
 :root[data-theme="light"] .pk-switch { background: var(--pk-input); }
 :root[data-theme="light"] .pk-switch:has(.pk-switch-input:checked) { background: var(--pk-brand); }
 :root[data-theme="light"] .pk-switch-thumb { background: var(--pk-bg) !important; }

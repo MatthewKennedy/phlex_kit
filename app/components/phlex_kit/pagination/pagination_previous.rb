@@ -16,13 +16,23 @@ module PhlexKit
       # custom (possibly localized) label: speaks for itself — hardcoding
       # "Go to previous page" over it would make AT announce the wrong language.
       base = { href: @href, class: "pk-button ghost pk-pagination-previous" }
-      base[:aria] = { label: "Go to previous page" } if @label == DEFAULT_LABEL
+      # ...and never over a caller-supplied aria label — `mix` would fuse
+      # the two strings instead of overriding.
+      base[:aria] = { label: "Go to previous page" } if @label == DEFAULT_LABEL && !aria_labelled?
       li do
         a(**mix(base, @attrs)) do
           render Icon.new(:chevron_left, size: nil)
           span(class: "pk-pagination-label") { @label }
         end
       end
+    end
+
+    private
+
+    def aria_labelled?
+      aria = @attrs[:aria] || @attrs["aria"]
+      (aria.is_a?(Hash) && (aria[:label] || aria["label"])) ||
+        [ :aria_label, "aria_label", "aria-label" ].any? { |k| @attrs[k] }
     end
   end
 end

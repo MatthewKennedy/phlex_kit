@@ -11,7 +11,13 @@ export default class extends Controller {
     const trigger = this.element.querySelector(".pk-tooltip-trigger")
     if (content && trigger) {
       if (!content.id) content.id = `pk-tooltip-${Math.random().toString(36).slice(2, 8)}`
-      if (!trigger.hasAttribute("aria-describedby")) trigger.setAttribute("aria-describedby", content.id)
+      // Describe the element that actually takes focus: with focusable: false
+      // the wrapper span never receives focus, so a describedby left only on
+      // it is never announced — wire the focusable child too.
+      const focusable = trigger.querySelector("button, a[href], input, select, textarea, [tabindex]")
+      ;[trigger, focusable].forEach((el) => {
+        if (el && !el.hasAttribute("aria-describedby")) el.setAttribute("aria-describedby", content.id)
+      })
     }
 
     this._onKeydown = (e) => {

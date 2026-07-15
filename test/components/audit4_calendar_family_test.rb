@@ -116,8 +116,8 @@ class Audit4CalendarFamilyTest < Minitest::Test
 
   def test_horizontal_carousel_uses_left_right_keys
     html = render(PhlexKit::Carousel.new { "x" })
-    assert_includes html, "keydown.right->phlex-kit--carousel#scrollNext:prevent"
-    assert_includes html, "keydown.left->phlex-kit--carousel#scrollPrev:prevent"
+    assert_includes html, "keydown.right->phlex-kit--carousel#keyNext:prevent"
+    assert_includes html, "keydown.left->phlex-kit--carousel#keyPrev:prevent"
     refute_includes html, "keydown.down"
   end
 

@@ -13,6 +13,10 @@ module PhlexKit
       input(**mix({
         type: :checkbox,
         class: "pk-combobox-checkbox",
+        # The option label is the interactive surface (ARIA option); the real
+        # input must not be a second tab stop inside it — same as
+        # ComboboxCheckbox/ComboboxRadio.
+        tabindex: "-1",
         data: {
           phlex_kit__combobox_target: "toggleAll",
           action: "change->phlex-kit--combobox#toggleAllItems"

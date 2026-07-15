@@ -30,7 +30,8 @@ module PhlexKit
             "keydown.down->phlex-kit--combobox#keyDownPressed",
             "keydown.up->phlex-kit--combobox#keyUpPressed",
             "keydown.enter->phlex-kit--combobox#keyEnterPressed",
-            "keydown.esc->phlex-kit--combobox#closePopover:prevent"
+            # no :prevent — closePopover only swallows Escape while open.
+            "keydown.esc->phlex-kit--combobox#closePopover"
           ].join(" ")
         }
       }, @attrs)) do
@@ -49,7 +50,10 @@ module PhlexKit
             action: [
               "keyup->phlex-kit--combobox#filterItems",
               "input->phlex-kit--combobox#filterItems",
-              "keydown.backspace->phlex-kit--combobox#handleBadgeInputBackspace"
+              # plain keydown — "backspace" is not a Stimulus key filter
+              # (using it throws "unknown key filter" on every keystroke and
+              # the handler never ran); the method guards on e.key itself.
+              "keydown->phlex-kit--combobox#handleBadgeInputBackspace"
             ].join(" ")
           }
         )

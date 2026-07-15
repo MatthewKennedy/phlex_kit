@@ -12,8 +12,11 @@ module PhlexKit
     end
 
     def view_template(&)
-      base = { class: "pk-scroll-area", tabindex: "0" }
-      base[:role] = "region" if labelled?
+      # Defaults only when the caller didn't supply their own — `mix` would
+      # fuse role="region log" / tabindex="0 -1" instead of overriding.
+      base = { class: "pk-scroll-area" }
+      base[:tabindex] = "0" unless @attrs.key?(:tabindex) || @attrs.key?("tabindex")
+      base[:role] = "region" if labelled? && !@attrs.key?(:role) && !@attrs.key?("role")
       div(**mix(base, @attrs), &)
     end
 

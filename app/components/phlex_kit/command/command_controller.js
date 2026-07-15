@@ -98,6 +98,9 @@ export default class extends Controller {
     this.searchEntries = this.searchEntries.filter(
       (entry) => entry.element !== item,
     );
+    // The highlight index is positional — after a removal it points at the
+    // wrong (or a missing) row, so Enter would activate the wrong item.
+    this.selectedIndex = -1;
   }
 
   dismiss() {
@@ -266,7 +269,9 @@ export default class extends Controller {
       this.updateSelectedItem(visibleItems, -1);
     } else if (e.key === "Enter" && this.selectedIndex !== -1) {
       e.preventDefault();
-      visibleItems[this.selectedIndex].click();
+      // Optional-chained: a stale selectedIndex after dynamic item removal
+      // (turbo stream re-render) must not throw.
+      visibleItems[this.selectedIndex]?.click();
     }
   }
 

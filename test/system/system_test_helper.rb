@@ -44,8 +44,13 @@ class SystemTestCase < Minitest::Test
   private
 
   # Cuprite tracks console messages per page; collect error-level ones.
+  # returnByValue is required — without it Runtime.evaluate returns a remote
+  # object REFERENCE for arrays ("value" always nil), and the trap silently
+  # never flunked anything (audit round 6).
   def console_errors
-    logs = page.driver.browser.page.command("Runtime.evaluate", expression: "window.__pkJsErrors || []")
+    logs = page.driver.browser.page.command(
+      "Runtime.evaluate", expression: "window.__pkJsErrors || []", returnByValue: true
+    )
     Array(logs.dig("result", "value"))
   rescue StandardError
     []
@@ -58,6 +63,16 @@ class SystemTestCase < Minitest::Test
       window.__pkJsErrors ||= [];
       window.addEventListener("error", (e) => window.__pkJsErrors.push(String(e.message)));
       window.addEventListener("unhandledrejection", (e) => window.__pkJsErrors.push(String(e.reason)));
+      // Stimulus catches action-handler exceptions and reports them via
+      // console.error — they never reach window.onerror, so hook it too.
+      if (!console.error.__pkTrapped) {
+        const original = console.error.bind(console);
+        console.error = (...args) => {
+          window.__pkJsErrors.push(args.map(String).join(" "));
+          original(...args);
+        };
+        console.error.__pkTrapped = true;
+      }
     JS
   end
 

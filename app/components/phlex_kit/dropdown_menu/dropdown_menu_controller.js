@@ -16,6 +16,9 @@ export default class extends Controller {
 
   connect() {
     this.boundHandleKeydown = this.#handleKeydown.bind(this);
+    // Outstanding syncSub rAF handles — cancelled on disconnect so a queued
+    // frame never touches a torn-down menu (menubar's pattern).
+    this.subFrames = new Set();
     // The visible control is the caller's button/link inside the trigger
     // wrapper — that's what AT reads, so the popup wiring belongs on it.
     this.invoker = this.triggerTarget.querySelector("button, a, [tabindex]") || this.triggerTarget;
@@ -32,7 +35,22 @@ export default class extends Controller {
 
   disconnect() {
     document.removeEventListener("turbo:before-cache", this.boundBeforeCache);
+    this.subFrames.forEach((id) => cancelAnimationFrame(id));
+    this.subFrames.clear();
     this.#removeEventListeners();
+  }
+
+  // Mirrors the CSS-driven submenu state (:hover / :focus-within) onto the
+  // sub trigger's aria-expanded. rAF: on mouseleave/focusout the pseudo-class
+  // state isn't settled until the event finishes dispatching.
+  syncSub(e) {
+    const sub = e.currentTarget;
+    const id = requestAnimationFrame(() => {
+      this.subFrames.delete(id);
+      sub.querySelector(":scope > [aria-haspopup]")
+        ?.setAttribute("aria-expanded", sub.matches(":hover, :focus-within"));
+    });
+    this.subFrames.add(id);
   }
 
   onClickOutside(event) {

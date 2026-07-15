@@ -35,12 +35,13 @@ module PhlexKit
     end
 
     # Arrow keys follow the scroll axis: left/right for horizontal, up/down
-    # for vertical.
+    # for vertical. Horizontal arrows route through keyNext/keyPrev, which
+    # flip in RTL (the next slide sits to the physical left there).
     def keyboard_action
       if @orientation == :vertical
         "keydown.down->phlex-kit--carousel#scrollNext:prevent keydown.up->phlex-kit--carousel#scrollPrev:prevent"
       else
-        "keydown.right->phlex-kit--carousel#scrollNext:prevent keydown.left->phlex-kit--carousel#scrollPrev:prevent"
+        "keydown.right->phlex-kit--carousel#keyNext:prevent keydown.left->phlex-kit--carousel#keyPrev:prevent"
       end
     end
   end

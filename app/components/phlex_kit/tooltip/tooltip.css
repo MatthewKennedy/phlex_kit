@@ -79,6 +79,9 @@
   .pk-tooltip:hover .pk-tooltip-content {
     opacity: 1;
     visibility: visible;
+    /* WCAG 1.4.13 Hoverable: the revealed bubble must accept the pointer —
+       it's a DOM child of .pk-tooltip, so hovering it keeps the reveal. */
+    pointer-events: auto;
     transition-delay: .4s, .4s;
   }
 }
@@ -87,9 +90,10 @@
 .pk-tooltip:has(:focus-visible) .pk-tooltip-content {
   opacity: 1;
   visibility: visible;
+  pointer-events: auto;
   transition-delay: 0s, 0s;
 }
 /* Escape-dismissed (WCAG 1.4.13): suppressed until pointer/focus leaves.
    transition: none so the hide is immediate regardless of hover-in delays. */
 .pk-tooltip[data-pk-dismissed]:hover .pk-tooltip-content,
-.pk-tooltip[data-pk-dismissed]:focus-within .pk-tooltip-content { opacity: 0; visibility: hidden; transition: none; }
+.pk-tooltip[data-pk-dismissed]:focus-within .pk-tooltip-content { opacity: 0; visibility: hidden; pointer-events: none; transition: none; }

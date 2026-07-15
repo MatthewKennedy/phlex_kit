@@ -20,14 +20,17 @@
   position-try-fallbacks: flip-block;
 }
 .pk-dropdown-menu-content-up { position-area: block-start span-inline-end; margin: 0 0 4px; }
+/* Gap margins are logical to match the logical position-area — physical
+   margins landed on the wrong side in RTL (and flip-inline flips logical
+   margins along with the placement). */
 .pk-dropdown-menu-content-right {
   position-area: inline-end span-block-end;
-  margin: 0 0 0 4px;
+  margin: 0; margin-inline-start: 4px;
   position-try-fallbacks: flip-inline;
 }
 .pk-dropdown-menu-content-left {
   position-area: inline-start span-block-end;
-  margin: 0 4px 0 0;
+  margin: 0; margin-inline-end: 4px;
   position-try-fallbacks: flip-inline;
 }
 .pk-dropdown-menu-viewport {

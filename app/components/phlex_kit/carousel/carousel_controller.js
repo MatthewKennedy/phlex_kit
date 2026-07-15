@@ -73,6 +73,16 @@ export default class extends Controller {
     this._goTo(this.index - 1);
   }
 
+  // Physical arrow keys (horizontal axis only): in RTL the next slide sits
+  // to the physical LEFT, so the right arrow must travel toward "previous".
+  keyNext() {
+    this._rtl() ? this.scrollPrev() : this.scrollNext();
+  }
+
+  keyPrev() {
+    this._rtl() ? this.scrollNext() : this.scrollPrev();
+  }
+
   get slides() {
     return this.track ? Array.from(this.track.children) : [];
   }
@@ -129,6 +139,8 @@ export default class extends Controller {
     const drag = this.drag;
     if (!drag) return;
     drag.delta = this._pointerPos(e) - drag.start;
+    // Normalize to scroll-axis space: in RTL a rightward drag reveals next.
+    if (this._rtl()) drag.delta = -drag.delta;
     if (!drag.moved && Math.abs(drag.delta) > 5) {
       drag.moved = true;
       this.track.style.transition = "none";
@@ -183,13 +195,22 @@ export default class extends Controller {
     return this.options.axis === "y" ? e.clientY : e.clientX;
   }
 
+  // In RTL the horizontal track lays slides right-to-left: later slides have
+  // SMALLER offsetLeft and the track must translate in +x to reveal them.
+  // All geometry below works in a direction-neutral "offset along the scroll
+  // axis" space; _rtl() flips the signs at the physical boundaries only.
+  _rtl() {
+    return this.options.axis !== "y" && getComputedStyle(this.element).direction === "rtl";
+  }
+
   _offsetOf(index) {
     const slide = this.slides[index];
     const first = this.slides[0];
     if (!slide || !first) return 0;
-    const raw = this.options.axis === "y"
+    let raw = this.options.axis === "y"
       ? slide.offsetTop - first.offsetTop
       : slide.offsetLeft - first.offsetLeft;
+    if (this._rtl()) raw = -raw;
     // Never scroll past the content edge: with multi-up layouts the last
     // slides' offsets overshoot the max scrollable offset (track − viewport).
     return Math.min(Math.max(0, raw), this._maxOffset());
@@ -211,6 +232,6 @@ export default class extends Controller {
   _translateTo(offset) {
     this.track.style.transform = this.options.axis === "y"
       ? `translate3d(0, ${-offset}px, 0)`
-      : `translate3d(${-offset}px, 0, 0)`;
+      : `translate3d(${this._rtl() ? offset : -offset}px, 0, 0)`;
   }
 }

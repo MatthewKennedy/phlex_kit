@@ -29,7 +29,7 @@ class ComboboxTest < Minitest::Test
     html = render(PhlexKit::ComboboxPopover.new { "x" })
     assert_includes html, %(class="pk-combobox-popover" popover="manual")
     assert_includes html, "keydown.down->phlex-kit--combobox#keyDownPressed"
-    assert_includes html, "keydown.esc->phlex-kit--combobox#closePopover:prevent"
+    assert_includes html, "keydown.esc->phlex-kit--combobox#closePopover"
   end
 
   def test_search_input_filters
@@ -68,7 +68,7 @@ class ComboboxTest < Minitest::Test
     assert_includes html, "focusin->phlex-kit--combobox#openPopover"
     assert_includes html, "input->phlex-kit--combobox#filterItems"
     assert_includes html, "keydown.down->phlex-kit--combobox#keyDownPressed"
-    assert_includes html, "keydown.esc->phlex-kit--combobox#closePopover:prevent"
+    assert_includes html, "keydown.esc->phlex-kit--combobox#closePopover"
     assert_includes html, %(placeholder="Pick a fruit")
   end
 

@@ -36,7 +36,10 @@ module PhlexKit
             "keydown.down->phlex-kit--combobox#keyDownPressed",
             "keydown.up->phlex-kit--combobox#keyUpPressed",
             "keydown.enter->phlex-kit--combobox#keyEnterPressed",
-            "keydown.esc->phlex-kit--combobox#closePopover:prevent"
+            # no :prevent — closePopover only swallows Escape while the
+            # popover is open, so a closed field keeps the key's default
+            # (e.g. cancelling an enclosing <dialog>).
+            "keydown.esc->phlex-kit--combobox#closePopover"
           ].join(" ")
         }
       }, @attrs)) do

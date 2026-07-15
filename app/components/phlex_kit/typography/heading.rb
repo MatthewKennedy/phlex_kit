@@ -8,6 +8,9 @@ module PhlexKit
     # ruby_ui's level → default size mapping (h1 is big, h4 smaller); 5/6
     # extend the scale downward — HTML has h1–h6, so all six must map.
     LEVEL_SIZE = { "1" => "7", "2" => "6", "3" => "5", "4" => "4", "5" => "3", "6" => "2" }.freeze
+    # `as:` is dispatched dynamically (send) — whitelist so it can't reach
+    # arbitrary (including private) methods. Mirrors Separator/Marker.
+    AS_TAGS = %i[h1 h2 h3 h4 h5 h6 p span div].freeze
 
     # level: defaults to 1 so `Heading.new` is identical to `Heading.new(level: 1)`
     # (a nil default used to render h1 with the level-6 size — self-disagreeing).
@@ -18,7 +21,10 @@ module PhlexKit
         raise ArgumentError, "Invalid heading level: #{level.inspect} — valid: 1–6"
       end
       @level = level
-      @as = as
+      @as = as&.to_sym
+      if @as && !AS_TAGS.include?(@as)
+        raise ArgumentError, "unknown Heading as: #{@as.inspect} (use one of #{AS_TAGS.join(", ")})"
+      end
       @size = size
       @attrs = attrs
     end

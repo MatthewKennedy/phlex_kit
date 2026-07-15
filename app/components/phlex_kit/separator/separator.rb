@@ -24,7 +24,11 @@ module PhlexKit
     end
 
     def view_template(&block)
-      send(@as, **mix({ role: (@decorative ? "none" : "separator"), class: classes }, @attrs), &block)
+      base = { role: (@decorative ? "none" : "separator"), class: classes }
+      # role="separator" is implicitly horizontal — a semantic vertical one
+      # must say so or AT announces the wrong axis.
+      base[:"aria-orientation"] = "vertical" if !@decorative && @orientation == :vertical
+      send(@as, **mix(base, @attrs), &block)
     end
 
     private

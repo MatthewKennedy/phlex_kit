@@ -18,6 +18,10 @@ module PhlexKit
         class: "pk-command-item",
         href: @href,
         role: "option",
+        # Options in an aria-activedescendant listbox are not tab stops —
+        # keyboard access is arrows/Enter from the input (cmdk parity); a
+        # tabbable anchor per row also made disabled items focusable.
+        tabindex: "-1",
         aria: { disabled: (@disabled ? "true" : nil) },
         data: {
           phlex_kit__command_target: "item",

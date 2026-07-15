@@ -222,6 +222,8 @@ export default class extends Controller {
   }
 
   handleBadgeInputBackspace(e) {
+    // Bound as a bare keydown: "backspace" is not a Stimulus key filter.
+    if (e.key !== "Backspace") return
     if (this.badgeInputTarget.value !== "") return
 
     const checked = this.checkedInputs()
@@ -283,7 +285,14 @@ export default class extends Controller {
     }
   }
 
-  closePopover() {
+  closePopover(e) {
+    // Escape must keep its browser default (e.g. cancelling an enclosing
+    // <dialog>) when the popover is already closed — only swallow the key
+    // when this close actually consumes it.
+    if (e?.type === "keydown") {
+      if (!this.isOpen()) return
+      e.preventDefault()
+    }
     // Hiding the popover while focus is inside it (search input, option) drops
     // focus to <body>; hand it back to the trigger. Checked BEFORE hiding, and
     // only when focus would actually be orphaned — a click elsewhere on the

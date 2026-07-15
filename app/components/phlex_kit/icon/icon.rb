@@ -20,7 +20,13 @@ module PhlexKit
 
     def view_template
       icon = Icons.fetch(@name, library: @library || PhlexKit.config.icon_library)
-      svg(**mix(base_attrs(icon), @attrs)) do |s|
+      base = base_attrs(icon)
+      # `mix` merges duplicate string attrs ("16 24") — drop a generated attr
+      # whenever the caller supplies their own copy, so theirs wins.
+      %i[width height viewbox aria-hidden].each do |key|
+        base.delete(key) if @attrs.key?(key) || @attrs.key?(key.to_s)
+      end
+      svg(**mix(base, @attrs)) do |s|
         icon[:elements].each { |tag, attrs| s.public_send(tag, **attrs) }
       end
     end
