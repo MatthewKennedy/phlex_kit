@@ -11,10 +11,11 @@ module PhlexKit
     # `autofocus:` defaults off so an inline palette doesn't steal page focus
     # on load; the dialog clone needs no autofocus either — the command
     # controller's connect() focuses the input when the clone is inserted.
-    def initialize(placeholder: "Type a command or search...", list_id: nil, autofocus: false, **attrs)
+    def initialize(placeholder: "Type a command or search...", list_id: nil, autofocus: false, value: "", **attrs)
       @placeholder = placeholder
       @list_id = list_id
       @autofocus = autofocus
+      @value = value
       @attrs = attrs
     end
 
@@ -31,7 +32,7 @@ module PhlexKit
             spellcheck: "false",
             autofocus: @autofocus,
             role: "combobox",
-            value: "",
+            value: @value,
             aria: { autocomplete: "list", expanded: "true", controls: @list_id },
             data: {
               phlex_kit__command_target: "input",

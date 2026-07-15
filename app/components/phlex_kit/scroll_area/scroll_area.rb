@@ -16,21 +16,8 @@ module PhlexKit
       # fuse role="region log" / tabindex="0 -1" instead of overriding.
       base = { class: "pk-scroll-area" }
       base[:tabindex] = "0" unless @attrs.key?(:tabindex) || @attrs.key?("tabindex")
-      base[:role] = "region" if labelled? && !@attrs.key?(:role) && !@attrs.key?("role")
+      base[:role] = "region" if aria_labelled? && !@attrs.key?(:role) && !@attrs.key?("role")
       div(**mix(base, @attrs), &)
-    end
-
-    private
-
-    # True when the caller supplies an accessible name, via the aria: hash
-    # (aria: { label:/labelledby: }) or flat aria_label/aria-labelledby attrs.
-    def labelled?
-      aria = @attrs[:aria] || @attrs["aria"]
-      if aria.is_a?(Hash)
-        return true if %w[label labelledby].any? { |k| aria[k.to_sym] || aria[k] }
-      end
-      [ :aria_label, "aria_label", "aria-label",
-       :aria_labelledby, "aria_labelledby", "aria-labelledby" ].any? { |k| @attrs[k] }
     end
   end
 end

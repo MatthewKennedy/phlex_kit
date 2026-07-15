@@ -14,7 +14,14 @@ module PhlexKit
         # z-stacking across overlay families when they nest.
         div(data: { controller: "phlex-kit--sheet-content", action: "keydown->phlex-kit--sheet-content#keydown", pk_overlay_clone: "" }) do
           div(class: "pk-sheet-backdrop", data: { action: "click->phlex-kit--sheet-content#close mousedown->phlex-kit--sheet-content#overlayMousedown" })
-          div(**mix({ class: [ "pk-sheet-content", fetch_option(SIDES, @side, :side) ].join(" "), role: "dialog", aria: { modal: "true" }, tabindex: "-1", data: { phlex_kit__sheet_content_target: "panel" } }, @attrs)) do
+          panel_attrs = { class: [ "pk-sheet-content", fetch_option(SIDES, @side, :side) ].join(" "), data: { phlex_kit__sheet_content_target: "panel" } }
+          # Defaults only when the caller didn't supply their own — `mix`
+          # would fuse role="dialog region" / aria-modal="true false" /
+          # tabindex="-1 0" instead of overriding.
+          panel_attrs[:role] = "dialog" unless @attrs.key?(:role) || @attrs.key?("role")
+          panel_attrs[:aria] = { modal: "true" } unless aria_key_set?(:modal)
+          panel_attrs[:tabindex] = "-1" unless @attrs.key?(:tabindex) || @attrs.key?("tabindex")
+          div(**mix(panel_attrs, @attrs)) do
             block&.call
             if @show_close_button
               button(type: "button", class: "pk-overlay-close", data: { action: "click->phlex-kit--sheet-content#close" }) do

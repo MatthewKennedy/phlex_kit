@@ -4,21 +4,26 @@ module PhlexKit
   # (search/sort/direction/...) survive via `preserved_params:` hidden inputs,
   # mirroring DataTableSearch. See data_table.rb.
   class DataTablePerPageSelect < BaseComponent
-    def initialize(path:, name: "per_page", value: nil, frame_id: nil, options: [ 5, 10, 25, 50 ], preserved_params: {}, **attrs)
+    # method:/action: are kit-owned (a GET form targeting `path:`) — named
+    # kwargs so a caller override lands in @method/@action directly instead
+    # of fusing with the generated defaults via `mix` ("get post").
+    def initialize(path:, name: "per_page", value: nil, frame_id: nil, options: [ 5, 10, 25, 50 ], preserved_params: {}, method: "get", action: nil, **attrs)
       @path = path
       @name = name
       @value = value
       @frame_id = frame_id
       @options = options
       @preserved_params = preserved_params
+      @method = method
+      @action = action || @path
       @attrs = attrs
     end
 
     def view_template
       form_attrs = {
         class: "pk-data-table-per-page",
-        action: @path,
-        method: "get",
+        action: @action,
+        method: @method,
         # Reuse the search controller for its CSP-safe #submitNow action.
         data: { controller: "phlex-kit--data-table-search" }
       }

@@ -21,15 +21,17 @@ module PhlexKit
     def view_template(&)
       base = {
         class: "pk-chart",
-        # Canvas content is invisible to AT — announce it as an image with at
-        # least a generic name; pass aria: { label: "…" } (or block fallback
-        # content) to describe the actual data.
-        role: "img",
         data: {
           controller: "phlex-kit--chart",
           phlex_kit__chart_options_value: JSON.generate(@options)
         }
       }
+      # Defaults only when the caller didn't supply their own — `mix` would
+      # fuse role="img figure" instead of overriding.
+      # Canvas content is invisible to AT — announce it as an image with at
+      # least a generic name; pass aria: { label: "…" } (or block fallback
+      # content) to describe the actual data.
+      base[:role] = "img" unless @attrs.key?(:role) || @attrs.key?("role")
       base[:aria] = { label: "Chart" } unless aria_labelled?
       canvas(**mix(base, @attrs), &)
     end

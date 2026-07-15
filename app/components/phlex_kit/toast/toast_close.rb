@@ -7,12 +7,15 @@ module PhlexKit
     end
 
     def view_template
-      button(**mix({
+      base = {
         type: :button,
         class: "pk-toast-close",
-        aria: { label: "Close toast" },
         data: { slot: "close", action: "click->phlex-kit--toast#dismiss" }
-      }, @attrs)) do
+      }
+      # Default label only when the caller didn't supply their own — `mix`
+      # would fuse aria-label into a two-token value instead of overriding.
+      base[:aria] = { label: "Close toast" } unless aria_labelled?
+      button(**mix(base, @attrs)) do
         render Icon.new(:x, size: 14)
         span(class: "pk-sr-only") { "Close" }
       end

@@ -12,7 +12,11 @@ module PhlexKit
       # tabindex=0 + role=region: the block scrolls (overflow:auto), so it must
       # be keyboard-focusable (WCAG 2.1.1 scrollable-region-focusable). Pass
       # `aria: { label: ... }` to name the region for AT.
-      base = { class: "pk-codeblock", tabindex: "0", role: "region", data: { syntax: @syntax } }
+      # Defaults only when the caller didn't supply their own — `mix` would
+      # fuse tabindex="0 -1" / role="region article" instead of overriding.
+      base = { class: "pk-codeblock", data: { syntax: @syntax } }
+      base[:tabindex] = "0" unless @attrs.key?(:tabindex) || @attrs.key?("tabindex")
+      base[:role] = "region" unless @attrs.key?(:role) || @attrs.key?("role")
       # A region landmark without a name is an axe violation — default one
       # from the syntax; a caller aria: { label: } replaces it (never fused).
       unless aria_labelled?

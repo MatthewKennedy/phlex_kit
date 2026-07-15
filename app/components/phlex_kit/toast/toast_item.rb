@@ -56,13 +56,17 @@ module PhlexKit
       data[:phlex_kit__toast_on_dismiss_value] = @on_dismiss if @on_dismiss
       data[:phlex_kit__toast_on_auto_close_value] = @on_auto_close if @on_auto_close
 
-      attrs = {
-        role: ALERT_VARIANTS.include?(@variant) ? "alert" : "status",
-        tabindex: "0",
-        class: "pk-toast",
-        aria: { atomic: "true" },
-        data: data
-      }
+      attrs = { class: "pk-toast", data: data }
+      # Defaults only when the caller didn't supply their own — `mix` would
+      # fuse role="status log" / tabindex="0 -1" / aria-atomic="true false"
+      # instead of overriding.
+      unless @attrs.key?(:role) || @attrs.key?("role")
+        attrs[:role] = ALERT_VARIANTS.include?(@variant) ? "alert" : "status"
+      end
+      attrs[:tabindex] = "0" unless @attrs.key?(:tabindex) || @attrs.key?("tabindex")
+      unless aria_key_set?(:atomic)
+        attrs[:aria] = { atomic: "true" }
+      end
       attrs[:id] = @id if @id
       attrs
     end
