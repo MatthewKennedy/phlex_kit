@@ -95,6 +95,12 @@ export default class extends Controller {
     // handle the keyboard, or one Escape would close every layer at once.
     if (!this.#topmost()) return;
     if (event.key === "Escape") {
+      // A native <dialog> nested inside this panel (e.g. a Dialog opened
+      // from within AlertDialogContent) owns its own Escape handling; this
+      // document-level listener still sees the keydown since it bubbles all
+      // the way up — ignore it so one Escape doesn't also dismiss the alert
+      // dialog underneath (mirrors sheet_content_controller's guard).
+      if (event.target.closest("dialog[open]")) return;
       event.preventDefault();
       this.dismiss();
       return;
