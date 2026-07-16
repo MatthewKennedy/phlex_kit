@@ -131,7 +131,7 @@ class Audit5ToastSystemTest < SystemTestCase
       document.getElementById(#{toast_id.to_json}).dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }))
     JS
     wait_until("toast should auto-dismiss once unhovered") do
-      page.evaluate_script(%(document.getElementById(#{toast_id.to_json})) ).nil?
+      page.evaluate_script(%(document.getElementById(#{toast_id.to_json}))).nil?
     end
   end
 

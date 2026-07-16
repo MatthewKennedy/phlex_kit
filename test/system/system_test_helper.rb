@@ -18,7 +18,16 @@ Capybara.register_driver(:pk_cuprite) do |app|
     headless: ENV["HEADLESS"] != "0", # HEADLESS=0 to watch the browser
     timeout: 15,
     process_timeout: 15,
-    browser_options: { "disable-gpu": nil, "no-sandbox": nil }
+    browser_options: {
+      "disable-gpu": nil, "no-sandbox": nil,
+      # Headless Chrome on CI Linux has no pointing device, so it reports
+      # `hover: none` and every `@media (hover: hover)` rule (tooltip reveal
+      # etc.) silently never matches — tests asserting hover behavior pass
+      # locally (macOS always has a mouse) and fail on CI. Pin a fine,
+      # hover-capable pointer so all environments evaluate the media queries
+      # identically. (2 = hover-capable, 4 = fine pointer.)
+      "blink-settings": "primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4"
+    }
   )
 end
 

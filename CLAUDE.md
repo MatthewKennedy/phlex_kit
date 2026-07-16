@@ -100,6 +100,10 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   1400×900 default in teardown.
   Cuprite node refs go stale (`ObsoleteNode`) after a detach/reattach —
   drive those flows via `execute_script` on selectors, not held elements.
+  The Cuprite driver pins `blink-settings` hover/pointer capabilities —
+  headless Chrome on CI Linux has no pointing device and reports
+  `hover: none`, so `@media (hover: hover)` rules never match there
+  (bit the tooltip WCAG-hoverable test: green locally, red on CI).
   Detach+reattach of a controller root re-runs `connect()` on markup still
   carrying snapshot-stale attributes — the standard way to simulate a Turbo
   cache restore (see audit6_turbo_state_system_test). Stimulus
