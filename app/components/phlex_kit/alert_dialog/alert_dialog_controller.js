@@ -29,7 +29,17 @@ export default class extends Controller {
     this.previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     this.onKeydown = (event) => this.keydown(event);
-    this.beforeCache = () => this.element.remove();
+    // Turbo snapshots synchronously right after dispatching this event —
+    // BEFORE Stimulus disconnect() runs (it fires via MutationObserver, too
+    // late). Restore inert + scroll lock here so the snapshot never captures
+    // a fully-inerted, scroll-locked page; disconnect()'s later restore
+    // becomes a harmless no-op (#restoreInert clears `this.inerted`, and
+    // reassigning the same overflow value is idempotent).
+    this.beforeCache = () => {
+      this.#restoreInert();
+      document.body.style.overflow = this.previousOverflow;
+      this.element.remove();
+    };
     document.addEventListener("keydown", this.onKeydown);
     document.addEventListener("turbo:before-cache", this.beforeCache);
     this.#inertOthers();
@@ -40,7 +50,16 @@ export default class extends Controller {
   }
 
   disconnect() {
-    if (this.hasContentTarget) return;
+    if (this.hasContentTarget) {
+      // The source element (holding the template) can disconnect while a
+      // clone it spawned is still live in <body> — e.g. Turbo replacing this
+      // region out from under an open dialog. Remove the orphan rather than
+      // leaving a modal nothing can dismiss. Idempotent: if the clone
+      // already removed itself (Cancel, Escape, its own before-cache),
+      // this.clone is disconnected and the isConnected check no-ops.
+      if (this.clone?.isConnected) this.clone.remove();
+      return;
+    }
     document.removeEventListener("keydown", this.onKeydown);
     document.removeEventListener("turbo:before-cache", this.beforeCache);
     this.#restoreInert();
@@ -76,6 +95,12 @@ export default class extends Controller {
     // handle the keyboard, or one Escape would close every layer at once.
     if (!this.#topmost()) return;
     if (event.key === "Escape") {
+      // A native <dialog> nested inside this panel (e.g. a Dialog opened
+      // from within AlertDialogContent) owns its own Escape handling; this
+      // document-level listener still sees the keydown since it bubbles all
+      // the way up — ignore it so one Escape doesn't also dismiss the alert
+      // dialog underneath (mirrors sheet_content_controller's guard).
+      if (event.target.closest("dialog[open]")) return;
       event.preventDefault();
       this.dismiss();
       return;
@@ -104,12 +129,15 @@ export default class extends Controller {
     }
   }
 
-  // Clones are appended as direct <body> children whose direct child is the
-  // [role="alertdialog"] panel (source elements only hold a <template>, whose
-  // content never matches querySelector). The last such clone is the topmost.
+  // Clones are appended as direct <body> children. Other clone-based overlay
+  // families (sheet/drawer content) stamp the same [data-pk-overlay-clone]
+  // marker on their own clone root, so this checks z-stacking across overlay
+  // TYPES, not just other alert dialogs — a sheet opened from inside an
+  // alert dialog (or vice versa) is a later sibling and must absorb Escape
+  // first; only the last overlay clone overall may act on it.
   #topmost() {
-    const clones = document.body.querySelectorAll(':scope > [data-controller~="phlex-kit--alert-dialog"] > [role="alertdialog"]');
-    return clones.length > 0 && clones[clones.length - 1].parentElement === this.element;
+    const clones = document.body.querySelectorAll(":scope > [data-pk-overlay-clone]");
+    return clones.length > 0 && clones[clones.length - 1] === this.element;
   }
 
   #panel() {

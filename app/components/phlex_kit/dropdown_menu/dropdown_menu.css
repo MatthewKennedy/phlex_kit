@@ -116,6 +116,10 @@
    the viewport right edge. */
 .pk-dropdown-menu-sub { anchor-name: --pk-dropdown-menu-sub; anchor-scope: --pk-dropdown-menu-sub; }
 .pk-dropdown-menu-sub-chevron { margin-inline-start: auto; width: 1rem; height: 1rem; }
+/* The chevron points toward where the submenu opens (inline-end). In RTL that
+   is visually LEFT — mirror it. Ancestor [dir="rtl"] (not :dir()) so Chrome
+   re-styles it on a dynamic dir flip too. */
+[dir="rtl"] .pk-dropdown-menu-sub-chevron { transform: scaleX(-1); }
 .pk-dropdown-menu-sub-content {
   position: fixed;
   position-anchor: --pk-dropdown-menu-sub;

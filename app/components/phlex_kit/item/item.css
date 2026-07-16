@@ -34,7 +34,8 @@ a.pk-item:hover { background: var(--pk-surface-2); }
   transform: translateY(.125rem);
   align-self: flex-start;
 }
-.pk-item-media.icon svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+/* Glyphs default to size-4; explicit width attrs (Icon size:) win. */
+.pk-item-media.icon svg:not([width]) { width: 1rem; height: 1rem; }
 .pk-item-media.image {
   width: 2.5rem;
   height: 2.5rem;

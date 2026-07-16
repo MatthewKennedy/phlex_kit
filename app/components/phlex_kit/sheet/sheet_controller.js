@@ -11,8 +11,19 @@ export default class extends Controller {
 
   initialize() {
     this.overlay = null
+    // Turbo snapshots synchronously right after dispatching this event —
+    // BEFORE Stimulus disconnect() runs (it fires via MutationObserver, too
+    // late to keep the snapshot from capturing an inerted, scroll-locked
+    // page). Reach into the clone's own controller and restore its state
+    // synchronously before removing it; that method is idempotent, so the
+    // content controller's own disconnect() (fired later, once the removal
+    // is observed) is a harmless no-op.
     this.clearOverlay = () => {
-      if (this.overlay?.isConnected) this.overlay.remove()
+      if (this.overlay?.isConnected) {
+        const content = this.application.getControllerForElementAndIdentifier(this.overlay, "phlex-kit--sheet-content")
+        content?.restoreImmediate()
+        this.overlay.remove()
+      }
       this.overlay = null
     }
   }
@@ -22,7 +33,11 @@ export default class extends Controller {
     // Popup semantics for AT: the trigger's real control announces that it
     // opens a dialog, and expanded state tracks the clone's lifetime (the
     // content controller signals removal via phlex-kit:sheet-content:closed).
-    this.invoker = this.element.querySelector(".pk-sheet-trigger button, .pk-sheet-trigger a, .pk-sheet-trigger [tabindex]")
+    // Drawer rides this same controller (see drawer.rb) — its trigger is
+    // marked .pk-drawer-trigger rather than .pk-sheet-trigger.
+    this.invoker = this.element.querySelector(
+      ".pk-sheet-trigger button, .pk-sheet-trigger a, .pk-sheet-trigger [tabindex], .pk-drawer-trigger button, .pk-drawer-trigger a, .pk-drawer-trigger [tabindex]"
+    )
     this.invoker?.setAttribute("aria-haspopup", "dialog")
     this.invoker?.setAttribute("aria-expanded", "false")
     this.onOverlayClosed = () => {

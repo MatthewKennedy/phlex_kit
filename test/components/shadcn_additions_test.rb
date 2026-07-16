@@ -75,6 +75,11 @@ class ShadcnAdditionsTest < Minitest::Test
   def test_drawer_reuses_sheet_machinery
     html = render(PhlexKit::Drawer.new { "x" })
     assert_includes html, "phlex-kit--sheet"
+    # open: must serialize as a string ("false"/"true"), matching sheet.rb —
+    # a raw boolean renders as Ruby's to_s via Phlex anyway, but the explicit
+    # to_s keeps the two controllers' markup shape identical.
+    assert_includes html, %(data-phlex-kit--sheet-open-value="false")
+    assert_includes render(PhlexKit::Drawer.new(open: true) { "x" }), %(data-phlex-kit--sheet-open-value="true")
     content = render(PhlexKit::DrawerContent.new { "body" })
     assert_includes content, "<template"
     assert_includes content, "pk-drawer-handle"
@@ -148,6 +153,14 @@ class ShadcnAdditionsTest < Minitest::Test
     assert_includes render(PhlexKit::AlertDialogContent.new(size: :sm) { "x" }), "pk-alert-dialog-panel sm"
     assert_raises(KeyError) { render(PhlexKit::AlertDialogContent.new(size: :xl) { "x" }) }
     assert_includes render(PhlexKit::AlertDialogAction.new(variant: :destructive) { "Delete" }), "pk-button destructive"
+  end
+
+  # Task 12, item 4: 100vh touched the screen edges and overflowed behind
+  # mobile browser chrome — mirror dialog.css's dvh-based breathing room.
+  def test_alert_dialog_panel_uses_dvh_max_height
+    css = File.read(File.join(__dir__, "..", "..", "app/components/phlex_kit/alert_dialog/alert_dialog.css"))
+    assert_includes css, "max-height: calc(100dvh - 2rem);"
+    refute_includes css, "max-height: 100vh;"
   end
 
   def test_alert_dialog_cancel_caller_data_merges_with_dismiss_action

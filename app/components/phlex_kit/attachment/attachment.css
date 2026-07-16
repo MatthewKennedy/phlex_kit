@@ -118,6 +118,21 @@
   -webkit-text-fill-color: transparent;
   animation: pk-shimmer 2s linear infinite;
 }
+/* Same two fallback arms as _tokens.css's .pk-shimmer (:49-54): never let the
+   filename disappear under reduced motion or without relative color syntax
+   (Safari <16.4 / Chrome <119). */
+@media (prefers-reduced-motion: reduce) {
+  .pk-attachment[data-state="uploading"] .pk-attachment-title,
+  .pk-attachment[data-state="processing"] .pk-attachment-title {
+    animation: none; background-image: none; -webkit-text-fill-color: currentColor;
+  }
+}
+@supports not (color: oklch(from white l c h)) {
+  .pk-attachment[data-state="uploading"] .pk-attachment-title,
+  .pk-attachment[data-state="processing"] .pk-attachment-title {
+    animation: none; background-image: none; -webkit-text-fill-color: currentColor;
+  }
+}
 .pk-attachment[data-state="error"] { border-color: color-mix(in oklab, var(--pk-red) 40%, transparent); }
 .pk-attachment[data-state="error"] .pk-attachment-media { color: var(--pk-red); background: color-mix(in oklab, var(--pk-red) 12%, transparent); }
 .pk-attachment[data-state="error"] .pk-attachment-description { color: var(--pk-red); }

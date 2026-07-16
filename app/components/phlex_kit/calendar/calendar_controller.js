@@ -243,7 +243,10 @@ export default class extends Controller {
     return this.isoDate(date);
   }
 
-  updateCalendar() {
+  // `focusDay` overrides the day to refocus after re-render: on a keyboard
+  // month cross the target day lives in the NEW grid, not the pre-render
+  // activeElement, so onKeydown passes it explicitly.
+  updateCalendar(focusDay = null) {
     if (this.hasTitleTarget) {
       this.titleTarget.textContent = this.monthAndYear();
     }
@@ -251,9 +254,11 @@ export default class extends Controller {
     this.syncNavButtons();
     // innerHTML replacement drops focus — remember the focused day so
     // keyboard selection/month hops don't strand focus on <body>.
-    const focusedDay = this.calendarTarget.contains(document.activeElement)
-      ? document.activeElement.dataset?.day
-      : null;
+    const focusedDay =
+      focusDay ||
+      (this.calendarTarget.contains(document.activeElement)
+        ? document.activeElement.dataset?.day
+        : null);
     this.calendarTarget.innerHTML = this.calendarHTML();
     this.ensureGridTabStop(focusedDay);
   }
@@ -282,7 +287,11 @@ export default class extends Controller {
   // boundary re-renders the grid on the target month. Enter/Space activate
   // natively (the days are real <button>s).
   onKeydown(e) {
-    const STEPS = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 };
+    // In RTL the day grid mirrors: the physical LEFT arrow advances one day.
+    // The week steps (Up/Down) and the PageUp/Down/Home/End jumps are
+    // unaffected. Runtime dir check is reliable after a dynamic flip.
+    const rtl = getComputedStyle(this.element).direction === "rtl";
+    const STEPS = { ArrowLeft: rtl ? 1 : -1, ArrowRight: rtl ? -1 : 1, ArrowUp: -7, ArrowDown: 7 };
     const day = e.target.closest?.("[data-day]");
     if (!day) return;
 
@@ -319,7 +328,15 @@ export default class extends Controller {
     }
 
     if (target.getMonth() !== this.viewDate().getMonth() || target.getFullYear() !== this.viewDate().getFullYear()) {
-      this.viewDateValue = iso; // re-renders the grid on the target month
+      // Crossing a month re-renders the grid on the target month. Stimulus
+      // value-changed callbacks fire via MutationObserver (async), so the grid
+      // is NOT re-rendered synchronously after this assignment — querying it
+      // below would hit the OLD month, and the target day (outside it) would be
+      // missing → early return, stranding focus on <body>. Drive the re-render
+      // ourselves and hand it the target day so ensureGridTabStop focuses it.
+      this.viewDateValue = iso;
+      this.updateCalendar(iso);
+      return;
     }
     const next = this.calendarTarget.querySelector(`[data-day="${iso}"]:not([disabled])`);
     if (!next) return;

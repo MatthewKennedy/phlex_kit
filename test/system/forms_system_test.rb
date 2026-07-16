@@ -95,6 +95,36 @@ class FormsSystemTest < SystemTestCase
     assert_nil input["aria-invalid"]
   end
 
+  def test_form_field_shared_error_tracks_first_invalid_of_several_inputs
+    visit "/docs/form"
+    section = demo("Multi-checkbox agreement")
+    field = section.find(".pk-form-field:has(#form-agree-terms)")
+    terms = field.find("#form-agree-terms", visible: :all)
+    privacy = field.find("#form-agree-privacy", visible: :all)
+
+    # Submitting with both unchecked fires `invalid` on terms (first target);
+    # its message is shown and wired onto terms.
+    section.click_button "Agree"
+    error = field.find(".pk-form-field-error", text: "You must agree to the terms.")
+    assert_equal "true", terms["aria-invalid"]
+    assert_includes terms["aria-describedby"].to_s.split, error[:id]
+
+    # Ticking the SECOND (still-valid-after) checkbox must not clear the
+    # shared error while the first checkbox is still invalid — the real bug:
+    # the old controller decided visibility from the event's own target only.
+    privacy.click
+    field.assert_selector ".pk-form-field-error", text: "You must agree to the terms."
+    refute field.has_selector?(".pk-form-field-error.pk-hidden", visible: :all)
+    assert_equal "true", terms["aria-invalid"]
+    assert_nil privacy["aria-invalid"]
+
+    # Ticking the first checkbox too clears the error entirely.
+    terms.click
+    field.assert_selector ".pk-form-field-error.pk-hidden", visible: :all
+    assert_nil terms["aria-invalid"]
+    assert_nil privacy["aria-invalid"]
+  end
+
   def test_theme_toggle_flips_persists_and_falls_back_to_system
     visit "/docs/button"
     # Connect resolves to "system" when nothing is stored (the layout's

@@ -22,6 +22,18 @@ export default class extends Controller {
     // The visible control is the caller's button/link inside the trigger
     // wrapper — that's what AT reads, so the popup wiring belongs on it.
     this.invoker = this.triggerTarget.querySelector("button, a, [tabindex]") || this.triggerTarget;
+    // A Turbo snapshot (or a detach/reattach that mimics one) serializes
+    // aria-expanded="true" on sub triggers even though no submenu can be
+    // open at connect time — sweep every stale marker back to false
+    // (menubar's pattern). Runs before the invoker's own reset below so
+    // both are covered by one mental model.
+    this.element.querySelectorAll("[aria-expanded='true']").forEach((el) => el.setAttribute("aria-expanded", "false"));
+    // Same shape for checkbox/radio rows: their `checked` DOM property
+    // survives a reconnect but a hand-edited/replayed aria-checked can drift
+    // from it — resync every row from its live input.
+    this.element.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach((i) => {
+      i.closest('[role^="menuitem"]')?.setAttribute("aria-checked", i.checked);
+    });
     this.invoker.setAttribute("aria-haspopup", "menu");
     this.invoker.setAttribute("aria-expanded", "false");
     // Associate trigger and menu for AT (the dialog controller wires its
@@ -74,6 +86,18 @@ export default class extends Controller {
     this.contentTarget.matches(":popover-open") ? this.close() : this.#open();
   }
 
+  // Tabbing (or otherwise moving real focus) out of the menu closes it —
+  // menubar's onFocusout pattern (menubar_controller.js). relatedTarget is
+  // null when the window itself blurs — leave the menu alone then. The
+  // trigger + content are both DOM children of this.element even though the
+  // content is a top-layer popover, so one containment check covers both.
+  onFocusout(e) {
+    if (!this.contentTarget.matches(":popover-open")) return;
+    const to = e.relatedTarget;
+    if (!to || this.element.contains(to)) return;
+    this.close();
+  }
+
   #open() {
     this.openValue = true;
     this.#addEventListeners();
@@ -102,6 +126,16 @@ export default class extends Controller {
   }
 
   #handleKeydown(e) {
+    // This listener is document-level (see #addEventListeners) so it keeps
+    // receiving events even once real focus has left the menu (e.g. a click
+    // into an unrelated text field the onFocusout listener didn't catch) —
+    // scope the roving-nav keys to when focus is actually within the widget.
+    // this.element (not just contentTarget) so ArrowDown still works right
+    // after a mouse-driven open, when focus is still on the invoker button
+    // (#open() doesn't force focus into the first row). Escape stays global
+    // while the menu is open (APG).
+    if (e.key !== "Escape" && !this.element.contains(document.activeElement)) return;
+
     const items = this.#items();
     if (items.length === 0) return;
     const index = items.indexOf(document.activeElement);
@@ -138,20 +172,27 @@ export default class extends Controller {
         this.invoker.focus();
         break;
       case "ArrowRight":
-        // On a sub trigger, enter the submenu (focus reveals it via
-        // :focus-within, making its rows visible to the roving nav).
-        // Same keyboard grammar as context_menu.
-        if (document.activeElement?.matches(".pk-dropdown-menu-sub-trigger")) {
-          e.preventDefault();
-          this.#enterSub(document.activeElement);
-        }
-        break;
       case "ArrowLeft": {
-        // Inside a submenu, step back to its trigger (closes it on focus-out).
-        const sub = document.activeElement?.closest(".pk-dropdown-menu-sub-content");
-        if (sub) {
-          e.preventDefault();
-          sub.closest(".pk-dropdown-menu-sub")?.querySelector(".pk-dropdown-menu-sub-trigger")?.focus();
+        // Submenus open inline-end — visually LEFT in RTL — so the enter key
+        // follows visual direction: ArrowLeft enters / ArrowRight exits in RTL
+        // (and the reverse in LTR). Same keyboard grammar as context_menu.
+        // Runtime dir check is reliable after a dynamic flip.
+        const rtl = getComputedStyle(this.element).direction === "rtl";
+        const enterKey = rtl ? "ArrowLeft" : "ArrowRight";
+        if (e.key === enterKey) {
+          // On a sub trigger, enter the submenu (focus reveals it via
+          // :focus-within, making its rows visible to the roving nav).
+          if (document.activeElement?.matches(".pk-dropdown-menu-sub-trigger")) {
+            e.preventDefault();
+            this.#enterSub(document.activeElement);
+          }
+        } else {
+          // Inside a submenu, step back to its trigger (closes it on focus-out).
+          const sub = document.activeElement?.closest(".pk-dropdown-menu-sub-content");
+          if (sub) {
+            e.preventDefault();
+            sub.closest(".pk-dropdown-menu-sub")?.querySelector(".pk-dropdown-menu-sub-trigger")?.focus();
+          }
         }
         break;
       }

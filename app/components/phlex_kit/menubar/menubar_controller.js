@@ -48,6 +48,12 @@ export default class extends Controller {
     // (only on elements that already carry it: plain nav links must not
     // grow an aria-expanded). Covers the trigger and CSS-revealed subs.
     menu.querySelectorAll("[aria-expanded='true']").forEach((el) => el.setAttribute("aria-expanded", "false"))
+    // Same shape for checkbox/radio rows: their `checked` DOM property
+    // survives a reconnect but a hand-edited/replayed aria-checked can drift
+    // from it — resync every row from its live input.
+    menu.querySelectorAll('input[type="checkbox"], input[type="radio"]').forEach((i) => {
+      i.closest('[role^="menuitem"]')?.setAttribute("aria-checked", i.checked)
+    })
     if (this.roving) this.applyRoving()
   }
 
@@ -107,8 +113,15 @@ export default class extends Controller {
     if (focus) (this.items(menu)[0] ?? this.trigger(menu))?.focus()
   }
 
+  // Also wired directly as the click handler on plain nav links (see
+  // navigation_menu_link.rb) — `opts` is then the click Event rather than an
+  // options hash. Guard the default href="#" (dropdown_menu_controller.js's
+  // close() does the same) so a link without a real destination doesn't
+  // scroll-to-top/append a hash; a link WITH a real href is left to navigate
+  // normally, closing whatever panel is open on the way out.
   close(opts = {}) {
     clearTimeout(this.graceTimer)
+    if (opts?.target?.closest?.('a[href="#"]')) opts.preventDefault?.()
     const menu = this.openMenu
     if (!menu) return
     const panel = this.panel(menu)
@@ -147,10 +160,14 @@ export default class extends Controller {
         e.preventDefault()
         this.show(menu, true)
       } else if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
-        // Closed bar: left/right move focus between the triggers (APG).
+        // Closed bar: left/right move focus between the triggers (APG). In RTL
+        // the bar mirrors, so the physical LEFT arrow moves to the next
+        // trigger. Runtime dir check is reliable after a dynamic flip.
         e.preventDefault()
+        const rtl = getComputedStyle(this.element).direction === "rtl"
+        const step = (e.key === "ArrowRight" ? 1 : -1) * (rtl ? -1 : 1)
         const menus = this.menuTargets
-        const next = menus[(menus.indexOf(menu) + (e.key === "ArrowRight" ? 1 : -1) + menus.length) % menus.length]
+        const next = menus[(menus.indexOf(menu) + step + menus.length) % menus.length]
         const target = next ? this.trigger(next) : null
         target?.focus()
         if (this.roving && target) this.applyRoving(target)
@@ -190,23 +207,30 @@ export default class extends Controller {
         }
         break
       case "ArrowRight":
-        e.preventDefault()
-        // On a sub trigger, enter the submenu (focus reveals it via
-        // :focus-within) instead of jumping to the next top-level menu.
-        if (document.activeElement?.matches(".pk-menubar-sub-trigger")) {
-          this.enterSub(document.activeElement)
-        } else {
-          this.shift(1)
-        }
-        break
       case "ArrowLeft": {
         e.preventDefault()
-        // Inside a submenu, step back to its trigger instead of switching menus.
-        const sub = document.activeElement?.closest(".pk-menubar-sub-content")
-        if (sub) {
-          sub.closest(".pk-menubar-sub")?.querySelector(".pk-menubar-sub-trigger")?.focus()
+        // Both the submenu (opens inline-end = visually LEFT in RTL) and the
+        // top-level menu traversal follow visual direction: the "enter/next"
+        // key is ArrowLeft in RTL, ArrowRight in LTR. Runtime dir check is
+        // reliable after a dynamic flip.
+        const rtl = getComputedStyle(this.element).direction === "rtl"
+        const enterKey = rtl ? "ArrowLeft" : "ArrowRight"
+        if (e.key === enterKey) {
+          // On a sub trigger, enter the submenu (focus reveals it via
+          // :focus-within) instead of jumping to the next top-level menu.
+          if (document.activeElement?.matches(".pk-menubar-sub-trigger")) {
+            this.enterSub(document.activeElement)
+          } else {
+            this.shift(1)
+          }
         } else {
-          this.shift(-1)
+          // Inside a submenu, step back to its trigger instead of switching menus.
+          const sub = document.activeElement?.closest(".pk-menubar-sub-content")
+          if (sub) {
+            sub.closest(".pk-menubar-sub")?.querySelector(".pk-menubar-sub-trigger")?.focus()
+          } else {
+            this.shift(-1)
+          }
         }
         break
       }

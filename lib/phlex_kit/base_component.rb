@@ -36,12 +36,22 @@ module PhlexKit
     # generated default label must skip it then: `mix` merges duplicate string
     # attrs ("pagination Résultats") instead of overriding.
     def aria_labelled?
+      aria_key_set?(:label) || aria_key_set?(:labelledby)
+    end
+
+    # True when the caller already supplied their own value for a given aria
+    # attribute — via the aria: hash (aria: { <key>: ... }) or the flat
+    # "aria-<key>"/aria_<key> spelling. A component with a generated default
+    # for that attribute must skip it then: `mix` merges duplicate attrs
+    # (aria-modal="true false") instead of overriding.
+    def aria_key_set?(key)
       aria = @attrs[:aria] || @attrs["aria"]
       if aria.is_a?(Hash)
-        return true if %i[label labelledby].any? { |k| aria[k] || aria[k.to_s] }
+        return true if aria.key?(key) || aria.key?(key.to_s)
       end
-      [ :aria_label, "aria_label", "aria-label",
-        :aria_labelledby, "aria_labelledby", "aria-labelledby" ].any? { |k| @attrs[k] }
+      dashed = "aria-#{key}"
+      underscored = "aria_#{key}"
+      [ dashed.to_sym, dashed, underscored.to_sym, underscored ].any? { |k| @attrs[k] }
     end
   end
 end

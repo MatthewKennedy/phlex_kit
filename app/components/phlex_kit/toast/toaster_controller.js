@@ -172,6 +172,7 @@ export default class extends Controller {
       )
       return
     }
+    if (!this._listEl) return
     const el = this._listEl.querySelector(`#${CSS.escape(id)}`)
     if (el) el.dispatchEvent(new CustomEvent("phlex-kit:toast:force-dismiss", { bubbles: true }))
   }
@@ -329,6 +330,7 @@ export default class extends Controller {
   }
 
   _mutate(id, variant, text) {
+    if (!this._listEl) return
     const el = this._listEl.querySelector(`#${CSS.escape(id)}`)
     if (!el) return
     el.dataset.variant = variant

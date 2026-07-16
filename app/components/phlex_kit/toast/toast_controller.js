@@ -20,23 +20,28 @@ export default class extends Controller {
     this._unmountTimer = null
     this._startedAt = 0
     this._remaining = this.durationValue
-    this._paused = false
+    // Independent pause sources (hover / focus / region) — resume only once
+    // ALL are clear. A single shared boolean let any one source's resume
+    // restart the timer while another source still held it paused (e.g.
+    // pointer leaving a toast into the gap while the region is still
+    // hover-paused).
+    this._pauseSources = new Set()
     this._swipe = { active: false, x: 0, y: 0, startedAt: 0 }
 
     this._onPointerDown = this._onPointerDown.bind(this)
     this._onPointerMove = this._onPointerMove.bind(this)
     this._onPointerUp = this._onPointerUp.bind(this)
-    this._onPointerEnter = () => this._pause()
-    this._onPointerLeave = () => { if (!this._swipe.active) this._resume() }
+    this._onPointerEnter = () => this._pause("hover")
+    this._onPointerLeave = () => { if (!this._swipe.active) this._resume("hover") }
     // Keyboard parity with hover: tabbing into the toast (e.g. to reach its
     // action button) must pause auto-dismiss just like pointerenter does.
-    this._onFocusIn = () => this._pause()
-    this._onFocusOut = (e) => { if (!this.element.contains(e.relatedTarget)) this._resume() }
+    this._onFocusIn = () => this._pause("focus")
+    this._onFocusOut = (e) => { if (!this.element.contains(e.relatedTarget)) this._resume("focus") }
     this._onKeyDown = this._onKeyDown.bind(this)
     this._onForceDismiss = (e) => { e.stopPropagation(); this._close() }
     this._onRestart = () => this._restart()
-    this._onRegionPause = () => this._pause()
-    this._onRegionResume = () => this._resume()
+    this._onRegionPause = () => this._pause("region")
+    this._onRegionResume = () => this._resume("region")
 
     this.element.addEventListener("pointerdown", this._onPointerDown)
     this.element.addEventListener("pointerenter", this._onPointerEnter)
@@ -52,7 +57,8 @@ export default class extends Controller {
     this._regionList.addEventListener("phlex-kit:toast:pause", this._onRegionPause)
     this._regionList.addEventListener("phlex-kit:toast:resume", this._onRegionResume)
 
-    requestAnimationFrame(() => {
+    this._connectFrame = requestAnimationFrame(() => {
+      this._connectFrame = null
       this.element.dataset.state = "open"
       // Spawned under an already-hovered stack (the toaster stamps
       // data-pk-toasts-paused while dispatching pause): arm as paused so the
@@ -60,7 +66,7 @@ export default class extends Controller {
       // under the user's cursor.
       if (Number.isFinite(this.durationValue) && this.durationValue > 0 &&
           this.element.closest("[data-pk-toasts-paused]")) {
-        this._paused = true
+        this._pauseSources.add("region")
         this._remaining = this.durationValue
       } else {
         this._start()
@@ -70,6 +76,8 @@ export default class extends Controller {
 
   disconnect() {
     this._clearTimer()
+    if (this._connectFrame) cancelAnimationFrame(this._connectFrame)
+    this._connectFrame = null
     // Don't let a pending 200ms unmount fire after teardown (e.g. into a
     // Turbo-cached copy of the page).
     if (this._unmountTimer) clearTimeout(this._unmountTimer)
@@ -115,22 +123,30 @@ export default class extends Controller {
     this._timer = setTimeout(() => this._close("auto"), this._remaining)
   }
 
+  // Resets the timer duration but must respect any pause source still
+  // active (e.g. a promise resolving into a fresh duration while the toast
+  // is hovered) — arm paused instead of ticking away under the cursor, and
+  // leave the source set intact so the matching resume can still fire.
   _restart() {
     this._clearTimer()
+    this._remaining = this.durationValue
+    if (this._pauseSources.size > 0) return
     this._start()
   }
 
-  _pause() {
-    if (this._paused || !this._timer) return
-    this._paused = true
+  _pause(source) {
+    this._pauseSources.add(source)
+    if (!this._timer) return
     clearTimeout(this._timer)
     this._timer = null
     this._remaining -= performance.now() - this._startedAt
   }
 
-  _resume() {
-    if (!this._paused) return
-    this._paused = false
+  _resume(source) {
+    this._pauseSources.delete(source)
+    if (this._pauseSources.size > 0) return
+    if (this._timer) return
+    if (!Number.isFinite(this.durationValue) || this.durationValue <= 0) return
     if (this._remaining <= 0) return this._close("auto")
     this._startedAt = performance.now()
     this._timer = setTimeout(() => this._close("auto"), this._remaining)
@@ -192,7 +208,7 @@ export default class extends Controller {
       this.element.dataset.swipe = "cancel"
       this.element.style.removeProperty("--pk-toast-swipe-x")
       this.element.style.removeProperty("--pk-toast-swipe-y")
-      this._resume()
+      this._resume("hover")
     }
   }
 }

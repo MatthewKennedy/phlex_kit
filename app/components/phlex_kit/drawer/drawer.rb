@@ -12,7 +12,7 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({ data: { controller: "phlex-kit--sheet", phlex_kit__sheet_open_value: @open } }, @attrs), &)
+      div(**mix({ data: { controller: "phlex-kit--sheet", phlex_kit__sheet_open_value: @open.to_s } }, @attrs), &)
     end
   end
 end

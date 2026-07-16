@@ -20,6 +20,7 @@ module PhlexKit
     }.freeze
 
     SIZES = {
+      xs: "xs",
       sm: "sm",
       md: nil,
       lg: "lg",

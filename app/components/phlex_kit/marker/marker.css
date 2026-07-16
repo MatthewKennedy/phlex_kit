@@ -25,7 +25,8 @@ a.pk-marker, button.pk-marker {
   font-size: .875rem;
 }
 a.pk-marker:hover, button.pk-marker:hover { color: var(--pk-text); }
-.pk-marker svg:not([class*="size-"]) { width: 1rem; height: 1rem; }
+/* Glyphs default to size-4; explicit width attrs (Icon size:) win. */
+.pk-marker svg:not([width]) { width: 1rem; height: 1rem; }
 .pk-marker-icon { display: inline-flex; flex: none; width: 1rem; height: 1rem; }
 .pk-marker-content { min-width: 0; overflow-wrap: break-word; }
 .pk-marker-content a { text-decoration: underline; text-underline-offset: 3px; color: inherit; }

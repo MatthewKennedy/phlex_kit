@@ -10,6 +10,8 @@ module Docs
         demo Docs::Examples::AlertDialog::Media, title: "Media"
         demo Docs::Examples::AlertDialog::SmallWithMedia, title: "Small with media"
         demo Docs::Examples::AlertDialog::Destructive, title: "Destructive"
+        demo Docs::Examples::AlertDialog::WithNestedSheet, title: "With Nested Sheet"
+        demo Docs::Examples::AlertDialog::WithNestedDialog, title: "With Nested Dialog"
       end
     end
   end

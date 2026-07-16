@@ -50,6 +50,10 @@ export default class extends Controller {
     // a restored page doesn't announce an open listbox over a closed combobox.
     this.setExpanded(false)
     this.clearActiveDescendant()
+    // Mirrors select_controller.js's connect(): a Turbo snapshot also
+    // serializes the keyboard-highlighted item's aria-current even though
+    // the popover itself does not survive the restore.
+    this.itemTargets.forEach((item) => item.removeAttribute("aria-current"))
     this.generateItemIds()
     this.updateTriggerContent()
   }
@@ -208,7 +212,19 @@ export default class extends Controller {
     remove.textContent = "×"
     remove.addEventListener("click", (e) => {
       e.stopPropagation() // don't reopen the popover via the trigger's click action
+      // Removing a focused chip drops focus with it (the remove button is
+      // torn out of the DOM by the renderBadges() rebuild below) — hand
+      // focus to the badge input instead of stranding it on <body>.
+      const wasFocused = document.activeElement === remove
       this.uncheck(input)
+      // badgeInput sits inside the trigger wrapper, so focusing it bubbles a
+      // focusin the trigger's own focusin->openPopover action would otherwise
+      // reopen — same guard closePopover() uses for its own focus restore.
+      if (wasFocused && this.hasBadgeInputTarget) {
+        this.refocusing = true
+        this.badgeInputTarget.focus()
+        this.refocusing = false
+      }
     })
 
     badge.append(remove)
@@ -235,6 +251,10 @@ export default class extends Controller {
   }
 
   clearAll(e) {
+    // The clear button hides itself once nothing is checked (updateTriggerContent
+    // below) — if it held focus, hand focus to the badge input rather than
+    // stranding it on a now-hidden element.
+    const wasFocused = this.hasClearButtonTarget && document.activeElement === this.clearButtonTarget
     if (e) {
       e.preventDefault()
       e.stopPropagation() // the button sits inside the trigger's click-to-open area
@@ -246,6 +266,11 @@ export default class extends Controller {
     })
     if (this.hasToggleAllTarget) this.toggleAllTarget.checked = false
     this.updateTriggerContent()
+    if (wasFocused && this.hasBadgeInputTarget) {
+      this.refocusing = true
+      this.badgeInputTarget.focus()
+      this.refocusing = false
+    }
   }
 
   togglePopover(event) {
@@ -303,6 +328,11 @@ export default class extends Controller {
     // aria-activedescendant holds an element id; on close it must be removed,
     // not left pointing at a hidden option.
     this.clearActiveDescendant()
+    // Also drop the highlight itself — otherwise a closed combobox still
+    // exposes an aria-current="true" option that Enter would go on to
+    // activate (APG: Enter on a closed combobox must be a no-op).
+    this.selectedItemIndex = null
+    this.itemTargets.forEach(item => item.ariaCurrent = "false")
     if (this.hasPopoverTarget && this.popoverTarget.matches(":popover-open")) this.popoverTarget.hidePopover()
     this.updateTriggerContent() // reflect the selection into an input trigger
 
@@ -349,6 +379,12 @@ export default class extends Controller {
     this.applyFilter(field.value.toLowerCase())
   }
 
+  // Strips combining diacritical marks after an NFD decomposition, so "é"
+  // (query or candidate) matches "e" instead of never comparing equal.
+  normalizeDiacritics(s) {
+    return s.normalize("NFD").replace(/[̀-ͯ]/g, "")
+  }
+
   applyFilter(filterTerm) {
     if (this.hasToggleAllTarget) {
       if (filterTerm) this.toggleAllTarget.parentElement.classList.add("pk-hidden")
@@ -363,10 +399,12 @@ export default class extends Controller {
     // aria-current="true" stayed the Enter target while invisible.
     this.itemTargets.forEach(item => item.ariaCurrent = "false")
 
-    this.inputTargets.forEach((input) => {
-      const text = this.inputContent(input).toLowerCase()
+    const normalizedFilterTerm = this.normalizeDiacritics(filterTerm)
 
-      if (text.indexOf(filterTerm) > -1) {
+    this.inputTargets.forEach((input) => {
+      const text = this.normalizeDiacritics(this.inputContent(input).toLowerCase())
+
+      if (text.indexOf(normalizedFilterTerm) > -1) {
         input.parentElement.classList.remove("pk-hidden")
         resultCount++
       } else {
@@ -395,6 +433,12 @@ export default class extends Controller {
   keyDownPressed(e) {
     if (e) e.preventDefault()
 
+    // APG: ArrowDown on a closed combobox opens it and highlights the first
+    // option, rather than walking aria-current through invisible options.
+    // openPopover() resets selectedItemIndex to null, so the branch below
+    // still lands on 0.
+    if (!this.isOpen()) this.openPopover()
+
     if (this.selectedItemIndex !== null) {
       this.selectedItemIndex++
     } else {
@@ -406,6 +450,11 @@ export default class extends Controller {
 
   keyUpPressed(e) {
     if (e) e.preventDefault()
+
+    // Same as keyDownPressed: ArrowUp on a closed combobox opens it and
+    // highlights the last option (wrapSelectedInputIndex turns -1 into the
+    // final index).
+    if (!this.isOpen()) this.openPopover()
 
     if (this.selectedItemIndex !== null) {
       this.selectedItemIndex--
@@ -439,6 +488,12 @@ export default class extends Controller {
   }
 
   keyEnterPressed(event) {
+    // APG: Enter on a CLOSED combobox is a no-op — it must not activate
+    // whatever option happened to keep aria-current="true" from before the
+    // popover closed. Bail before preventDefault so a closed field keeps
+    // Enter's ordinary default behaviour.
+    if (!this.isOpen()) return
+
     event.preventDefault()
     const option = this.itemTargets.find(item => item.ariaCurrent === "true")
 

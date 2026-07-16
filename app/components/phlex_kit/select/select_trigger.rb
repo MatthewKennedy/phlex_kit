@@ -16,7 +16,10 @@ module PhlexKit
         role: "combobox",
         class: [ "pk-select-trigger", fetch_option(SIZES, @size, :size) ].compact.join(" "),
         aria: { expanded: "false", haspopup: "listbox", autocomplete: "none" },
-        data: { action: "phlex-kit--select#onClick", phlex_kit__select_target: "trigger" }
+        data: { action: "phlex-kit--select#onClick " \
+                  "keydown.down->phlex-kit--select#handleTriggerArrowDown " \
+                  "keydown.up->phlex-kit--select#handleTriggerArrowUp",
+          phlex_kit__select_target: "trigger" }
       }, @attrs)) do
         block&.call
         icon

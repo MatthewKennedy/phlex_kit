@@ -1,5 +1,12 @@
 import { Controller } from "@hotwired/stimulus";
 
+// Strips combining diacritical marks after an NFD decomposition, so "é"
+// (query or candidate) matches "e" — the scorer otherwise treats accented
+// characters as never equal to their bare ASCII counterparts.
+function normalizeDiacritics(s) {
+  return s.normalize("NFD").replace(/[̀-ͯ]/g, "");
+}
+
 // Fuzzy subsequence score: every query character must appear in order in the
 // value (else null = no match). Consecutive runs compound, word-starts score
 // extra, and a verbatim substring outranks scattered hits — so "set" beats
@@ -7,6 +14,8 @@ import { Controller } from "@hotwired/stimulus";
 // what fuse.js gave ruby_ui.
 function fuzzyScore(query, value) {
   if (!query) return 0;
+  query = normalizeDiacritics(query);
+  value = normalizeDiacritics(value);
   let qi = 0;
   let score = 0;
   let streak = 0;
@@ -50,10 +59,17 @@ export default class extends Controller {
     // dismiss() can hand focus back instead of dropping it on <body>.
     this.previouslyFocused = document.activeElement;
 
+    // A Turbo snapshot serializes stale aria-selected on rows / aria-
+    // activedescendant on the input even though the live JS highlight state
+    // doesn't survive restore — normalize here so a restored page doesn't
+    // announce a stale highlight (mirrors select_controller.js's connect()).
+    this.itemTargets.forEach((item) => item.removeAttribute("aria-selected"));
+
     if (!this.hasInputTarget) {
       return;
     }
 
+    this.inputTarget.removeAttribute("aria-activedescendant");
     this.generateItemIds();
     // Only the cloned dialog overlay grabs focus on connect — an inline
     // palette connecting at page load must not steal it.
@@ -174,7 +190,7 @@ export default class extends Controller {
   }
 
   focusInput() {
-    this.inputTarget?.focus();
+    if (this.hasInputTarget) this.inputTarget.focus();
   }
 
   filter(e) {

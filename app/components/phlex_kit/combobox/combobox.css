@@ -107,7 +107,7 @@
   padding: .25rem 0;
   border-bottom: 1px solid var(--pk-border);
 }
-.pk-combobox-group::before {
+.pk-combobox-group[data-label]::before {
   content: attr(data-label);
   padding: .375rem .5rem;
   font-size: .75rem;

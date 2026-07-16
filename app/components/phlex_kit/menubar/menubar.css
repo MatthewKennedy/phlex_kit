@@ -129,6 +129,9 @@
    the viewport right edge. */
 .pk-menubar-sub { anchor-name: --pk-menubar-sub; anchor-scope: --pk-menubar-sub; }
 .pk-menubar-sub-chevron { margin-inline-start: auto; width: 1rem; height: 1rem; }
+/* Mirror the chevron in RTL (submenu opens visually LEFT). Ancestor
+   [dir="rtl"] (not :dir()) so Chrome re-styles it on a dynamic dir flip too. */
+[dir="rtl"] .pk-menubar-sub-chevron { transform: scaleX(-1); }
 .pk-menubar-sub-content {
   position: fixed;
   position-anchor: --pk-menubar-sub;

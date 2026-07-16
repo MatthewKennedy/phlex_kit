@@ -62,6 +62,15 @@ class ToastTest < Minitest::Test
     assert_includes render(PhlexKit::ToastClose.new), "pk-sr-only"
   end
 
+  # Audit round 7: dismiss must be wired even without on: — a
+  # server-rendered ToastAction.new(label: "OK") with no Stimulus action of
+  # its own was previously inert, contradicting the comment above the
+  # binding and the clone path (toaster always force-dismisses after
+  # onClick).
+  def test_action_without_on_still_dismisses
+    assert_includes render(PhlexKit::ToastAction.new(label: "OK")), %(data-action="click->phlex-kit--toast#dismiss")
+  end
+
   def test_flash_variant_mapping
     assert_equal :info, PhlexKit::Toast.flash_variant(:notice)
     assert_equal :default, PhlexKit::Toast.flash_variant(:whatever)

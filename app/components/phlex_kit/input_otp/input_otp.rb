@@ -15,15 +15,18 @@ module PhlexKit
     end
 
     def view_template(&block)
-      div(**mix({
+      base = {
         class: "pk-input-otp",
         role: "group",
-        aria: { label: @label },
         data: {
           controller: "phlex-kit--input-otp",
           phlex_kit__input_otp_length_value: @length
         }
-      }, @attrs)) do
+      }
+      # Default label only when the caller didn't supply their own — `mix`
+      # would fuse aria-label into a two-token value instead of overriding.
+      base[:aria] = { label: @label } unless aria_labelled?
+      div(**mix(base, @attrs)) do
         input(type: :hidden, name: @name, value: @value, data: { phlex_kit__input_otp_target: "value" }) if @name
         yield if block
       end

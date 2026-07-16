@@ -30,20 +30,32 @@ export default class extends Controller {
       const chars = this.valueTarget.value.split("")
       this.slotTargets.forEach((slot, i) => { if (chars[i] != null) slot.value = chars[i] })
     }
+    // Track each slot's last-known-good value so a rejected keystroke (see
+    // onInput) can restore it instead of leaving the slot blanked.
+    this.slotTargets.forEach((slot) => { slot.dataset.otpValue = slot.value })
     this.syncValue()
   }
 
   onInput(e) {
     const slot = e.target
+    const isNumeric = slot.getAttribute("inputmode") === "numeric"
+    const priorValue = slot.dataset.otpValue || ""
     let text = slot.value.replace(/\s/g, "")
     // Typing rejects the same characters paste strips — a letter keyed into
     // an inputmode=numeric slot must not land.
-    if (slot.getAttribute("inputmode") === "numeric") text = text.replace(/\D/g, "")
+    if (isNumeric) text = text.replace(/\D/g, "")
 
     if (text.length > 1) {
       if (e.data && e.data.length === 1) {
+        if (isNumeric && !/\d/.test(e.data)) {
+          // Rejected keystroke into an already-filled/selected slot: restore
+          // the prior digit rather than blanking it, and don't advance focus.
+          slot.value = priorValue
+          return
+        }
         // one keystroke into an already-filled slot: keep the newest char
         slot.value = e.data
+        slot.dataset.otpValue = e.data
         this.focusSlot(this.slotTargets.indexOf(slot) + 1)
         this.syncValue()
       } else {
@@ -55,7 +67,16 @@ export default class extends Controller {
       return
     }
 
+    if (!text && e.data) {
+      // A keystroke was fully rejected by numeric filtering (e.g. a letter
+      // typed into a filled/selected slot) — restore the slot's prior value
+      // instead of blanking it, and don't advance focus.
+      slot.value = priorValue
+      return
+    }
+
     slot.value = text
+    slot.dataset.otpValue = text
     if (slot.value) this.focusSlot(this.slotTargets.indexOf(slot) + 1)
     this.syncValue()
   }
@@ -66,6 +87,7 @@ export default class extends Controller {
       e.preventDefault()
       const prev = this.slotTargets[index - 1]
       prev.value = ""
+      prev.dataset.otpValue = ""
       prev.focus()
       this.syncValue()
     } else if (e.key === "ArrowLeft" && index > 0) {
@@ -92,7 +114,7 @@ export default class extends Controller {
   fillFrom(slot, text) {
     const chars = text.split("")
     const start = this.slotTargets.indexOf(slot)
-    this.slotTargets.slice(start).forEach((s, i) => { if (chars[i] != null) s.value = chars[i] })
+    this.slotTargets.slice(start).forEach((s, i) => { if (chars[i] != null) { s.value = chars[i]; s.dataset.otpValue = chars[i] } })
     this.focusSlot(Math.min(start + chars.length, this.slotTargets.length - 1))
     this.syncValue()
   }

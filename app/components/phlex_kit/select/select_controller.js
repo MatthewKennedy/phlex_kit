@@ -59,6 +59,28 @@ export default class extends Controller {
     this.closeContent();
   }
 
+  // APG select pattern: ArrowDown/ArrowUp on the CLOSED trigger opens the
+  // listbox and highlights the first/last option, instead of only working
+  // once already open (combobox_controller.js's keyDownPressed/keyUpPressed
+  // does the equivalent for its own open/closed model).
+  handleTriggerArrowDown(event) {
+    if (this.openValue) return
+    event.preventDefault()
+    this.#show()
+    if (this.itemTargets.length === 0) return
+    this.resetCurrent()
+    this.setAriaCurrentAndActiveDescendant(0)
+  }
+
+  handleTriggerArrowUp(event) {
+    if (this.openValue) return
+    event.preventDefault()
+    this.#show()
+    if (this.itemTargets.length === 0) return
+    this.resetCurrent()
+    this.setAriaCurrentAndActiveDescendant(this.itemTargets.length - 1)
+  }
+
   onClick() {
     this.toggleContent();
 

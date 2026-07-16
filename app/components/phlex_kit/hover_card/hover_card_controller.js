@@ -10,6 +10,29 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["trigger", "content"]
   static values = { openDelay: { type: Number, default: 200 }, closeDelay: { type: Number, default: 200 } }
+
+  connect() {
+    // Turbo snapshots BEFORE disconnect, so a stale data-state="open" would
+    // otherwise resurrect host CSS keyed on the state hook after a cache
+    // restore — close now (popover_controller.js's contentTargetConnected /
+    // context_menu_controller.js's turbo:before-cache pattern combined).
+    this.onBeforeCache = () => {
+      if (this.contentTarget.matches(":popover-open")) {
+        clearTimeout(this.t)
+        this.#close()
+      }
+    }
+    document.addEventListener("turbo:before-cache", this.onBeforeCache)
+  }
+
+  contentTargetConnected(el) {
+    // A reconnect (Turbo cache restore, or the detach/reattach it's tested
+    // with) can hand us markup whose data-state was serialized while open —
+    // :popover-open does not survive the restore, so resync before anything
+    // reads the hook.
+    el.dataset.state = el.matches(":popover-open") ? "open" : "closed"
+  }
+
   show() {
     clearTimeout(this.t)
     this.t = setTimeout(() => {
@@ -25,6 +48,7 @@ export default class extends Controller {
   disconnect() {
     clearTimeout(this.t)
     this.#unbindEscape()
+    document.removeEventListener("turbo:before-cache", this.onBeforeCache)
   }
 
   #close() {

@@ -32,4 +32,13 @@ class DatePickerTest < Minitest::Test
   def test_label_omitted_when_nil
     refute_includes render(PhlexKit::DatePicker.new(id: "d", label: nil)), "pk-date-picker-label"
   end
+
+  # Task 7: the calendar's change event is routed to a close-on-complete
+  # listener so picking a date collapses the popover (see
+  # date_picker_controller.js / popover_controller.js#close).
+  def test_wires_calendar_change_to_the_date_picker_controller
+    html = render(PhlexKit::DatePicker.new(id: "d"))
+    assert_includes html, %(data-controller="phlex-kit--date-picker")
+    assert_includes html, %(data-action="phlex-kit--calendar:change->phlex-kit--date-picker#onCalendarChange")
+  end
 end

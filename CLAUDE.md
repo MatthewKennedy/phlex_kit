@@ -159,12 +159,23 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   sidebar-primary).
 - **Known RTL limitations (deliberate, audit round 5)**: sidebar is
   physically left-pinned (no `side:` kwarg yet) and resizable's drag math
-  assumes LTR (commented at the clientX delta). Everything else uses logical
+  assumes LTR (commented at the clientX delta) — these two remain the only
+  deliberate exemptions. Everything else uses logical
   properties — keep it that way; physical is only for the side-kwarg
   contracts (sheet/drawer/toast) and centering math. Round 6 made carousel
   (direction-aware geometry + keyNext/keyPrev), switch/slider/progress
   (`:dir(rtl)` arms) and hover_card/dropdown/select (logical gap
-  margins/paddings) RTL-correct — new work must not regress them.
+  margins/paddings) RTL-correct — new work must not regress them. Round 7
+  added the RTL keyboard cluster: tabs/toggle_group (horizontal arrows flip,
+  Up/Down don't), calendar (ArrowLeft/Right day delta flips, week/Page/Home/
+  End don't), and dropdown/context/menubar (submenu enter/exit keys +
+  menubar bar traversal follow visual direction — panels open inline-end =
+  visually LEFT in RTL, so ArrowLeft enters). All use a runtime
+  `getComputedStyle(this.element).direction === "rtl"` check (reliable after
+  a dynamic flip, unlike CSS `:dir()`); sub-trigger chevrons mirror via a
+  `[dir="rtl"] .pk-…-sub-chevron { transform: scaleX(-1) }` ancestor arm
+  (attribute selectors re-style on a dynamic flip; `:dir()` would not).
+  Gate: audit7_rtl_keyboard_system_test.
 - **Chrome doesn't re-style `:dir()` on a dynamic `dir` flip** — existing
   elements keep the old evaluation inside `:dir()`-compound selectors until
   they're reattached, even though `el.matches(":dir(rtl)")` says true. Pages

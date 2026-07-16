@@ -71,4 +71,27 @@ class ModalsSystemTest < SystemTestCase
     assert background_inert_cleared?, "inert was not cleared after close"
     assert_equal "Open", active_element.text
   end
+
+  # Task 12, item 5: a mousedown that starts a drag on the backdrop moves
+  # focus to <body>, killing the panel's element-scoped keydown listener —
+  # Escape pressed afterward silently did nothing. overlayMousedown
+  # preventDefault keeps focus in the trap so Escape keeps working.
+  def test_sheet_overlay_mousedown_keeps_escape_alive
+    visit "/docs/sheet"
+    within(demo("Default")) { click_button "Open" }
+    assert_selector ".pk-sheet-content[role='dialog']"
+
+    prevented = page.evaluate_script(<<~JS)
+      (() => {
+        const evt = new MouseEvent("mousedown", { bubbles: true, cancelable: true, detail: 1 });
+        const notCanceled = document.querySelector(".pk-sheet-backdrop").dispatchEvent(evt);
+        return !notCanceled;
+      })()
+    JS
+    assert prevented, "overlay mousedown must call preventDefault to keep focus in the trap"
+
+    press(:escape)
+    # Escape must still work after a backdrop mousedown moved focus to <body>
+    assert_no_selector ".pk-sheet-content[role='dialog']"
+  end
 end

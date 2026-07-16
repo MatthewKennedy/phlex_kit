@@ -48,6 +48,25 @@ export default class extends Controller {
     this.contentTarget.togglePopover()
   }
 
+  // Public close, for consumers that need to dismiss the panel from outside
+  // a trigger interaction (e.g. the date picker closing on a complete
+  // calendar selection). Returns focus to the trigger's focusable child —
+  // dismissing without it would strand focus on the day button that's
+  // about to disappear from the DOM.
+  close() {
+    if (this.contentTarget.matches(":popover-open")) {
+      this.contentTarget.hidePopover()
+    }
+    this.focusTrigger()
+  }
+
+  focusTrigger() {
+    const focusable = this.fallbackInvoker
+      || this.triggerTarget.querySelector("button, input, a[href], select, textarea, [tabindex]")
+      || this.triggerTarget
+    focusable.focus()
+  }
+
   // One stable handler added/removed symmetrically — an anonymous listener
   // here would pile up a duplicate on every target reconnect.
   syncState = (e) => {

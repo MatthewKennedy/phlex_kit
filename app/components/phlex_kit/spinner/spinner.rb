@@ -11,12 +11,15 @@ module PhlexKit
 
     def view_template
       # A visible loader, not decoration: role=status + label, aria-hidden off.
-      render Icon.new(:loader, size: nil, **mix({
+      base = {
         class: [ "pk-spinner", fetch_option(SIZES, @size, :size) ].compact.join(" "),
         role: "status",
-        aria: { label: "Loading" },
         "aria-hidden": false
-      }, @attrs))
+      }
+      # Default label only when the caller didn't supply their own — `mix`
+      # would fuse aria-label="Loading Saving" instead of overriding.
+      base[:aria] = { label: "Loading" } unless aria_labelled?
+      render Icon.new(:loader, size: nil, **mix(base, @attrs))
     end
   end
 end

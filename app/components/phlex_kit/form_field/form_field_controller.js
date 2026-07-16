@@ -59,42 +59,50 @@ export default class extends Controller {
     }
 
     this.shouldValidateValue = true;
-    this.#setErrorMessage(error);
+    this.#setErrorMessage();
   }
 
-  onInput(event) {
-    this.#setErrorMessage(event);
+  onInput(_event) {
+    this.#setErrorMessage();
   }
 
-  onChange(event) {
-    this.#setErrorMessage(event);
+  onChange(_event) {
+    this.#setErrorMessage();
   }
 
-  // The event's own control, when it's one of ours — radio/checkbox groups
-  // register several input targets and validity/aria-invalid must land on
-  // the control that fired, not always the first.
-  #inputFor(event) {
-    if (event && this.inputTargets.includes(event.target)) return event.target;
-    return this.inputTarget;
-  }
-
-  #setErrorMessage(event) {
+  // A FormField can carry several input targets (radio/checkbox groups, or
+  // independent controls like two required checkboxes sharing one error).
+  // Recompute across ALL of them on every validity event — deciding from the
+  // event's own target alone left a shared error stuck on/off based on
+  // whichever control happened to fire last, out of step with the others'
+  // own (correctly-updated) aria-invalid.
+  #setErrorMessage() {
     if (!this.shouldValidateValue || !this.hasErrorTarget) return;
 
-    const input = this.#inputFor(event);
     // aria-invalid drives the red ring for LIVE validation too (input.css
-    // only matched server-rendered attrs); aria-describedby ties the message
-    // to the control for AT.
-    if (input.validity.valid) {
-      input.removeAttribute("aria-invalid");
+    // only matched server-rendered attrs); each control reflects its own
+    // validity regardless of which one fired the event. Radio buttons
+    // sharing a `name` share native validity, so they naturally agree here.
+    let firstInvalid = null;
+    this.inputTargets.forEach((input) => {
+      if (input.validity.valid) {
+        input.removeAttribute("aria-invalid");
+      } else {
+        input.setAttribute("aria-invalid", "true");
+        firstInvalid ||= input;
+      }
+      // Clear the shared error's id everywhere first — it's re-added below,
+      // only on the one control whose message is currently shown.
       this.#describeBy(input, false);
+    });
+
+    if (firstInvalid) {
+      this.#describeBy(firstInvalid, true);
+      this.errorTarget.textContent = this.#getValidationMessage(firstInvalid);
+      this.errorTarget.classList.remove("pk-hidden");
+    } else {
       this.errorTarget.textContent = "";
       this.errorTarget.classList.add("pk-hidden");
-    } else {
-      input.setAttribute("aria-invalid", "true");
-      this.#describeBy(input, true);
-      this.errorTarget.textContent = this.#getValidationMessage(input);
-      this.errorTarget.classList.remove("pk-hidden");
     }
   }
 

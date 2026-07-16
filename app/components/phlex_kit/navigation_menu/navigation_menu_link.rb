@@ -11,7 +11,14 @@ module PhlexKit
     end
 
     def view_template(&)
-      a(**mix({ class: "pk-navigation-menu-link", href: @href, data: { action: "mouseenter->phlex-kit--menubar#switch" } }, @attrs), &)
+      a(**mix({
+        class: "pk-navigation-menu-link",
+        href: @href,
+        # click: closes the open panel on real activation (and swallows the
+        # default href="#" the way dropdown_menu_controller.js's close() does
+        # — see menubar_controller.js#close).
+        data: { action: "mouseenter->phlex-kit--menubar#switch click->phlex-kit--menubar#close" }
+      }, @attrs), &)
     end
   end
 end

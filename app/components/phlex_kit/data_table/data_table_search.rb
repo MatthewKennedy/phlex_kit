@@ -3,7 +3,10 @@ module PhlexKit
   # params survive via `preserved_params:` hidden inputs; focus/caret survive the
   # frame swap (see the search controller). See data_table.rb.
   class DataTableSearch < BaseComponent
-    def initialize(path:, name: "search", value: nil, frame_id: nil, placeholder: "Search...", debounce: 300, preserved_params: {}, **attrs)
+    # method:/action: are kit-owned (a GET form targeting `path:`) — named
+    # kwargs so a caller override lands in @method/@action directly instead
+    # of fusing with the generated defaults via `mix` ("get post").
+    def initialize(path:, name: "search", value: nil, frame_id: nil, placeholder: "Search...", debounce: 300, preserved_params: {}, method: "get", action: nil, **attrs)
       @path = path
       @name = name
       @value = value
@@ -11,11 +14,13 @@ module PhlexKit
       @placeholder = placeholder
       @debounce = debounce
       @preserved_params = preserved_params
+      @method = method
+      @action = action || @path
       @attrs = attrs
     end
 
     def view_template
-      form(**mix({ class: "pk-data-table-search", method: "get", action: @path, data: form_data }, @attrs)) do
+      form(**mix({ class: "pk-data-table-search", method: @method, action: @action, data: form_data }, @attrs)) do
         render Input.new(
           type: :search,
           name: @name,
