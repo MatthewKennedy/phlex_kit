@@ -215,6 +215,17 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   menus close on `turbo:before-cache` (dropdown/context) or normalize stale
   `aria-expanded`/`aria-activedescendant` in `connect()` (select/combobox/
   menubar) — a snapshot serializes those even though `:popover-open` dies.
+- **connect() must re-derive every reflected state attribute from live
+  truth** — the mirror-image of the universal before-cache rule: a Turbo
+  snapshot keeps ATTRIBUTES (`data-state`, `aria-current`, `aria-expanded`,
+  `aria-checked`) but not properties or native popover state, so a cache
+  restore reconnects on stale markup. Any controller that reflects state
+  into an attribute normalizes it in `connect()` (`:popover-open` →
+  data-state, `input.checked` → aria-checked, clear stale
+  aria-current/activedescendant, sweep `[aria-expanded='true']`). Rounds
+  4–7 rediscovered this independently in select, combobox, menubar,
+  hover_card, dropdown/context, and command — it is ONE convention, not
+  per-component folklore.
 - **"backspace" is NOT a Stimulus key filter** — `keydown.backspace->` throws
   "unknown key filter" on every keystroke and the action never runs (bit the
   combobox badge chips). Bind bare `keydown` and guard `e.key` in the method.
