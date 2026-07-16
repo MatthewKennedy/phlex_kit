@@ -10,6 +10,7 @@ architecture; `docs/07-TOKENS.md` for the full `--pk-*` token reference;
 
 ```bash
 bundle exec rake test                 # unit suite (fast, no Rails boot; excludes test/system)
+bundle exec rubocop                   # lint — CI runs this BEFORE the suite; run it before every push
 bundle exec rake test:system          # browser suite — Capybara + Cuprite (headless Chrome)
                                       # drives /gallery + /docs/<slug>; HEADLESS=0 to watch
 node --check app/components/phlex_kit/<name>/<name>_controller.js
@@ -51,7 +52,10 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
 - Clone-based modals (alert_dialog, sheet/drawer, sidebar mobile, command
   dialog) `inert` the page behind them — restore on close, disconnect, AND
   `turbo:before-cache`; the helper is duplicated per controller by design (no
-  shared JS util). The before-cache rule is universal: ANY transient UI (open
+  shared JS util). Every clone root must stamp `data-pk-overlay-clone` —
+  alert_dialog's Escape handler uses it to yield to a newer overlay of a
+  DIFFERENT type (command dialog is still unstamped; round-8 item).
+  The before-cache rule is universal: ANY transient UI (open
   dialog, flash popover, toast) must clear on `turbo:before-cache` — Turbo
   snapshots BEFORE disconnect, so a missed listener resurrects the overlay
   from the page cache (bit dialog and clipboard). Viewport-scoped overlays
@@ -126,6 +130,15 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
 - **Stimulus fires `[target]Connected` before `connect()`** — state used by
   target callbacks must be initialized in `initialize()` (bit the toaster
   with server-rendered flash toasts).
+- **Stimulus `*Value` writes re-render asynchronously** — valueChanged
+  callbacks fire via MutationObserver, so code right after `this.fooValue =`
+  still sees the OLD DOM. Drive the re-render synchronously (call the update
+  method directly) when the next line must query the result (bit calendar's
+  month-cross keyboard focus).
+- **drawer_content.rb hand-duplicates sheet_content.rb** (same
+  `phlex-kit--sheet-content` controller, separate markup) — any markup-level
+  fix to one MUST be mirrored in the other; `a11y_modal_test.rb` drift-guards
+  the overlay-clone marker + backdrop actions (bit round 7's Escape layering).
 - **The unit suite cannot nest `render`** — `RenderHelper#render` returns a
   string, so composing components inside a test block escapes the child HTML.
   Render multi-part components part-by-part in tests; compose only in the
@@ -191,6 +204,11 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   `label:` — a caller copy would fuse. For generated *defaults* the caller
   may override (icon width/aria-hidden, scroll_area role/tabindex, codeblock/
   chart aria-label), check `@attrs` first (`BaseComponent#aria_labelled?`).
+  Round 7 extended this (spinner/otp aria-labels, chart/codeblock role+tabindex,
+  toast item/close, overlay panels' role/aria-modal/tabindex, CommandInput
+  value, DataTableSearch/PerPageSelect method+action) and added
+  `BaseComponent#aria_key_set?` for any aria-hash-or-flat-spelling guard —
+  use it instead of re-inlining the two-spelling check.
 - **`open:` values are one-shot** on clone-based overlays (alert_dialog,
   sheet): clear `openValue` when the clone spawns, or the reflected value in
   the Turbo snapshot re-opens a dismissed overlay on restore. Popover-based
