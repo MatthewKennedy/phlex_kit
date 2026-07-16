@@ -7,6 +7,7 @@ module Docs
       def demos
         demo Docs::Examples::Form::Profile, title: "Profile form"
         demo Docs::Examples::Form::Agreement, title: "Multi-checkbox agreement"
+        demo Docs::Examples::Form::Plan, title: "Radio group plan"
         demo Docs::Examples::Form::ServerError, title: "Server-rendered error"
       end
     end
