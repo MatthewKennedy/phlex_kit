@@ -30,9 +30,9 @@ module PhlexKit
           # Defaults only when the caller didn't supply their own — `mix`
           # would fuse role="alertdialog dialog" / aria-modal="true false" /
           # tabindex="-1 0" instead of overriding.
-          panel_attrs[:role] = "alertdialog" unless @attrs.key?(:role) || @attrs.key?("role")
+          panel_attrs[:role] = "alertdialog" unless attr_set?(:role)
           panel_attrs[:"aria-modal"] = "true" unless aria_key_set?(:modal)
-          panel_attrs[:tabindex] = "-1" unless @attrs.key?(:tabindex) || @attrs.key?("tabindex")
+          panel_attrs[:tabindex] = "-1" unless attr_set?(:tabindex)
           div(**mix(panel_attrs, @attrs), &block)
         end
       end

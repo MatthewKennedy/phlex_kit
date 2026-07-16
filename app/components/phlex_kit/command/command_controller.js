@@ -83,6 +83,13 @@ export default class extends Controller {
     return this.element.hasAttribute("data-phlex-kit--command-dialog-instance");
   }
 
+  // Clones are appended as direct <body> children; the last stamped clone is
+  // the visually topmost overlay across all clone-based overlay families.
+  isTopmostClone() {
+    const clones = document.body.querySelectorAll(":scope > [data-pk-overlay-clone]");
+    return clones.length > 0 && clones[clones.length - 1] === this.element;
+  }
+
   // ARIA plumbing: aria-controls is wired to the listbox (mirrors
   // select_controller.js); the per-result ids come from itemTargetConnected.
   generateItemIds() {
@@ -119,7 +126,22 @@ export default class extends Controller {
     this.selectedIndex = -1;
   }
 
-  dismiss() {
+  dismiss(e) {
+    if (e?.type === "keydown" && this.isDialogClone()) {
+      // The backdrop's Escape binding is window-scoped, so it fires even
+      // with another overlay (alert dialog, sheet) stacked ON TOP of the
+      // palette — those clones are later <body> siblings carrying the same
+      // [data-pk-overlay-clone] marker. Only the topmost clone may act on
+      // Escape (mirrors alert_dialog_controller.js#topmost).
+      if (!this.isTopmostClone()) return;
+      // The input's Escape binding is element-scoped and fires BEFORE lower
+      // overlays' document/window listeners — stop the keydown here, or by
+      // the time they run this clone (and its marker) is already removed and
+      // their own topmost check would wrongly elect them (mirrors
+      // sheet_content_controller.js's Escape guard).
+      e.stopPropagation();
+    }
+
     // Cloned dialog overlay: tear the clone down and hand focus back.
     if (this.isDialogClone()) {
       // Dispatched BEFORE teardown: the command-dialog controller listens on

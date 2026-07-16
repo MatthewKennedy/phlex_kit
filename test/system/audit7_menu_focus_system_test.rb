@@ -3,9 +3,9 @@
 require_relative "system_test_helper"
 require_relative "interaction_helpers"
 
-# Task 8 — dropdown/context menu Tab-out close, page-wide key-hijack scoping,
+# Audit round 7, task 8 — dropdown/context menu Tab-out close, page-wide key-hijack scoping,
 # stale-aria normalization on connect, and navigation menu link click guard.
-class Task8MenuFocusSystemTest < SystemTestCase
+class Audit7MenuFocusSystemTest < SystemTestCase
   include InteractionHelpers
 
   RECONNECT = <<~JS

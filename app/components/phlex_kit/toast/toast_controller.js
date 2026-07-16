@@ -208,7 +208,12 @@ export default class extends Controller {
       this.element.dataset.swipe = "cancel"
       this.element.style.removeProperty("--pk-toast-swipe-x")
       this.element.style.removeProperty("--pk-toast-swipe-y")
-      this._resume("hover")
+      // pointerleave is suppressed while a swipe is active, so release the
+      // hover hold here — but only if the pointer actually left the toast; a
+      // cancelled swipe ending under the cursor must stay hover-paused (the
+      // eventual pointerleave resumes it, including the touch case where
+      // pointerleave fires right after pointerup).
+      if (!this.element.matches(":hover")) this._resume("hover")
     }
   }
 }

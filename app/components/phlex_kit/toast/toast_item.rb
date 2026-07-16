@@ -60,10 +60,10 @@ module PhlexKit
       # Defaults only when the caller didn't supply their own — `mix` would
       # fuse role="status log" / tabindex="0 -1" / aria-atomic="true false"
       # instead of overriding.
-      unless @attrs.key?(:role) || @attrs.key?("role")
+      unless attr_set?(:role)
         attrs[:role] = ALERT_VARIANTS.include?(@variant) ? "alert" : "status"
       end
-      attrs[:tabindex] = "0" unless @attrs.key?(:tabindex) || @attrs.key?("tabindex")
+      attrs[:tabindex] = "0" unless attr_set?(:tabindex)
       unless aria_key_set?(:atomic)
         attrs[:aria] = { atomic: "true" }
       end

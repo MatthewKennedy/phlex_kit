@@ -3,12 +3,12 @@
 require_relative "system_test_helper"
 require_relative "interaction_helpers"
 
-# Task 16 — remaining system-test coverage gaps: toast swipe-to-dismiss,
+# Audit round 7, task 16 — remaining system-test coverage gaps: toast swipe-to-dismiss,
 # masked-input mid-string deletion/caret reseating, OTP paste distribution +
 # autofill, slider drag/keyboard --pk-slider-progress sync, and a
 # radio-group-inside-FormField exercising the Task 10 multi-target recompute
 # against native radio-GROUP validity.
-class Task16SystemTest < SystemTestCase
+class Audit7CoverageGapsSystemTest < SystemTestCase
   include InteractionHelpers
 
   # --- Toast swipe-to-dismiss -------------------------------------------

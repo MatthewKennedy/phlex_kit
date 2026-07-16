@@ -9,7 +9,7 @@ module PhlexKit
       # value: is silently clobbered below (the checkbox's real value comes
       # from checked_value:) — fail loud rather than let a caller's value:
       # vanish (mirrors ToggleGroupItem's unsupported-kwargs guard).
-      if attrs.key?(:value)
+      if attrs.key?(:value) || attrs.key?("value")
         raise ArgumentError, "Switch does not support value: — the checkbox's value comes from checked_value:, pass that instead"
       end
       @include_hidden = include_hidden

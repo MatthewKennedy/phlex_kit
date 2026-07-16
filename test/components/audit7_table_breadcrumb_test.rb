@@ -5,7 +5,7 @@ require "test_helper"
 # Task 16 — remaining render-test gaps: Table structural parts and the
 # Breadcrumb parts whose accessibility contract (aria-current/role/
 # aria-disabled, aria-hidden separator) wasn't exercised by any prior audit.
-class Task16TableBreadcrumbTest < Minitest::Test
+class Audit7TableBreadcrumbTest < Minitest::Test
   include RenderHelper
 
   def test_table_head_renders_th_with_class

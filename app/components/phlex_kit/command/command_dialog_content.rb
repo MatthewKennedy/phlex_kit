@@ -17,9 +17,14 @@ module PhlexKit
       template(data: { phlex_kit__command_dialog_target: "content" }) do
         # The keydown action is the focus trap: Tab cycles within the cloned
         # overlay instead of escaping to the page underneath.
+        # data-pk-overlay-clone is the common marker stamped by every
+        # clone-based overlay family (see alert_dialog_controller.js#topmost):
+        # it lets stacked overlays of DIFFERENT types resolve which one is
+        # topmost, so one Escape never closes both layers at once.
         div(data: {
           controller: "phlex-kit--command",
           phlex_kit__command_dialog_instance: true,
+          pk_overlay_clone: "",
           action: "keydown->phlex-kit--command#trapFocus"
         }) do
           backdrop

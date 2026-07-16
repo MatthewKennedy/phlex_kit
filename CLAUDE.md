@@ -54,7 +54,10 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   `turbo:before-cache`; the helper is duplicated per controller by design (no
   shared JS util). Every clone root must stamp `data-pk-overlay-clone` —
   alert_dialog's Escape handler uses it to yield to a newer overlay of a
-  DIFFERENT type (command dialog is still unstamped; round-8 item).
+  DIFFERENT type. An overlay whose Escape handler is ELEMENT-scoped (sheet,
+  command input) must also stopPropagation when it closes itself, or the
+  clone + marker are gone by the time lower overlays' document/window
+  listeners run and their topmost check wrongly elects them.
   The before-cache rule is universal: ANY transient UI (open
   dialog, flash popover, toast) must clear on `turbo:before-cache` — Turbo
   snapshots BEFORE disconnect, so a missed listener resurrects the overlay
@@ -208,7 +211,9 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   toast item/close, overlay panels' role/aria-modal/tabindex, CommandInput
   value, DataTableSearch/PerPageSelect method+action) and added
   `BaseComponent#aria_key_set?` for any aria-hash-or-flat-spelling guard —
-  use it instead of re-inlining the two-spelling check.
+  use it instead of re-inlining the two-spelling check. Round 8 added
+  `BaseComponent#attr_set?` for plain (non-aria) attributes — same rule:
+  never re-inline `@attrs.key?(:x) || @attrs.key?("x")`.
 - **`open:` values are one-shot** on clone-based overlays (alert_dialog,
   sheet): clear `openValue` when the clone spawns, or the reflected value in
   the Turbo snapshot re-opens a dismissed overlay on restore. Popover-based

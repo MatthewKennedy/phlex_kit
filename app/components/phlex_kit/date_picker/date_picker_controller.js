@@ -13,11 +13,9 @@ export default class extends Controller {
   onCalendarChange(e) {
     const { mode, rangeEnd } = e.detail
     if (mode === "multiple") return
-    // calendar_controller.js clears rangeEnd via `this.rangeEndValue = null`,
-    // which goes through Element#setAttribute — the DOM stringifies a null
-    // argument to the literal "null", so a genuinely-unset rangeEnd reads
-    // back as that string, not JS null/undefined/"".
-    if (mode === "range" && (!rangeEnd || rangeEnd === "null")) return
+    // calendar_controller.js clears rangeEnd by assigning undefined (Stimulus
+    // removes the attribute), so an unset rangeEnd reads back as null here.
+    if (mode === "range" && !rangeEnd) return
     this.popoverController()?.close()
   }
 

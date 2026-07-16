@@ -31,6 +31,15 @@ module PhlexKit
       end
     end
 
+    # True when the caller supplied their own value for a plain attribute in
+    # @attrs — symbol or string spelling. A component with a generated default
+    # for that attribute must skip it then: `mix` merges duplicate attrs
+    # (role="dialog region") instead of overriding. Aria attributes have their
+    # own check (aria_key_set?) covering the aria: hash spelling too.
+    def attr_set?(key)
+      @attrs.key?(key) || @attrs.key?(key.to_s)
+    end
+
     # True when the caller supplied an accessible name in @attrs — via the
     # aria: hash or flat aria_label/aria-label(ledby) keys. Components with a
     # generated default label must skip it then: `mix` merges duplicate string

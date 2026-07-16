@@ -15,8 +15,8 @@ module PhlexKit
       # Defaults only when the caller didn't supply their own — `mix` would
       # fuse tabindex="0 -1" / role="region article" instead of overriding.
       base = { class: "pk-codeblock", data: { syntax: @syntax } }
-      base[:tabindex] = "0" unless @attrs.key?(:tabindex) || @attrs.key?("tabindex")
-      base[:role] = "region" unless @attrs.key?(:role) || @attrs.key?("role")
+      base[:tabindex] = "0" unless attr_set?(:tabindex)
+      base[:role] = "region" unless attr_set?(:role)
       # A region landmark without a name is an axe violation — default one
       # from the syntax; a caller aria: { label: } replaces it (never fused).
       unless aria_labelled?

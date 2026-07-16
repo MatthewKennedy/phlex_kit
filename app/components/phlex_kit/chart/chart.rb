@@ -31,7 +31,7 @@ module PhlexKit
       # Canvas content is invisible to AT — announce it as an image with at
       # least a generic name; pass aria: { label: "…" } (or block fallback
       # content) to describe the actual data.
-      base[:role] = "img" unless @attrs.key?(:role) || @attrs.key?("role")
+      base[:role] = "img" unless attr_set?(:role)
       base[:aria] = { label: "Chart" } unless aria_labelled?
       canvas(**mix(base, @attrs), &)
     end

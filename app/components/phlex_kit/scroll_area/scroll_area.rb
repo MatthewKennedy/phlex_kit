@@ -15,7 +15,7 @@ module PhlexKit
       # Defaults only when the caller didn't supply their own — `mix` would
       # fuse role="region log" / tabindex="0 -1" instead of overriding.
       base = { class: "pk-scroll-area" }
-      base[:tabindex] = "0" unless @attrs.key?(:tabindex) || @attrs.key?("tabindex")
+      base[:tabindex] = "0" unless attr_set?(:tabindex)
       base[:role] = "region" if aria_labelled? && !@attrs.key?(:role) && !@attrs.key?("role")
       div(**mix(base, @attrs), &)
     end

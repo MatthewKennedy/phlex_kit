@@ -34,6 +34,15 @@ class A11yModalTest < Minitest::Test
     assert_includes html, "mousedown->phlex-kit--sheet-content#overlayMousedown"
   end
 
+  def test_command_dialog_content_stamps_the_overlay_clone_marker
+    html = render(PhlexKit::CommandDialogContent.new { "body" })
+    # Escape layering across overlay families: alert_dialog/command resolve
+    # the topmost overlay via this shared marker on each clone root.
+    assert_includes html, "data-pk-overlay-clone"
+    assert_includes html, %(role="dialog")
+    assert_includes html, %(aria-modal="true")
+  end
+
   def test_dialog_content_accepts_labelledby_and_describedby
     html = render(PhlexKit::DialogContent.new(labelledby: "t1", describedby: "d1") { "body" })
     assert_includes html, %(aria-labelledby="t1")

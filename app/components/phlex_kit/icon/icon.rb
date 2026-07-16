@@ -24,7 +24,7 @@ module PhlexKit
       # `mix` merges duplicate string attrs ("16 24") — drop a generated attr
       # whenever the caller supplies their own copy, so theirs wins.
       %i[width height viewbox aria-hidden].each do |key|
-        base.delete(key) if @attrs.key?(key) || @attrs.key?(key.to_s)
+        base.delete(key) if attr_set?(key)
       end
       svg(**mix(base, @attrs)) do |s|
         icon[:elements].each { |tag, attrs| s.public_send(tag, **attrs) }

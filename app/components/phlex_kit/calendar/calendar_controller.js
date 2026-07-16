@@ -144,9 +144,11 @@ export default class extends Controller {
     const end = this.parseDate(this.rangeEndValue);
 
     if (!start || (start && end)) {
-      // begin a fresh range
+      // begin a fresh range. undefined (not null) clears the value: Stimulus
+      // removes the attribute for undefined, while null goes through
+      // setAttribute and serializes as the literal string "null".
       this.rangeStartValue = this.isoDate(candidate);
-      this.rangeEndValue = null;
+      this.rangeEndValue = undefined;
     } else if (candidate < start) {
       this.rangeStartValue = this.isoDate(candidate);
     } else {
@@ -182,9 +184,10 @@ export default class extends Controller {
       return;
     }
 
-    // update the viewDateValue to the selected date's month (this re-renders)
+    // update the viewDateValue to the selected date's month
     const newViewDate = new Date(selectedDate);
     newViewDate.setDate(2); // avoid month-length/timezone edges
+    this._viewRendered = true;
     this.viewDateValue = this.isoDate(newViewDate);
 
     this.updateCalendar();
@@ -197,6 +200,13 @@ export default class extends Controller {
   }
 
   viewDateValueChanged(value, prevValue) {
+    // Month-cross paths render synchronously right after writing
+    // viewDateValue (focus must land in the NEW grid); this async echo
+    // (MutationObserver) would render the same view a second time.
+    if (this._viewRendered) {
+      this._viewRendered = false;
+      return;
+    }
     this.updateCalendar();
   }
 
@@ -334,6 +344,7 @@ export default class extends Controller {
       // below would hit the OLD month, and the target day (outside it) would be
       // missing → early return, stranding focus on <body>. Drive the re-render
       // ourselves and hand it the target day so ensureGridTabStop focuses it.
+      this._viewRendered = true;
       this.viewDateValue = iso;
       this.updateCalendar(iso);
       return;

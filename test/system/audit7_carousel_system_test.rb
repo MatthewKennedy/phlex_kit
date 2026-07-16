@@ -3,12 +3,12 @@
 require_relative "system_test_helper"
 require_relative "interaction_helpers"
 
-# Task 9 — non-loop multi-up carousel bound state + Firefox image-drag
+# Audit round 7, task 9 — non-loop multi-up carousel bound state + Firefox image-drag
 # suppression. carousel_controller.js's _offsetOf clamps every offset to
 # _maxOffset() (track − viewport); with a basis-1/3 layout the track hits
 # that max before this.index reaches the last slide, so an index-based
 # canNext left Next enabled for several dead clicks. Fix is offset-based.
-class Task9CarouselSystemTest < SystemTestCase
+class Audit7CarouselSystemTest < SystemTestCase
   include InteractionHelpers
 
   def track_transform(section)
