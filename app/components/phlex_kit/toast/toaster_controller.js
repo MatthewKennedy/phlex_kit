@@ -63,12 +63,26 @@ export default class extends Controller {
     // _setExpanded's state change left auto-dismiss running under the cursor.
     this._onPointerEnter = () => { this._setPaused(true); this._setExpanded(true) }
     this._onPointerLeave = () => { this._setPaused(false); if (!this.expandValue) this._setExpanded(false) }
-    this._onWindowToast = (e) => this._spawn(e.detail || {})
+    this._onWindowToast = (e) => {
+      const detail = e.detail || {}
+      // Routing: toast(msg, { region: "<id>" }) targets the region whose
+      // wrapper or list carries that id. Without region only the page's
+      // FIRST region spawns — the event is a window broadcast, so every
+      // region hears it and an unguarded spawn would duplicate the toast
+      // once per region.
+      if (!this._handlesRegion(detail.region)) return
+      this._spawn(detail)
+    }
     this._onWindowDismissAll = () => this._dismissById(null)
+    // Dismiss-by-id is a broadcast too: _dismissById only acts on a toast in
+    // its OWN list, so whichever region owns the id handles it — the api
+    // registration (last region wins) no longer has to be the owner.
+    this._onWindowDismissId = (e) => this._dismissById(e.detail?.id)
     this._onKey = this._onKey.bind(this)
 
     window.addEventListener("phlex-kit:toast", this._onWindowToast)
     window.addEventListener("phlex-kit:toast:dismiss-all", this._onWindowDismissAll)
+    window.addEventListener("phlex-kit:toast:dismiss", this._onWindowDismissId)
     this._listEl.addEventListener("pointerenter", this._onPointerEnter)
     this._listEl.addEventListener("pointerleave", this._onPointerLeave)
     document.addEventListener("keydown", this._onKey)
@@ -81,6 +95,7 @@ export default class extends Controller {
   disconnect() {
     window.removeEventListener("phlex-kit:toast", this._onWindowToast)
     window.removeEventListener("phlex-kit:toast:dismiss-all", this._onWindowDismissAll)
+    window.removeEventListener("phlex-kit:toast:dismiss", this._onWindowDismissId)
     this._listEl?.removeEventListener("pointerenter", this._onPointerEnter)
     this._listEl?.removeEventListener("pointerleave", this._onPointerLeave)
     document.removeEventListener("keydown", this._onKey)
@@ -163,6 +178,15 @@ export default class extends Controller {
 
     this._listEl.appendChild(node)
     return node.id
+  }
+
+  // True when this region should act on a toast event carrying `region`
+  // (the list's base id or the wrapper's "<id>-region" both match). Without
+  // an explicit region, only the page's first region in DOM order handles
+  // the broadcast — single-region pages are unaffected.
+  _handlesRegion(region) {
+    if (region) return region === this.element.id || region === this._listEl?.id
+    return this.element === document.querySelector("[data-controller~='phlex-kit--toaster']")
   }
 
   _dismissById(id) {
@@ -311,12 +335,14 @@ export default class extends Controller {
     api.info = (m, o) => fire("info", m, o)
     api.loading = (m, o = {}) => fire("loading", m, { ...o, duration: o.duration ?? 0 })
     api.dismiss = (id) => {
-      if (id) this._dismissById(id)
+      // Both broadcasts: whichever region owns the id dismisses it — the
+      // api may be registered by a different region than the owner.
+      if (id) window.dispatchEvent(new CustomEvent("phlex-kit:toast:dismiss", { detail: { id } }))
       else window.dispatchEvent(new CustomEvent("phlex-kit:toast:dismiss-all"))
     }
     api.promise = (p, msgs = {}) => {
       const id = `toast-${this._uuid()}`
-      fire("loading", typeof msgs.loading === "function" ? msgs.loading() : (msgs.loading || "Loading..."), { id, duration: 0 })
+      fire("loading", typeof msgs.loading === "function" ? msgs.loading() : (msgs.loading || "Loading..."), { id, duration: 0, region: msgs.region })
       Promise.resolve(p).then(
         (val) => this._mutate(id, "success", typeof msgs.success === "function" ? msgs.success(val) : msgs.success),
         (err) => this._mutate(id, "error", typeof msgs.error === "function" ? msgs.error(err) : msgs.error)
@@ -330,9 +356,11 @@ export default class extends Controller {
   }
 
   _mutate(id, variant, text) {
-    if (!this._listEl) return
-    const el = this._listEl.querySelector(`#${CSS.escape(id)}`)
-    if (!el) return
+    // Document-scoped: promise()'s loading toast spawns in whichever region
+    // the broadcast routed it to, which need not be the region that
+    // registered the api this closure belongs to.
+    const el = document.getElementById(id)
+    if (!el || !el.closest(".pk-toast-list")) return
     el.dataset.variant = variant
     el.setAttribute("role", variant === "error" ? "alert" : "status")
     this._swapIcon(el, variant)

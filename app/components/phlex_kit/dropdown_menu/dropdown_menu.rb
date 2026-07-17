@@ -20,7 +20,9 @@ module PhlexKit
           phlex_kit__dropdown_menu_open_value: @open,
           # focusout: tabbing (or otherwise moving real focus) out of the
           # menu closes the open [popover=manual] panel (menubar's pattern).
-          action: "click@window->phlex-kit--dropdown-menu#onClickOutside focusout->phlex-kit--dropdown-menu#onFocusout"
+          # mousedown@window arms the modal-menu click swallow before the
+          # gesture's focusout closes the panel (see the controller).
+          action: "mousedown@window->phlex-kit--dropdown-menu#onMousedownOutside click@window->phlex-kit--dropdown-menu#onClickOutside focusout->phlex-kit--dropdown-menu#onFocusout"
         }
       }, @attrs), &block)
     end

@@ -8,6 +8,18 @@ import { Controller } from "@hotwired/stimulus"
 // native [popover=manual] in the top layer (context_menu.css); it is placed
 // in viewport coordinates after showPopover() — a hidden popover has no
 // size — and clamped so it never overflows the viewport (no floating-ui).
+
+// One-shot capture listener swallowing the click an outside mousedown is
+// about to produce (see onDocMousedown; same helper in dropdown/menubar —
+// duplicated per controller by design). {once} self-removes; the DOM
+// dedupes re-arming with the same fn. If the gesture's click never fires
+// (e.g. suppressed after a selection drag) the armed swallow eats the next
+// one — rare enough to accept.
+const swallowClick = (ev) => ev.preventDefault()
+function armSwallowClick() {
+  window.addEventListener("click", swallowClick, { once: true, capture: true })
+}
+
 export default class extends Controller {
   static targets = ["content", "trigger", "menuItem"]
 
@@ -21,6 +33,17 @@ export default class extends Controller {
       // menu: its trigger's contextmenu is "outside" for this instance.
       if (e.type === "contextmenu" && this.element.contains(e.target)) return
       this.close()
+    }
+    // Kit-wide dismiss contract (Radix modal-menu parity): a plain click
+    // outside only dismisses — swallowed, like dropdown/menubar/select.
+    // Armed at MOUSEDOWN: the gesture's focusout close() removes onDoc
+    // before the click even fires. Right-button mousedowns are ignored so a
+    // contextmenu elsewhere stays click-through (that's how a second kit —
+    // or the native — context menu opens in the same gesture).
+    this.onDocMousedown = (e) => {
+      if (this.contentTarget.contains(e.target)) return
+      if (e.button !== 0) return
+      armSwallowClick()
     }
     this.onKey = (e) => this.keydown(e)
     // Turbo snapshots BEFORE disconnect — close now or the snapshot keeps a
@@ -47,6 +70,7 @@ export default class extends Controller {
   }
 
   disconnect() {
+    document.removeEventListener("mousedown", this.onDocMousedown)
     document.removeEventListener("click", this.onDoc)
     document.removeEventListener("contextmenu", this.onDoc)
     document.removeEventListener("keydown", this.onKey)
@@ -95,6 +119,7 @@ export default class extends Controller {
     c.style.left = `${x}px`
     c.style.top = `${y}px`
     c.dataset.state = "open"
+    document.addEventListener("mousedown", this.onDocMousedown)
     document.addEventListener("click", this.onDoc)
     document.addEventListener("contextmenu", this.onDoc)
     document.addEventListener("keydown", this.onKey)
@@ -109,6 +134,7 @@ export default class extends Controller {
     if (opts?.target?.closest?.('a[href="#"]')) opts.preventDefault()
     if (this.contentTarget.matches(":popover-open")) this.contentTarget.hidePopover()
     this.contentTarget.dataset.state = "closed"
+    document.removeEventListener("mousedown", this.onDocMousedown)
     document.removeEventListener("click", this.onDoc)
     document.removeEventListener("contextmenu", this.onDoc)
     document.removeEventListener("keydown", this.onKey)

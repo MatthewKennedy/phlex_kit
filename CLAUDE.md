@@ -243,6 +243,20 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   :root-scoped and the kit has no status palette; don't "implement" them
   casually. `offset:` is `--pk-toast-offset`; `dir:` is a real dir attribute;
   pause/resume events are dispatched on the region's own list, not document.
+  Toast events are WINDOW BROADCASTS every region hears: `_handlesRegion`
+  gates the spawn (`toast(msg, { region: "<list-or-wrapper-id>" })` routes;
+  unrouted → first region in DOM order only) and dismiss-by-id is a
+  broadcast the owning region acts on — never assume the api-registering
+  region owns the toast (`_mutate` resolves ids document-wide for the same
+  reason).
+- **Outside-click dismiss contract (round 8)**: MENU overlays (dropdown,
+  context, menubar, select) are modal — the dismissing click is swallowed;
+  popover-family surfaces (combobox, popover, hover_card, navigation menu)
+  click through. The swallow must be armed at MOUSEDOWN via the one-shot
+  capture `armSwallowClick` helper (duplicated per controller by design):
+  the same gesture's focusout closes the panel before the click event
+  fires, so any click-time open check silently skips focusable targets.
+  Gate: the audit8 `install_dismiss_probe` checkbox tests.
 - **macOS Option-chords compose `e.key`** (Option+T → "†") — hotkey matching
   must accept `e.code` (`KeyT`) or alt+ hotkeys never fire on Mac.
 

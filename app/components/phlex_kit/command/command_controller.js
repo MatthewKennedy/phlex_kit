@@ -49,6 +49,7 @@ export default class extends Controller {
     // itemTargetConnected uses must be initialized here (mirrors
     // combobox_controller.js).
     this.itemIdCounter = 0;
+    this.orderCounter = 0;
     this.searchEntries = [];
     this.selectedIndex = -1;
   }
@@ -110,6 +111,10 @@ export default class extends Controller {
   // arrival (mirrors combobox_controller.js).
   itemTargetConnected(item) {
     if (!item.id) item.id = `${this.listId()}-${this.itemIdCounter++}`;
+    // Original position, stamped once — filter() reorders rows by fuzzy
+    // score and resetVisibility() restores this order. Survives the
+    // disconnect/reconnect a DOM move itself triggers.
+    if (!item.dataset.pkOrder) item.dataset.pkOrder = String(this.orderCounter++);
     this.searchEntries.push({
       value: (item.dataset.value || "").toLowerCase(),
       text: (item.dataset.text || "").toLowerCase(),
@@ -232,6 +237,9 @@ export default class extends Controller {
     results.forEach((result) =>
       this.toggleVisibility([result.item.element], true),
     );
+    // cmdk parity: the best match lists first. Within each parent only —
+    // groups keep their identity, matches never jump between them.
+    this.reorderWithinParents(results.map((r) => r.item.element));
 
     this.announceResultCount(results.length);
     this.toggleVisibility(this.emptyTargets, results.length === 0);
@@ -270,6 +278,35 @@ export default class extends Controller {
     this.toggleVisibility(this.groupTargets, true);
     this.toggleVisibility(this.separatorTargets, true);
     this.toggleVisibility(this.emptyTargets, false);
+    // Undo any fuzzy-score reordering: back to server-rendered order.
+    this.reorderWithinParents(
+      [...this.itemTargets].sort((a, b) => Number(a.dataset.pkOrder) - Number(b.dataset.pkOrder)),
+    );
+  }
+
+  // Re-inserts `orderedItems` in the given sequence, each within its own
+  // parent, at the position of that parent's first item row — headings,
+  // separators and empty-state siblings keep their places. (Items are
+  // assumed contiguous within a parent; a separator BETWEEN items of one
+  // parent would drift below them.) The moves retrigger item target
+  // disconnect/connect, which is safe: ids and pkOrder are stamped once,
+  // and filter()/dismiss() have already reset the highlight.
+  reorderWithinParents(orderedItems) {
+    const itemSet = new Set(this.itemTargets);
+    const byParent = new Map();
+    orderedItems.forEach((el) => {
+      const parent = el.parentElement;
+      if (!parent) return;
+      if (!byParent.has(parent)) byParent.set(parent, []);
+      byParent.get(parent).push(el);
+    });
+    byParent.forEach((els, parent) => {
+      const firstItem = [...parent.children].find((c) => itemSet.has(c));
+      const placeholder = document.createComment("");
+      parent.insertBefore(placeholder, firstItem || null);
+      els.forEach((el) => parent.insertBefore(el, placeholder));
+      placeholder.remove();
+    });
   }
 
   // Upstream builds a Fuse index here; this keeps the same result shape —

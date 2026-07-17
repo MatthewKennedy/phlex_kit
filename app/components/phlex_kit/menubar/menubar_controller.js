@@ -13,6 +13,17 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="phlex-kit--menubar"
 let uid = 0
 
+// One-shot capture listener swallowing the click an outside mousedown is
+// about to produce (see onMousedownOutside; same helper in dropdown/context
+// menu — duplicated per controller by design). {once} self-removes; the DOM
+// dedupes re-arming with the same fn. If the gesture's click never fires
+// (e.g. suppressed after a selection drag) the armed swallow eats the next
+// one — rare enough to accept.
+const swallowClick = (ev) => ev.preventDefault()
+function armSwallowClick() {
+  window.addEventListener("click", swallowClick, { once: true, capture: true })
+}
+
 export default class extends Controller {
   static targets = ["menu"]
 
@@ -129,6 +140,21 @@ export default class extends Controller {
     const trigger = menu.querySelector("[aria-expanded]")
     trigger?.setAttribute("aria-expanded", "false")
     if (opts.refocus === true) trigger?.focus()
+  }
+
+  // Kit-wide dismiss contract (Radix parity): MENU overlays (dropdown,
+  // context, menubar, select) are modal — the dismissing outside click is
+  // swallowed rather than also acting on what was under the pointer. The
+  // decision happens at MOUSEDOWN: the same gesture's focusout closes the
+  // panel before the click event fires, so a click-time openMenu check
+  // would already be null (that race made the old swallow silently skip
+  // focusable click targets). Only menubar.rb binds this action — the
+  // navigation menu (hover-open mode) is non-modal like Radix's and its
+  // dismissing click clicks through.
+  onMousedownOutside(e) {
+    if (this.element.contains(e.target)) return
+    if (!this.openMenu) return
+    armSwallowClick()
   }
 
   onClickOutside(e) {

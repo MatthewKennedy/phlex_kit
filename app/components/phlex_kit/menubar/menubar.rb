@@ -18,7 +18,9 @@ module PhlexKit
           controller: "phlex-kit--menubar",
           # focusout: tabbing out of the bar closes the open [popover=manual]
           # panel (which no focus trap holds open).
-          action: "click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown focusout->phlex-kit--menubar#onFocusout"
+          # mousedown@window arms the modal-menu click swallow (deliberately
+          # NOT bound by navigation_menu.rb — nav menus are non-modal).
+          action: "mousedown@window->phlex-kit--menubar#onMousedownOutside click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown focusout->phlex-kit--menubar#onFocusout"
         }
       }, @attrs), &)
     end

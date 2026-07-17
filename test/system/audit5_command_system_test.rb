@@ -42,7 +42,9 @@ class Audit5CommandSystemTest < SystemTestCase
     section.assert_no_selector ".pk-command-empty"
 
     # And it disappears from results once removed (itemTargetDisconnected).
-    page.execute_script("arguments[0].remove()", late_item)
+    # Selector, not the held node: the round-8 fuzzy reordering MOVES rows
+    # during filter, staling Cuprite refs (the detach/reattach gotcha).
+    page.execute_script(%(document.querySelector(".pk-command-item[data-value='zebra crossing']").remove()))
     input.send_keys "z" # re-run the filter ("zebraz" matches nothing)
     input.send_keys [ :backspace ] # back to "zebra"
     section.assert_selector ".pk-command-item.pk-hidden", count: 3, visible: :all

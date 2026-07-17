@@ -10,6 +10,18 @@ import { Controller } from "@hotwired/stimulus";
 // sub-rows are skipped via a visibility filter. Escape returns focus to the
 // trigger; Enter/Space activate the focused row (links, checkbox/radio
 // labels, and sub triggers alike).
+
+// One-shot capture listener swallowing the click an outside mousedown is
+// about to produce (see onMousedownOutside; same helper in menubar/context
+// menu — duplicated per controller by design). {once} self-removes; the DOM
+// dedupes re-arming with the same fn. If the gesture's click never fires
+// (e.g. suppressed after a selection drag) the armed swallow eats the next
+// one — rare enough to accept.
+const swallowClick = (ev) => ev.preventDefault();
+function armSwallowClick() {
+  window.addEventListener("click", swallowClick, { once: true, capture: true });
+}
+
 export default class extends Controller {
   static targets = ["trigger", "content", "menuItem"];
   static values = { open: { type: Boolean, default: false } };
@@ -69,16 +81,23 @@ export default class extends Controller {
     this.subFrames.add(id);
   }
 
+  // Deliberate (matches Radix's modal dismiss): the dismissing outside
+  // click ONLY dismisses the menu — swallowed rather than also acting on
+  // whatever was under the pointer (e.g. navigating a link). Armed at
+  // MOUSEDOWN: for a focusable click target the same gesture's focusout
+  // closes the panel before the click fires, so a click-time swallow
+  // silently skipped those targets (audit round 8).
+  onMousedownOutside(event) {
+    if (!this.contentTarget.matches(":popover-open")) return;
+    if (this.element.contains(event.target)) return;
+    armSwallowClick();
+  }
+
   onClickOutside(event) {
     // Gate on the live :popover-open state, not the stored flag — a stale
     // flag is how a close on an already-closed panel becomes an open.
     if (!this.contentTarget.matches(":popover-open")) return;
     if (this.element.contains(event.target)) return;
-
-    // Deliberate (matches Radix's modal dismiss): the outside click ONLY
-    // dismisses the menu — it is swallowed rather than also acting on
-    // whatever was under the pointer (e.g. navigating a link).
-    event.preventDefault();
     this.close();
   }
 

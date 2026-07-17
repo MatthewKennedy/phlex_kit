@@ -79,6 +79,40 @@ class Audit8SeedFixesSystemTest < SystemTestCase
     end
   end
 
+  # --- toast: multi-region routing -------------------------------------------
+
+  # A window-broadcast toast used to spawn once PER region. Unrouted toasts
+  # now go only to the page's first region; { region: "<id>" } targets a
+  # specific one; dismiss-by-id reaches whichever region owns the toast.
+  def test_toast_routes_to_the_first_region_by_default_and_by_region_id
+    visit "/docs/toast"
+    assert_selector "#pk-toaster-region", visible: :all
+    # Second region: clone the first with rewritten ids; Stimulus connects a
+    # second phlex-kit--toaster on insert.
+    page.execute_script(<<~JS)
+      const clone = document.getElementById("pk-toaster-region").cloneNode(true);
+      clone.id = "pk-second-region";
+      clone.querySelector("ol").id = "pk-second";
+      clone.querySelector("ol").innerHTML = "";
+      document.body.appendChild(clone);
+    JS
+    assert_selector "#pk-second", visible: :all
+
+    page.execute_script(%(window.PhlexKit.toast("Unrouted", { duration: 30000 })))
+    assert_selector "#pk-toaster .pk-toast", text: "Unrouted"
+    assert_equal 1, page.evaluate_script("document.querySelectorAll('.pk-toast').length"),
+                 "an unrouted toast must spawn once, in the first region only"
+
+    page.execute_script(%(window.PhlexKit.toast("Routed", { region: "pk-second", duration: 30000, id: "audit8-routed" })))
+    assert_selector "#pk-second .pk-toast", text: "Routed"
+    assert_no_selector "#pk-toaster .pk-toast", text: "Routed"
+
+    # Dismiss-by-id must reach the second region even though the api was
+    # registered by another controller.
+    page.execute_script(%(window.PhlexKit.toast.dismiss("audit8-routed")))
+    assert_no_selector "#pk-second .pk-toast", text: "Routed"
+  end
+
   # --- combobox: Enter while closed submits an enclosing form ----------------
 
   # Deliberate (APG): keyEnterPressed bails before preventDefault when the
@@ -109,6 +143,30 @@ class Audit8SeedFixesSystemTest < SystemTestCase
     press(:enter)
     wait_until("Enter on a closed combobox must submit the enclosing form") do
       page.evaluate_script("window.__pkFormSubmitted === true")
+    end
+  end
+
+  # --- command: fuzzy results reorder best-first within their group ----------
+
+  # "ar" scores search emoji (consecutive run + "ar" substring) above
+  # calendar (split subsequence + substring) above calculator (split, no
+  # substring) — display order must follow, and clearing the query must
+  # restore the server-rendered order.
+  def test_command_filter_reorders_matches_best_first_and_reset_restores
+    visit "/docs/command"
+    section = demo("Basic")
+    input = section.find("[data-phlex-kit--command-target='input']")
+    input.click
+    press("a", "r")
+
+    wait_until("best fuzzy match (Search Emoji) should list first") do
+      visible_command_items(section) == [ "Search Emoji", "Calendar", "Calculator" ]
+    end
+
+    press(:backspace)
+    press(:backspace)
+    wait_until("clearing the query should restore the server-rendered order") do
+      visible_command_items(section) == [ "Calendar", "Search Emoji", "Calculator" ]
     end
   end
 
@@ -169,7 +227,72 @@ class Audit8SeedFixesSystemTest < SystemTestCase
     end
   end
 
+  # --- kit-wide outside-click dismiss contract --------------------------------
+
+  # MENU overlays (dropdown/context/menubar/select) are modal: the outside
+  # click only dismisses — its default action (here: toggling a checkbox) is
+  # swallowed. Popover-family overlays (combobox, navigation menu) click
+  # through. The probe checkbox observes preventDefault: a swallowed click
+  # leaves it unchecked.
+  def test_menubar_outside_click_dismisses_and_is_swallowed
+    visit "/docs/menubar"
+    section = demo("Default")
+    file_trigger = section.find(".pk-menubar-trigger", text: "File")
+    page.execute_script("arguments[0].focus()", file_trigger)
+    press(:enter)
+    section.assert_selector ".pk-menubar-content:popover-open"
+
+    install_dismiss_probe
+    find("#pk-dismiss-probe").click
+    assert_no_selector ".pk-menubar-content:popover-open"
+    refute page.evaluate_script("document.getElementById('pk-dismiss-probe').checked"),
+           "menubar's dismissing outside click must be swallowed (modal menu)"
+  end
+
+  def test_context_menu_outside_click_dismisses_and_is_swallowed
+    visit "/docs/context-menu"
+    demo("Basic").find(".pk-context-menu-trigger").right_click
+    assert_selector ".pk-context-menu-content:popover-open"
+
+    install_dismiss_probe
+    find("#pk-dismiss-probe").click
+    assert_no_selector ".pk-context-menu-content:popover-open"
+    refute page.evaluate_script("document.getElementById('pk-dismiss-probe').checked"),
+           "context menu's dismissing outside click must be swallowed (modal menu)"
+  end
+
+  def test_navigation_menu_outside_click_dismisses_and_clicks_through
+    visit "/docs/navigation-menu"
+    trigger = find(".pk-navigation-menu-trigger", text: "Getting started")
+    page.execute_script("arguments[0].focus()", trigger)
+    press(:down)
+    assert_selector ".pk-navigation-menu-content:popover-open"
+
+    install_dismiss_probe
+    find("#pk-dismiss-probe").click
+    assert_no_selector ".pk-navigation-menu-content:popover-open"
+    assert page.evaluate_script("document.getElementById('pk-dismiss-probe').checked"),
+           "navigation menu is non-modal — its dismissing click must click through"
+  end
+
   private
+
+  def install_dismiss_probe
+    page.execute_script(<<~JS)
+      const probe = document.createElement("input");
+      probe.type = "checkbox";
+      probe.id = "pk-dismiss-probe";
+      probe.style.cssText = "position: fixed; top: 4px; left: 4px; z-index: 2147483647; width: 24px; height: 24px;";
+      document.body.appendChild(probe);
+    JS
+  end
+
+  def visible_command_items(section)
+    page.evaluate_script(<<~JS, section)
+      [...arguments[0].querySelectorAll("[data-phlex-kit--command-target='item']:not(.pk-hidden)")]
+        .map((el) => el.textContent.trim())
+    JS
+  end
 
   def toast_controller_js(toast_id, expression)
     <<~JS

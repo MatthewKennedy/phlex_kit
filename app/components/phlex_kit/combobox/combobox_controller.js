@@ -354,6 +354,10 @@ export default class extends Controller {
     if (!this.isOpen()) return
     if (this.element.contains(event.target)) return
 
+    // Kit-wide dismiss contract: the combobox is POPOVER-family (shadcn
+    // builds it on Popover light-dismiss), so the dismissing outside click
+    // deliberately clicks through — no preventDefault. Only the MENU
+    // overlays (dropdown/context/menubar/select) swallow theirs.
     this.closePopover()
   }
 
