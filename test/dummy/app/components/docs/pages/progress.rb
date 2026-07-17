@@ -8,6 +8,7 @@ module Docs
       def demos
         demo Docs::Examples::Progress::Default, title: "Default"
         demo Docs::Examples::Progress::WithLabel, title: "Label"
+        demo Docs::Examples::Progress::Indeterminate, title: "Indeterminate"
       end
     end
   end

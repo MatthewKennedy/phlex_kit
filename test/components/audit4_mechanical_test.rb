@@ -157,7 +157,9 @@ class Audit4MechanicalTest < Minitest::Test
   def test_checkbox_renders_native_input_with_form_field_wiring
     html = render(PhlexKit::Checkbox.new(name: "ok", class: "extra"))
     doc = Nokogiri::HTML5.fragment(html)
-    input = doc.at_css("input")
+    # A named checkbox is preceded by its include_hidden field (round 8) —
+    # select the checkbox itself.
+    input = doc.at_css("input[type=checkbox]")
     assert_equal "checkbox", input["type"]
     assert_includes input["class"], "pk-checkbox"
     assert_includes input["class"], "extra"

@@ -23,3 +23,22 @@
 .pk-progress:dir(rtl) .pk-progress-indicator {
   transform: translateX(calc((100 - var(--pk-progress-value, 0)) * 1%));
 }
+
+/* Indeterminate (value: nil): a 40%-wide segment sweeps the track.
+   translateX % is relative to the segment's own width: -100% parks it just
+   off the track's start edge, +250% (track = 250% of segment) just past the
+   end. Direction-agnostic — the sweep reads fine mirrored, no RTL arm. */
+.pk-progress.indeterminate .pk-progress-indicator {
+  width: 40%;
+  transition: none;
+  animation: pk-progress-indeterminate 1.5s ease-in-out infinite;
+}
+@keyframes pk-progress-indeterminate {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(250%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pk-progress.indeterminate .pk-progress-indicator {
+    animation-duration: 3s;
+  }
+}

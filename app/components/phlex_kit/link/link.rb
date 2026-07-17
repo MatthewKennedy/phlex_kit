@@ -36,10 +36,19 @@ module PhlexKit
     end
 
     def view_template(&block)
-      a(**mix({ href: @href, class: classes }, @attrs), &block)
+      base = { href: @href, class: classes }
+      # target="_blank" hands the new page a window.opener reference in older
+      # browsers (modern ones imply noopener) — default the safe rel unless
+      # the caller supplied their own (`mix` would fuse "noopener external").
+      base[:rel] = "noopener" if blank_target? && !attr_set?(:rel)
+      a(**mix(base, @attrs), &block)
     end
 
     private
+
+    def blank_target?
+      (@attrs[:target] || @attrs["target"]).to_s == "_blank"
+    end
 
     def classes
       [ "pk-button", fetch_option(VARIANTS, @variant, :variant), fetch_option(SIZES, @size, :size), ("icon" if @icon) ].compact.join(" ")

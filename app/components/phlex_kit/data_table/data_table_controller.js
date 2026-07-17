@@ -66,7 +66,13 @@ export default class extends Controller {
     }
 
     if (this.hasSelectionSummaryTarget) {
-      this.selectionSummaryTarget.textContent = `${selected} of ${total} row(s) selected.`;
+      // The component stamps its (possibly localized) %{selected}/%{total}
+      // template as data-format; live updates interpolate the same string
+      // the server rendered.
+      const format = this.selectionSummaryTarget.dataset.format || "%{selected} of %{total} row(s) selected.";
+      this.selectionSummaryTarget.textContent = format
+        .replace("%{selected}", String(selected))
+        .replace("%{total}", String(total));
     }
 
     if (this.hasBulkActionsTarget) {

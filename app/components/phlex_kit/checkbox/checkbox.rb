@@ -8,11 +8,25 @@ module PhlexKit
   # `name:`/`value:`/`checked:`/`**on(...)` pass through via `mix`. Styled by
   # `.pk-checkbox` (checkbox.css).
   class Checkbox < BaseComponent
-    def initialize(**attrs)
+    # include_hidden mirrors Rails' check_box (and PhlexKit::Switch): an
+    # unchecked box posts nothing, so a paired hidden field carries the
+    # unchecked value. Emitted only when a `name:` is present — and never for
+    # array-style names ("ids[]"), where an unchecked "0" would inject a
+    # bogus element into the collection param (use a single blank hidden for
+    # the whole collection instead, as Rails' collection helpers do).
+    def initialize(include_hidden: true, unchecked_value: "0", **attrs)
+      @include_hidden = include_hidden
+      @unchecked_value = unchecked_value
       @attrs = attrs
     end
 
     def view_template
+      if @include_hidden && @attrs[:name] && !@attrs[:name].to_s.end_with?("[]")
+        # Disabled in lockstep with the checkbox (Rails' check_box idiom) —
+        # a disabled checkbox must not still post its unchecked value.
+        input(type: "hidden", name: @attrs[:name], value: @unchecked_value,
+          disabled: @attrs[:disabled] ? true : nil)
+      end
       input(**mix({
         type: :checkbox,
         class: "pk-checkbox",
