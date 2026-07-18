@@ -191,6 +191,45 @@ class Audit8SeedFixesSystemTest < SystemTestCase
     assert_nil attr_value, "clearing rangeEnd must remove the attribute, not write the string 'null'"
   end
 
+  # --- calendar: stale double-render guard (v0.13.0 regression) --------------
+
+  # Selecting a day in the SAME month writes an unchanged viewDateValue;
+  # Stimulus skips valueChanged for same-value writes, so the round-8
+  # double-render flag armed there went stale and swallowed the next
+  # month-navigation click.
+  def test_same_month_selection_does_not_swallow_the_next_month_navigation
+    visit "/docs/calendar"
+    section = demo("Basic")
+    section.find("[data-day='2026-06-20']").click # same month as the June view
+
+    section.find(".pk-calendar-next").click
+    wait_until("the next-month click right after a same-month selection must advance to July") do
+      section.has_css?(".pk-calendar-title", text: "July 2026", wait: 0)
+    end
+  end
+
+  # A month-dropdown pick that clampViewIso clamps back to the CURRENT view
+  # is a same-value write (no valueChanged) — the select must snap back to
+  # the grid's month rather than keep showing the disallowed choice.
+  def test_clamped_dropdown_pick_resyncs_instead_of_desyncing
+    visit "/docs/calendar"
+    section = demo("Month and Year Selector")
+    calendar = "section.docs-demo:has(h2#month-and-year-selector) [data-controller~='phlex-kit--calendar']"
+    page.execute_script(
+      "const c = document.querySelector(#{calendar.to_json});" \
+      "c.setAttribute('data-phlex-kit--calendar-min-date-value', c.querySelector('[data-day]').dataset.day);"
+    )
+    month_select = section.find(".pk-calendar-month-select, select[aria-label='Month']", match: :first)
+    initial = month_select.value
+    # Pick the month BEFORE the min bound: clamp returns the current view.
+    target = ((initial.to_i - 1) % 12).to_s
+    month_select.find("option[value='#{target}']").select_option
+
+    wait_until("the clamped month dropdown must snap back to the grid's month") do
+      month_select.value == initial
+    end
+  end
+
   # --- RTL calendar: month-cross and booked-skip -----------------------------
 
   # In RTL ArrowLeft advances a day; from the last day of June it must cross

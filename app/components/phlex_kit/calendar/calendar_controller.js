@@ -50,27 +50,39 @@ export default class extends Controller {
 
   nextMonth(e) {
     e.preventDefault();
-    this.viewDateValue = this.clampViewIso(this.adjustMonth(1));
+    this.applyViewIso(this.clampViewIso(this.adjustMonth(1)));
   }
 
   prevMonth(e) {
     e.preventDefault();
-    this.viewDateValue = this.clampViewIso(this.adjustMonth(-1));
+    this.applyViewIso(this.clampViewIso(this.adjustMonth(-1)));
   }
 
-  // month/year dropdown caption (native selects)
+  // month/year dropdown caption (native selects). When clampViewIso clamps
+  // the pick back to the CURRENT view, the value write is a same-value
+  // no-op and Stimulus fires no valueChanged — render directly so the
+  // dropdown snaps back from the disallowed choice instead of desyncing
+  // from the grid.
   setMonth(e) {
     const date = this.viewDate();
     date.setDate(2);
     date.setMonth(Number(e.target.value));
-    this.viewDateValue = this.clampViewIso(this.isoDate(date));
+    this.applyViewIso(this.clampViewIso(this.isoDate(date)));
   }
 
   setYear(e) {
     const date = this.viewDate();
     date.setDate(2);
     date.setFullYear(Number(e.target.value));
-    this.viewDateValue = this.clampViewIso(this.isoDate(date));
+    this.applyViewIso(this.clampViewIso(this.isoDate(date)));
+  }
+
+  applyViewIso(iso) {
+    if (iso === this.viewDateValue) {
+      this.updateCalendar();
+      return;
+    }
+    this.viewDateValue = iso;
   }
 
   // --- month-navigation bounds (min/max dates + the year dropdown's range) ---
@@ -184,11 +196,17 @@ export default class extends Controller {
       return;
     }
 
-    // update the viewDateValue to the selected date's month
+    // update the viewDateValue to the selected date's month. Arm the
+    // double-render guard ONLY when the write actually changes the value:
+    // Stimulus skips valueChanged for a same-value attribute write
+    // (StringMapObserver compares before invoking), so arming on a
+    // same-month selection would leave a stale flag that swallows the next
+    // genuine navigation's re-render.
     const newViewDate = new Date(selectedDate);
     newViewDate.setDate(2); // avoid month-length/timezone edges
-    this._viewRendered = true;
-    this.viewDateValue = this.isoDate(newViewDate);
+    const newViewIso = this.isoDate(newViewDate);
+    this._viewRendered = newViewIso !== this.viewDateValue;
+    this.viewDateValue = newViewIso;
 
     this.updateCalendar();
 
