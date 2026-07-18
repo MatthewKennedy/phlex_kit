@@ -9,15 +9,17 @@ module PhlexKit
     end
 
     def view_template
-      button(**mix({
+      base = {
         type: :button,
         class: "pk-combobox-clear-button pk-hidden",
-        aria: { label: "Clear selection" },
         data: {
           phlex_kit__combobox_target: "clearButton",
           action: "phlex-kit--combobox#clearAll"
         }
-      }, @attrs)) do
+      }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:aria] = { label: "Clear selection" } unless aria_labelled?
+      button(**mix(base, @attrs)) do
         render Icon.new(:x, size: 24)
       end
     end

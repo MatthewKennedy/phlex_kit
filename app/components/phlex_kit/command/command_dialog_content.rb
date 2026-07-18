@@ -28,12 +28,16 @@ module PhlexKit
           action: "keydown->phlex-kit--command#trapFocus"
         }) do
           backdrop
-          div(**mix({
-            class: panel_classes,
-            role: "dialog",
-            aria: { modal: "true", label: @aria_label },
-            data: { state: "open" }
-          }, @attrs), &block)
+          panel_attrs = { class: panel_classes, data: { state: "open" } }
+          # Defaults only when the caller didn't supply their own — `mix`
+          # would fuse role="dialog x" / aria-modal="true false" (same guard
+          # as AlertDialogContent/SheetContent/DrawerContent, round 7).
+          panel_attrs[:role] = "dialog" unless attr_set?(:role)
+          aria = {}
+          aria[:modal] = "true" unless aria_key_set?(:modal)
+          aria[:label] = @aria_label unless aria_labelled?
+          panel_attrs[:aria] = aria unless aria.empty?
+          div(**mix(panel_attrs, @attrs), &block)
         end
       end
     end

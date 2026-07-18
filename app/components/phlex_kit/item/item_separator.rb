@@ -6,7 +6,7 @@ module PhlexKit
     def view_template
       # Purely decorative — aria-hidden only (role="separator" would
       # contradict aria-hidden and confuse AT).
-      div(**mix({ class: "pk-item-separator", aria: { hidden: true } }, @attrs))
+      div(**mix({ class: "pk-item-separator", aria: { hidden: "true" } }, @attrs))
     end
   end
 end

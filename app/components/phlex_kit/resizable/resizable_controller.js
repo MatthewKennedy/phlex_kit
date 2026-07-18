@@ -57,6 +57,9 @@ export default class extends Controller {
     try { handle.setPointerCapture(e.pointerId) } catch {}
 
     const onMove = (ev) => {
+      // Only the initiating pointer drives the drag — a second touch point
+      // over the handle must not hijack it.
+      if (ev.pointerId !== e.pointerId) return
       // LTR assumption: clientX grows toward the trailing panel; RTL drag
       // inversion is a documented limitation.
       const delta = (horizontal ? ev.clientX : ev.clientY) - drag.startPos
@@ -65,9 +68,12 @@ export default class extends Controller {
       const prevGrow = this.clampPrevGrow(prev, next, (prevSize / total) * drag.pairGrow, drag.pairGrow, drag.groupGrow)
       prev.style.flexGrow = prevGrow
       next.style.flexGrow = drag.pairGrow - prevGrow
-      this.syncValuenow(handle)
+      // Resizing this pair moves every share: 3+ panel groups have sibling
+      // handles whose aria-valuenow would otherwise go stale.
+      this.handleTargets.forEach((h) => this.syncValuenow(h))
     }
-    const onUp = () => {
+    const onUp = (ev) => {
+      if (ev.pointerId !== e.pointerId) return
       handle.removeEventListener("pointermove", onMove)
       handle.removeEventListener("pointerup", onUp)
       handle.removeEventListener("pointercancel", onUp)
@@ -109,7 +115,8 @@ export default class extends Controller {
     const prevGrow = this.clampPrevGrow(prev, next, share * pairGrow, pairGrow, this.groupGrow())
     prev.style.flexGrow = prevGrow
     next.style.flexGrow = pairGrow - prevGrow
-    this.syncValuenow(handle)
+    // All handles: sibling dividers share panels in 3+ panel groups.
+    this.handleTargets.forEach((h) => this.syncValuenow(h))
   }
 
   growOf(el) {

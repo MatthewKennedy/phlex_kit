@@ -42,9 +42,16 @@ module PhlexKit
     # (`pressed || enabledItems()[0]`). Items call this once each, in render
     # order, as they're constructed — a single-threaded sequential claim, not
     # a lookahead over siblings not yet rendered.
-    def claim_tab_stop(item_disabled)
-      return false unless selected_values.empty?
+    def claim_tab_stop(item_disabled, pressed: false)
+      # A pressed-but-disabled item can't take focus (reconcile() mirrors
+      # this with `pressed && !el.disabled`): unlock the fallback claim so a
+      # LATER enabled item takes the stop instead of the whole group
+      # rendering Tab-unreachable. (If every enabled item precedes the
+      # pressed-disabled one, the pre-JS render still has no stop — the
+      # sequential claim can't look ahead; reconcile() fixes it at connect.)
+      @selection_unfocusable = true if pressed && item_disabled
       return false if item_disabled
+      return false unless selected_values.empty? || @selection_unfocusable
       return false if @tab_stop_claimed
       @tab_stop_claimed = true
       true
@@ -61,10 +68,17 @@ module PhlexKit
 
     def render_hidden_inputs
       return unless @name
+      # Disabled in lockstep with the group — a disabled toggle group must
+      # not submit its value (matches toggle.rb and native form semantics).
+      disabled = @disabled ? true : nil
       if @type == :single
-        input(type: "hidden", name: @name, value: selected_values.first.to_s, data: { phlex_kit__toggle_group_target: "input" })
+        input(type: "hidden", name: @name, value: selected_values.first.to_s, disabled: disabled,
+          data: { phlex_kit__toggle_group_target: "input" })
       else
-        selected_values.each { |v| input(type: "hidden", name: "#{@name}[]", value: v, data: { phlex_kit__toggle_group_target: "input" }) }
+        selected_values.each do |v|
+          input(type: "hidden", name: "#{@name}[]", value: v, disabled: disabled,
+            data: { phlex_kit__toggle_group_target: "input" })
+        end
       end
     end
 

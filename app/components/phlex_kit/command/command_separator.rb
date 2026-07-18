@@ -10,7 +10,7 @@ module PhlexKit
       div(**mix({
         class: "pk-command-separator",
         role: "separator",
-        aria: { hidden: true },
+        aria: { hidden: "true" },
         data: { phlex_kit__command_target: "separator" }
       }, @attrs))
     end

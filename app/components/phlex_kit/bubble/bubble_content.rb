@@ -10,7 +10,11 @@ module PhlexKit
       @attrs = attrs
     end
     def view_template(&)
-      send(@as, **mix({ class: "pk-bubble-content", data: { slot: "bubble-content" } }, @attrs), &)
+      base = { class: "pk-bubble-content", data: { slot: "bubble-content" } }
+      # An interactive bubble inside a <form> must not be an implicit
+      # type="submit" (same default PhlexKit::Button ships).
+      base[:type] = :button if @as == :button && !attr_set?(:type)
+      send(@as, **mix(base, @attrs), &)
     end
   end
 end

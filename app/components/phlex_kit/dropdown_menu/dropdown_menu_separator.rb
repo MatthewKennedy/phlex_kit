@@ -6,7 +6,12 @@ module PhlexKit
     end
 
     def view_template
-      div(**mix({ role: "separator", "aria-orientation": "horizontal", class: "pk-dropdown-menu-separator" }, @attrs))
+      base = { class: "pk-dropdown-menu-separator" }
+      # Defaults only when the caller didn't supply their own — `mix` fuses,
+      # and aria_key_set? covers the aria: hash spelling the flat key missed.
+      base[:role] = "separator" unless attr_set?(:role)
+      base[:"aria-orientation"] = "horizontal" unless aria_key_set?(:orientation)
+      div(**mix(base, @attrs))
     end
   end
 end

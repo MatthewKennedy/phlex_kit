@@ -50,6 +50,9 @@
 /* Blockquote */
 .pk-blockquote { margin: 1.5rem 0; border-inline-start: 2px solid var(--pk-border); padding-inline-start: 1.5rem; font-style: italic; }
 
-/* Prose list (shadcn typography's list style). */
-.pk-list { margin: 1.5rem 0; padding-inline-start: 1.5rem; list-style: disc; }
+/* Prose list (shadcn typography's list style). Ordered variant (as: :ol)
+   keeps its numbers — the disc is scoped to unordered lists. */
+.pk-list { margin: 1.5rem 0; padding-inline-start: 1.5rem; }
+ul.pk-list { list-style: disc; }
+ol.pk-list { list-style: decimal; }
 .pk-list > li { margin-top: .5rem; }

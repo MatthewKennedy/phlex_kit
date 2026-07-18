@@ -16,10 +16,14 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({
-        class: [ "pk-carousel", fetch_option(ORIENTATIONS, @orientation, :orientation) ].join(" "),
-        role: "region",
-        aria: { roledescription: "carousel" },
+      base = {
+        class: [ "pk-carousel", fetch_option(ORIENTATIONS, @orientation, :orientation) ].join(" ")
+      }
+      # Defaults only when the caller didn't supply their own — `mix` fuses
+      # (a localized roledescription would announce both strings).
+      base[:role] = "region" unless attr_set?(:role)
+      base[:aria] = { roledescription: "carousel" } unless aria_key_set?(:roledescription)
+      div(**mix(base, {
         data: {
           controller: "phlex-kit--carousel",
           phlex_kit__carousel_options_value: JSON.generate(default_options.merge(@options)),

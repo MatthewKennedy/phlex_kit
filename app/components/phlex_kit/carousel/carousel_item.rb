@@ -7,11 +7,11 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({
-        role: "group",
-        aria: { roledescription: "slide" },
-        class: "pk-carousel-item"
-      }, @attrs), &)
+      base = { class: "pk-carousel-item" }
+      # Defaults only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "group" unless attr_set?(:role)
+      base[:aria] = { roledescription: "slide" } unless aria_key_set?(:roledescription)
+      div(**mix(base, @attrs), &)
     end
   end
 end

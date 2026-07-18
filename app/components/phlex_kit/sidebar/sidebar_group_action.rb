@@ -8,7 +8,7 @@ module PhlexKit
     end
 
     def view_template(&block)
-      button(**mix({ class: "pk-sidebar-group-action", type: "button" }, @attrs), &block)
+      button(**mix({ class: "pk-sidebar-group-action", type: :button }, @attrs), &block)
     end
   end
 end

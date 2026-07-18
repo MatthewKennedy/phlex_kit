@@ -24,13 +24,15 @@ module PhlexKit
       base = {
         class: "pk-tabs-trigger", role: "tab", id: @id,
         aria_selected: @active ? "true" : "false",
-        aria_controls: "pk-tabs-panel-#{@value}",
         tabindex: @active ? "0" : "-1",
         # data-state is the only hook tabs.css styles the active trigger by —
         # it must be server-rendered or the active tab looks inactive pre-JS.
         data: { phlex_kit__tabs_target: "trigger", action: "click->phlex-kit--tabs#show", value: @value,
                 state: @active ? "active" : "inactive" }
       }
+      # Generated idref default only when the caller didn't supply their own
+      # (pairing with a custom-id TabsContent) — `mix` fuses.
+      base[:aria_controls] = "pk-tabs-panel-#{@value}" unless aria_key_set?(:controls)
       if @as == :a
         a(**mix(base, @attrs), &)
       else

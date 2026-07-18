@@ -90,12 +90,15 @@ export default class extends Controller {
       prev.dataset.otpValue = ""
       prev.focus()
       this.syncValue()
-    } else if (e.key === "ArrowLeft" && index > 0) {
+    } else if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      // The slot row mirrors in RTL (all logical CSS), so the physical
+      // arrows flip: ArrowLeft moves toward the NEXT slot there. Runtime
+      // dir check — reliable after a dynamic flip, unlike :dir().
+      const rtl = getComputedStyle(this.element).direction === "rtl"
+      const delta = (e.key === "ArrowLeft") !== rtl ? -1 : 1
+      if (delta === -1 && index === 0) return
       e.preventDefault()
-      this.focusSlot(index - 1)
-    } else if (e.key === "ArrowRight") {
-      e.preventDefault()
-      this.focusSlot(index + 1)
+      this.focusSlot(index + delta)
     }
   }
 

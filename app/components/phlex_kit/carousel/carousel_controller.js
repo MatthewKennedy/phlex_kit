@@ -36,6 +36,11 @@ export default class extends Controller {
     this.track = this.viewportTarget.firstElementChild;
     this.drag = null;
     this.suppressClick = false;
+    // connect() re-derives reflected state: a Turbo snapshot can capture
+    // mid-drag markup (dragging class kills the transition; the inline
+    // transition:none was set for the drag's duration only).
+    this.viewportTarget.classList.remove("dragging");
+    this.track?.style.removeProperty("transition");
     this._onResize = () => this._applyTransform();
     this._onPointerDown = this._onPointerDown.bind(this);
     this._onPointerMove = this._onPointerMove.bind(this);

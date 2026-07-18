@@ -20,10 +20,11 @@ module PhlexKit
       base = {
         type: :button,
         class: "pk-sidebar-trigger",
-        aria_label: "Toggle sidebar",
         "aria-expanded": @expanded ? "true" : "false",
         data: { action: "click->phlex-kit--sidebar#toggle" }
       }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:aria_label] = "Toggle sidebar" unless aria_labelled?
       base["aria-controls"] = @controls if @controls
       button(**mix(base, @attrs)) do
         block ? yield : render(Icon.new(:menu, size: nil))

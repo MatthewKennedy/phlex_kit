@@ -17,12 +17,13 @@ module PhlexKit
       base = {
         type: :button,
         class: "pk-sidebar-rail",
-        aria_label: "Toggle sidebar",
         "aria-expanded": @expanded ? "true" : "false",
         tabindex: "-1",
-        title: "Toggle sidebar",
         data: { action: "click->phlex-kit--sidebar#toggle" }
       }
+      # Defaults only when the caller didn't supply their own — `mix` fuses.
+      base[:aria_label] = "Toggle sidebar" unless aria_labelled?
+      base[:title] = "Toggle sidebar" unless attr_set?(:title)
       base["aria-controls"] = @controls if @controls
       button(**mix(base, @attrs))
     end

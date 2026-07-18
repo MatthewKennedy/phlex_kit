@@ -166,3 +166,8 @@
   border-end-end-radius: var(--pk-cell-radius);
 }
 .pk-calendar-cell:has(> .range-start.range-end) { border-radius: var(--pk-cell-radius); }
+
+/* RTL: the nav buttons swap sides via inset-inline-*; mirror the chevrons
+   so each arrow keeps pointing outward (toward its travel direction). */
+[dir="rtl"] .pk-calendar-prev svg,
+[dir="rtl"] .pk-calendar-next svg { transform: scaleX(-1); }

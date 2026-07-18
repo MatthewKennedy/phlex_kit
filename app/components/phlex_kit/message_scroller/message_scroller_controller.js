@@ -30,6 +30,11 @@ export default class extends Controller {
   };
 
   connect() {
+    // connect() re-derives reflected state: a Turbo snapshot serializes a
+    // mid-flight data-autoscrolling marker; no programmatic scroll is in
+    // flight on a fresh connect.
+    this.element.removeAttribute("data-autoscrolling");
+    if (this.hasViewportTarget) this.viewportTarget.removeAttribute("data-autoscrolling");
     // Reader is considered "following" the live edge until they move away.
     this.following = true;
     // True only while a programmatic scroll is in flight, so reader-intent

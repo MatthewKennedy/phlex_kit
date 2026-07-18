@@ -10,3 +10,7 @@
 .pk-button.pk-pagination-next { padding-inline-end: .375rem; }
 .pk-pagination-label { display: none; }
 @media (min-width: 640px) { .pk-pagination-label { display: block; } }
+
+/* RTL: Previous/Next chevrons follow the reading direction. */
+[dir="rtl"] .pk-pagination-previous svg,
+[dir="rtl"] .pk-pagination-next svg { transform: scaleX(-1); }

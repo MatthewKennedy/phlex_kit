@@ -213,7 +213,12 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   `BaseComponent#aria_key_set?` for any aria-hash-or-flat-spelling guard —
   use it instead of re-inlining the two-spelling check. Round 8 added
   `BaseComponent#attr_set?` for plain (non-aria) attributes — same rule:
-  never re-inline `@attrs.key?(:x) || @attrs.key?("x")`.
+  never re-inline `@attrs.key?(:x) || @attrs.key?("x")`. Round 9 swept the
+  stragglers and added two spellings rules: `type:` defaults are SYMBOLS
+  (`type: :button` — mix overrides a Symbol base but fuses String+String),
+  and boolean-valued aria keys are STRINGS (`aria: { hidden: "true" }` — a
+  Ruby `true` serializes as a valueless attribute, which ARIA treats as
+  absent).
 - **`open:` values are one-shot** on clone-based overlays (alert_dialog,
   sheet): clear `openValue` when the clone spawns, or the reflected value in
   the Turbo snapshot re-opens a dismissed overlay on restore. Popover-based

@@ -17,7 +17,7 @@ module PhlexKit
       # group_context[:group] is nil for a hand-built context (bypassing
       # ToggleGroup#item_context) — treat that as "no tab-stop claim" rather
       # than raising, since standalone tests construct contexts by hand.
-      @is_first_tab_stop = group_context[:group]&.claim_tab_stop(item_disabled) || false
+      @is_first_tab_stop = group_context[:group]&.claim_tab_stop(item_disabled, pressed: pressed) || false
       super(pressed: pressed, name: nil, value: @item_value,
             variant: variant || group_context[:variant],
             size: size || group_context[:size],
@@ -31,7 +31,7 @@ module PhlexKit
     private
 
     def item_default_attrs
-      a = { type: "button",
+      a = { type: :button,
             class: ([ "pk-toggle" ] + self.class.modifier_classes(variant: @variant, size: @size) + [ "pk-toggle-group-item" ]).join(" "),
             data: { state: @pressed ? "on" : "off", value: @item_value,
               phlex_kit__toggle_group_target: "item",

@@ -7,7 +7,7 @@ module PhlexKit
 
     def view_template
       input(**mix({
-        type: "radio",
+        type: :radio,
         class: "pk-radio",
         data: {
           phlex_kit__form_field_target: "input",

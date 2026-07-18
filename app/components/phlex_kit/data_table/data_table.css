@@ -98,3 +98,7 @@
   opacity: .5;
   pointer-events: none;
 }
+
+/* RTL: the collapsed expand-toggle chevron points along the reading
+   direction; the expanded state's rotate(90deg) points down either way. */
+[dir="rtl"] .pk-data-table-expand-toggle:not([aria-expanded="true"]) svg { transform: scaleX(-1); }

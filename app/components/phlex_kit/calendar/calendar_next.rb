@@ -6,17 +6,19 @@ module PhlexKit
     end
 
     def view_template
-      button(**mix({
+      base = {
         type: :button,
         name: "next-month",
         class: "pk-calendar-next",
-        aria: { label: "Go to next month" },
         data: {
           action: "click->phlex-kit--calendar#nextMonth",
           # target so the controller can disable it at the max-date/to-year bound
           phlex_kit__calendar_target: "nextButton"
         }
-      }, @attrs)) do
+      }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:aria] = { label: "Go to next month" } unless aria_labelled?
+      button(**mix(base, @attrs)) do
         icon
       end
     end

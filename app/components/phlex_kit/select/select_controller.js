@@ -170,6 +170,16 @@ export default class extends Controller {
     this.#hide();
   }
 
+  // APG (select-only combobox): Tab out of an open listbox closes it —
+  // dropdown_menu's onFocusout pattern. relatedTarget is null when the
+  // window itself blurs; leave the panel alone then.
+  onFocusout(event) {
+    if (!this.contentTarget.matches(":popover-open")) return;
+    const to = event.relatedTarget;
+    if (!to || this.element.contains(to)) return;
+    this.#hide();
+  }
+
   // Open/close derive from the live :popover-open state, never a stored
   // flag — a stale flag is how a close on an already-closed panel becomes
   // an open (bit the popover's keyboard toggle).

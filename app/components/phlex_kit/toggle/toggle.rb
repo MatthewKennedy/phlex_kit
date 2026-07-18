@@ -39,7 +39,7 @@ module PhlexKit
     end
 
     def button_default_attrs
-      a = { type: "button", class: classes, aria: { pressed: @pressed.to_s },
+      a = { type: :button, class: classes, aria: { pressed: @pressed.to_s },
             data: { state: @pressed ? "on" : "off", phlex_kit__toggle_target: "button" } }
       a[:disabled] = true if @disabled
       a

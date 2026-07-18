@@ -13,7 +13,10 @@ module PhlexKit
     def view_template(&block)
       return if @errors.empty? && !block
 
-      div(**mix({ class: "pk-field-error", role: "alert", data: { slot: "field-error" } }, @attrs)) do
+      base = { class: "pk-field-error", data: { slot: "field-error" } }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "alert" unless attr_set?(:role)
+      div(**mix(base, @attrs)) do
         if @errors.length == 1
           plain @errors.first
         elsif @errors.length > 1

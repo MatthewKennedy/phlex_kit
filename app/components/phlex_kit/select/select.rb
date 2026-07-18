@@ -39,7 +39,7 @@ module PhlexKit
           # keydown.esc rides on the root (not only the items) so Escape closes
           # the [popover=manual] panel with focus on the trigger too; handleEsc
           # no-ops while closed.
-          action: "click@window->phlex-kit--select#clickOutside keydown.esc->phlex-kit--select#handleEsc"
+          action: "click@window->phlex-kit--select#clickOutside keydown.esc->phlex-kit--select#handleEsc focusout->phlex-kit--select#onFocusout"
         }
       }, @attrs), &block)
     end

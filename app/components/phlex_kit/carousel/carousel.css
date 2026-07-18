@@ -39,3 +39,10 @@
 .pk-carousel.is-vertical .pk-carousel-previous { top: -3rem; left: 50%; transform: translateX(-50%) rotate(90deg); }
 .pk-carousel.is-vertical .pk-carousel-next { bottom: -3rem; left: 50%; transform: translateX(-50%) rotate(90deg); }
 .pk-carousel-previous svg, .pk-carousel-next svg { width: 1rem; height: 1rem; }
+
+/* RTL (horizontal only): the scroll engine is direction-aware and the
+   buttons swap sides via inset-inline-*; mirror the arrow glyphs so they
+   point along the actual travel direction. Vertical carousels rotate the
+   whole button, which is direction-neutral. */
+[dir="rtl"] .pk-carousel.is-horizontal .pk-carousel-previous svg,
+[dir="rtl"] .pk-carousel.is-horizontal .pk-carousel-next svg { transform: scaleX(-1); }

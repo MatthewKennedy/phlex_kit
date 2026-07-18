@@ -29,7 +29,11 @@ module PhlexKit
     end
 
     def view_template(&block)
-      div(**mix({ class: classes, role: "alert" }, @attrs), &block)
+      base = { class: classes }
+      # Default only when the caller didn't supply their own — `mix` fuses
+      # (downgrading to role: "status" is a standard polite-live-region use).
+      base[:role] = "alert" unless attr_set?(:role)
+      div(**mix(base, @attrs), &block)
     end
 
     private

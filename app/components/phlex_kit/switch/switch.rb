@@ -30,7 +30,10 @@ module PhlexKit
         end
         # role="switch" belongs on the focusable control: native checkedness then
         # maps to aria-checked for AT, and the label stays a plain label.
-        input(**mix({ class: "pk-switch-input", role: "switch" }, @attrs).merge(type: "checkbox", value: @checked_value))
+        # Default role only when the caller didn't supply their own — `mix` fuses.
+        input_base = { class: "pk-switch-input" }
+        input_base[:role] = "switch" unless attr_set?(:role)
+        input(**mix(input_base, @attrs).merge(type: "checkbox", value: @checked_value))
         span(class: "pk-switch-thumb")
       end
     end

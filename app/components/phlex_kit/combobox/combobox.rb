@@ -28,7 +28,7 @@ module PhlexKit
           controller: "phlex-kit--combobox",
           phlex_kit__combobox_term_value: @term,
           phlex_kit__combobox_auto_highlight_value: (@auto_highlight ? "true" : nil),
-          action: "turbo:morph@window->phlex-kit--combobox#updateTriggerContent click@window->phlex-kit--combobox#onClickOutside"
+          action: "turbo:morph@window->phlex-kit--combobox#updateTriggerContent click@window->phlex-kit--combobox#onClickOutside focusout->phlex-kit--combobox#onFocusout"
         }
       }, @attrs)) do
         live_region

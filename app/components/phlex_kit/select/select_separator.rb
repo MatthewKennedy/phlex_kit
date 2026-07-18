@@ -4,7 +4,7 @@ module PhlexKit
   class SelectSeparator < BaseComponent
     def initialize(**attrs) = (@attrs = attrs)
     def view_template
-      div(**mix({ class: "pk-select-separator", role: "separator", aria: { hidden: true } }, @attrs))
+      div(**mix({ class: "pk-select-separator", role: "separator", aria: { hidden: "true" } }, @attrs))
     end
   end
 end

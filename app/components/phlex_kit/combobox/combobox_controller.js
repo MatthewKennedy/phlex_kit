@@ -350,6 +350,18 @@ export default class extends Controller {
     }
   }
 
+  // APG (combobox): Tab out of an open combobox closes the popup —
+  // dropdown_menu's onFocusout pattern. relatedTarget is null when the
+  // window itself blurs; leave the popup alone then. closePopover's
+  // focus-restore is a no-op here (focus has already left the popover, so
+  // focusWasInside is false — the user's Tab target keeps focus).
+  onFocusout(event) {
+    if (!this.isOpen()) return
+    const to = event.relatedTarget
+    if (!to || this.element.contains(to)) return
+    this.closePopover()
+  }
+
   onClickOutside(event) {
     if (!this.isOpen()) return
     if (this.element.contains(event.target)) return

@@ -20,6 +20,11 @@ export default class extends Controller {
       })
     }
 
+    // connect() re-derives reflected state from live truth: a Turbo snapshot
+    // serializes an Escape-dismissed suppression, and a cache restore must
+    // not resurrect it (the pointer/focus that justified it is gone).
+    delete this.element.dataset.pkDismissed
+
     this._onKeydown = (e) => {
       if (e.key !== "Escape") return
       if (this.element.matches(":hover, :focus-within")) this.element.dataset.pkDismissed = ""

@@ -13,7 +13,7 @@ module PhlexKit
       # aria-expanded reflects the render-time open state; the controller keeps
       # it in sync and wires aria-controls to the content's id in connect().
       base = {
-        type: "button", class: "pk-accordion-trigger",
+        type: :button, class: "pk-accordion-trigger",
         aria_expanded: @open ? "true" : "false", disabled: @disabled,
         data: { phlex_kit__accordion_target: "trigger", action: "click->phlex-kit--accordion#toggle" }
       }
