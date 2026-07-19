@@ -79,11 +79,12 @@ class Audit9Phase2ToastThemeSystemTest < SystemTestCase
     assert inherited
   end
 
-  # Spawning with closeButton: true into a region whose skeleton already bakes
-  # one in (close_button: true) must not stack a second ×.
+  # The docs layout mounts its shared region with close_button: true, so its
+  # skeleton already bakes a × in. Spawning with closeButton: true must not
+  # stack a second one.
   def test_no_double_close_button_when_skeleton_already_has_one
     visit "/docs/toast"
-    within(demo("Close Button")) { click_button "With close button" }
+    page.execute_script("PhlexKit.toast('Dedup', { id: 'cb-toast', closeButton: true, duration: 0 })")
     assert_selector "#cb-toast"
 
     count = page.evaluate_script(

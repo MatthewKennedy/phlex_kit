@@ -32,9 +32,10 @@ export default class extends Controller {
       // Math.abs: in RTL scrollLeft runs 0..negative, so the raw value would
       // read as permanently "at start" — abs tracks the logical inline start.
       const scrolled = Math.abs(el.scrollLeft)
-      // <= 2, not <= 1: scroll-snap + the 2px ring padding leave the group
-      // resting at scrollLeft 2, which must still count as "at start".
-      el.toggleAttribute("data-at-start", scrolled <= 2)
+      // <= 3, not <= 1: scroll-snap + the 3px ring padding (bumped from 2px so
+      // the 3px card focus ring isn't clipped) leave the group resting at
+      // scrollLeft ~3, which must still count as "at start".
+      el.toggleAttribute("data-at-start", scrolled <= 3)
       el.toggleAttribute("data-at-end", scrolled + el.clientWidth >= el.scrollWidth - 1)
     } else {
       el.toggleAttribute("data-at-start", el.scrollTop <= 1)

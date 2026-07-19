@@ -10,7 +10,6 @@ module Docs
         demo Docs::Examples::Toast::Types, title: "Types"
         demo Docs::Examples::Toast::Description, title: "Description"
         demo Docs::Examples::Toast::Position, title: "Position"
-        demo Docs::Examples::Toast::CloseButton, title: "Close Button"
       end
     end
   end
