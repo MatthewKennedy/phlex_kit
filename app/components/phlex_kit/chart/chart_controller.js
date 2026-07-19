@@ -29,7 +29,11 @@ export default class extends Controller {
     this.disconnectThemeObservers()
     this.chart?.destroy()
     if (!this.chart) {
-      this.dispatch("disconnect", { detail: { canvas: this.element } })
+      // Dispatch on document, not this.element: disconnect() runs AFTER the
+      // canvas has left the DOM, so an event fired on it neither bubbles nor
+      // reaches document/window — delegated host listeners would never see it.
+      // The canvas rides the detail so the host can still match its instance.
+      this.dispatch("disconnect", { target: document, detail: { canvas: this.element } })
     }
   }
 

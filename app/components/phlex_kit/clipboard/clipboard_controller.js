@@ -4,7 +4,7 @@ import { Controller } from "@hotwired/stimulus"
 // flashes a success/error popover (CSS-positioned, no @floating-ui). Ported from ruby_ui.
 export default class extends Controller {
   // No "trigger" target: the click->#copy action alone wires the trigger.
-  static targets = ["source", "successPopover", "errorPopover"]
+  static targets = ["source", "successPopover", "errorPopover", "liveRegion"]
 
   connect() {
     // Turbo snapshots at turbo:before-cache, BEFORE disconnect — hide the
@@ -49,6 +49,17 @@ export default class extends Controller {
   show(target) {
     this.hideAll()
     target.classList.remove("pk-hidden")
+    // Announce via the persistent live region (not the visual popover, which
+    // display:none keeps out of the a11y tree). Clear then re-assert on the
+    // next frame so an identical consecutive message still reads as a content
+    // change — aria-live announces changes, not the current state.
+    if (this.hasLiveRegionTarget) {
+      const message = target.textContent.trim()
+      this.liveRegionTarget.textContent = ""
+      requestAnimationFrame(() => {
+        if (this.hasLiveRegionTarget) this.liveRegionTarget.textContent = message
+      })
+    }
     clearTimeout(this.timer)
     this.timer = setTimeout(() => target.classList.add("pk-hidden"), 1500)
   }

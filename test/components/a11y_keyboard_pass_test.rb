@@ -83,9 +83,16 @@ class A11yKeyboardPassTest < Minitest::Test
 
   # -- clipboard -------------------------------------------------------------
 
-  def test_clipboard_popover_is_a_live_region
-    html = render(PhlexKit::ClipboardPopover.new(type: :success) { "Copied!" })
+  # The announcement rides a PERSISTENT sr-only live region on the Clipboard
+  # root, not the visual popover — toggling display:none on the popover never
+  # announced (AT ignores content already present when a region re-enters the
+  # tree). The controller writes the confirmation text into this region on copy.
+  def test_clipboard_has_a_persistent_live_region
+    html = render(PhlexKit::Clipboard.new)
+    assert_includes html, %(class="pk-sr-only")
     assert_includes html, %(role="status")
+    assert_includes html, %(aria-live="polite")
+    assert_includes html, %(data-phlex-kit--clipboard-target="liveRegion")
   end
 
   # -- resizable -------------------------------------------------------------

@@ -16,10 +16,20 @@ module PhlexKit
 
     def view_template(&block)
       # **mix on the ROOT (kit rule) — caller attrs previously landed on the
-      # inner div and could never reach the actual root element. The trailing
-      # ";" matters: mix joins duplicate string attrs with a space, so a
-      # caller style: would otherwise fuse into one invalid declaration.
-      div(**mix({ class: "pk-aspect-ratio", style: "padding-bottom: #{padding_bottom}%;" }, @attrs)) do
+      # inner div and could never reach the actual root element. Emit the
+      # generated padding-bottom in the SAME form the caller used for style:,
+      # because mix only composes same-typed values — it JOINS two strings
+      # (the trailing ";" keeps the fused declaration valid) and MERGES two
+      # hashes, but a string base against a caller hash (or vice versa) is
+      # replaced wholesale, silently dropping our ratio and collapsing the box.
+      caller_style = @attrs[:style] || @attrs["style"]
+      generated_style =
+        if caller_style.is_a?(Hash)
+          { padding_bottom: "#{padding_bottom}%" }
+        else
+          "padding-bottom: #{padding_bottom}%;"
+        end
+      div(**mix({ class: "pk-aspect-ratio", style: generated_style }, @attrs)) do
         div(class: "pk-aspect-ratio-inner", &block)
       end
     end

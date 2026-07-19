@@ -13,6 +13,13 @@ module PhlexKit
         div(&block)
         render PhlexKit::ClipboardPopover.new(type: :success) { @success }
         render PhlexKit::ClipboardPopover.new(type: :error) { @error }
+        # A persistent (never display:none) sr-only live region: the visual
+        # popovers are shown by removing display:none, which re-inserts them
+        # into the a11y tree with pre-existing content — a change AT does not
+        # announce. This region stays in the tree; the controller writes the
+        # confirmation text into it on copy, and THAT mutation announces.
+        div(class: "pk-sr-only", role: "status", aria: { live: "polite" },
+            data: { phlex_kit__clipboard_target: "liveRegion" })
       end
     end
   end

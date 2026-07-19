@@ -95,8 +95,14 @@ export default class extends Controller {
     if (!prev || !next) return
 
     const horizontal = this.directionValue === "horizontal"
+    // Horizontal arrows follow visual direction (round-7 kit convention, same
+    // as tabs/toggle_group): in RTL the DOM-first panel is on the RIGHT, so
+    // ArrowLeft must GROW it (move the divider visually left). Only the
+    // pointer-drag clientX math keeps its documented LTR exemption; Up/Down
+    // never flip. Runtime dir check — reliable after a dynamic flip.
+    const rtl = horizontal && getComputedStyle(this.element).direction === "rtl"
     const steps = horizontal
-      ? { ArrowLeft: -0.05, ArrowRight: 0.05 }
+      ? (rtl ? { ArrowLeft: 0.05, ArrowRight: -0.05 } : { ArrowLeft: -0.05, ArrowRight: 0.05 })
       : { ArrowUp: -0.05, ArrowDown: 0.05 }
 
     const pairGrow = this.growOf(prev) + this.growOf(next) || 2

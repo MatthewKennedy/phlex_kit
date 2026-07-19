@@ -49,11 +49,28 @@ export default class extends Controller {
     error.preventDefault();
 
     // preventDefault also cancels the browser's focus-first-invalid — restore
-    // it for the first invalid control of the submit pass (all invalid events
-    // fire in the same task, so the microtask reset scopes "first" correctly).
-    if (!this._focusedInvalid) {
-      this._focusedInvalid = true;
-      queueMicrotask(() => { this._focusedInvalid = false; });
+    // it for the FIRST invalid control of the submit pass. Coordinate across
+    // sibling FormField controllers via a flag on the shared form: invalid
+    // events fire in document order, so the first control to claim wins. A
+    // per-controller flag alone let each FormField focus its own control, so
+    // the LAST invalid field ended up focused, inverting native behavior. No
+    // shared JS util (kit rule) — the form element itself is the coordination
+    // point. The reset runs on a macrotask, NOT queueMicrotask: a microtask
+    // checkpoint can drain between two invalid events (the JS stack empties
+    // after each listener), clearing the flag mid-pass so the next field
+    // re-claims. setTimeout survives the whole synchronous validation pass and
+    // resets before the next submit. A control with no form (rare) falls back
+    // to the per-controller flag.
+    const form = error.target.form;
+    const alreadyClaimed = form ? form.dataset.pkInvalidFocused : this._focusedInvalid;
+    if (!alreadyClaimed) {
+      if (form) {
+        form.dataset.pkInvalidFocused = "1";
+        setTimeout(() => { delete form.dataset.pkInvalidFocused; }, 0);
+      } else {
+        this._focusedInvalid = true;
+        setTimeout(() => { this._focusedInvalid = false; }, 0);
+      }
       error.target.focus({ preventScroll: true });
       error.target.scrollIntoView({ block: "nearest" });
     }

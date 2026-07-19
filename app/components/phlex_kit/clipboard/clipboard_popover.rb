@@ -6,9 +6,11 @@ module PhlexKit
       @attrs = attrs
     end
     def view_template(&block)
-      # role="status": the shown/hidden confirmation is a live region, so
-      # screen readers announce "Copied!" instead of a silent visual flash.
-      div(class: "pk-clipboard-popover pk-hidden", role: "status", data: { phlex_kit__clipboard_target: fetch_option(TARGETS, @type, :target) }) do
+      # Visual-only now (aria-hidden): the announcement rides Clipboard's
+      # persistent sr-only role="status" live region — toggling display:none
+      # on this element never announced, since AT ignores content that was
+      # already present when a region re-enters the tree.
+      div(class: "pk-clipboard-popover pk-hidden", aria: { hidden: "true" }, data: { phlex_kit__clipboard_target: fetch_option(TARGETS, @type, :target) }) do
         div(**mix({ class: "pk-clipboard-popover-inner" }, @attrs), &block)
       end
     end

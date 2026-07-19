@@ -39,13 +39,27 @@ export default class extends Controller {
     this.element.requestSubmit();
   }
 
-  captureBeforeRender() {
+  captureBeforeRender(event) {
+    // Only capture for a render of the frame THIS form drives — the listener
+    // is document-wide, so an unrelated frame rendering elsewhere while the
+    // search input is focused would otherwise write a PENDING_FOCUS entry no
+    // matching swap ever consumes, stealing focus on a later restore.
+    const frame = event?.target;
+    if (!frame || !this.rendersInto(frame)) return;
     const input = this.input();
     if (!input || document.activeElement !== input) return;
     PENDING_FOCUS.set(this.key(), {
       selectionStart: input.selectionStart,
       selectionEnd: input.selectionEnd
     });
+  }
+
+  // True when `frame` is the <turbo-frame> this form's submission renders: the
+  // frame named by the form's data-turbo-frame, else the frame the form lives
+  // inside (Turbo's default target).
+  rendersInto(frame) {
+    const targeted = this.element.dataset.turboFrame;
+    return targeted ? frame.id === targeted : frame.contains(this.element);
   }
 
   restoreIfPending() {

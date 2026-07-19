@@ -116,7 +116,12 @@ export default class extends Controller {
   // (shared by paste and autofill), then park focus after the last filled one.
   fillFrom(slot, text) {
     const chars = text.split("")
-    const start = this.slotTargets.indexOf(slot)
+    // A full-length (or longer) code is distributed from the FIRST slot no
+    // matter which one is focused — pasting a complete code into a middle
+    // slot otherwise silently truncated it (only the slots from focus onward
+    // got filled) and merged the run with whatever digits sat before it.
+    // A shorter (partial) paste still fills from the focused slot.
+    const start = chars.length >= this.slotTargets.length ? 0 : this.slotTargets.indexOf(slot)
     this.slotTargets.slice(start).forEach((s, i) => { if (chars[i] != null) { s.value = chars[i]; s.dataset.otpValue = chars[i] } })
     this.focusSlot(Math.min(start + chars.length, this.slotTargets.length - 1))
     this.syncValue()

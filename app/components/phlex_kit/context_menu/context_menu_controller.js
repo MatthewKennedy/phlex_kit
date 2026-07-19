@@ -15,7 +15,16 @@ import { Controller } from "@hotwired/stimulus"
 // dedupes re-arming with the same fn. If the gesture's click never fires
 // (e.g. suppressed after a selection drag) the armed swallow eats the next
 // one — rare enough to accept.
-const swallowClick = (ev) => ev.preventDefault()
+const swallowClick = (ev) => {
+  // preventDefault alone suppresses only native default actions; the
+  // dismissing outside click would still fire addEventListener handlers on
+  // whatever sits under the pointer. stopPropagation (this listener is
+  // capture-phase on window, the outermost node, so it runs before any deeper
+  // handler) starves those too — the modal-menu contract is that an outside
+  // click ONLY dismisses.
+  ev.preventDefault()
+  ev.stopPropagation()
+}
 function armSwallowClick() {
   window.addEventListener("click", swallowClick, { once: true, capture: true })
 }
@@ -25,7 +34,13 @@ export default class extends Controller {
 
   connect() {
     this.onDoc = (e) => {
-      if (this.contentTarget.contains(e.target)) return
+      if (this.contentTarget.contains(e.target)) {
+        // A right-click ON the open menu must not pop the NATIVE context menu
+        // on top of it — native menus swallow their own contextmenu. Suppress
+        // it and leave the kit menu open (no reposition for an inside click).
+        if (e.type === "contextmenu") e.preventDefault()
+        return
+      }
       // The opening right-click bubbles to document AFTER open() adds this
       // listener — a contextmenu inside our own element must not close what
       // it just opened (it repositions instead). A contextmenu anywhere
