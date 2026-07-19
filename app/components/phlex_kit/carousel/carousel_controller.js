@@ -20,8 +20,8 @@ const OFFSET_EPSILON = 0.5;
 // axis from the options value) moves the track directly, so only
 // @hotwired/stimulus is needed. Button disabled state mirrors embla's
 // canScrollNext/canScrollPrev, and pointer drag/swipe (threshold + velocity,
-// rubber-band at the ends when not looping, click suppression after a drag)
-// replaces embla's gesture engine.
+// rubber-band at the ends, click suppression after a drag) replaces embla's
+// gesture engine.
 export default class extends Controller {
   static values = {
     options: {
@@ -41,7 +41,9 @@ export default class extends Controller {
     // transition:none was set for the drag's duration only).
     this.viewportTarget.classList.remove("dragging");
     this.track?.style.removeProperty("transition");
-    this._onResize = () => this._applyTransform();
+    // _update, not just _applyTransform: a resize can change _maxOffset,
+    // which feeds the buttons' disabled state as well as the transform.
+    this._onResize = () => this._update();
     this._onPointerDown = this._onPointerDown.bind(this);
     this._onPointerMove = this._onPointerMove.bind(this);
     this._onPointerUp = this._onPointerUp.bind(this);
@@ -51,7 +53,7 @@ export default class extends Controller {
     // window resize misses container-only resizes (flex/grid reflow,
     // sidebar toggles) — observe the viewport itself.
     if (typeof ResizeObserver !== "undefined") {
-      this._resizeObserver = new ResizeObserver(() => this._applyTransform());
+      this._resizeObserver = new ResizeObserver(() => this._update());
       this._resizeObserver.observe(this.viewportTarget);
     }
     this.viewportTarget.addEventListener("pointerdown", this._onPointerDown);
@@ -82,18 +84,36 @@ export default class extends Controller {
   }
 
   scrollNext() {
-    // Non-loop multi-up: the track can hit its max scrollable offset before
-    // the index reaches the last slide (_offsetOf clamps). Once there, index
-    // still has room to climb but there's nothing left to reveal — bail so
-    // neither clicks (button already disables via _update) nor ArrowRight
-    // (keyNext, which routes here) produce dead no-op advances.
-    if (!this.options.loop && this._offsetOf(this.index) >= this._maxOffset() - OFFSET_EPSILON) {
+    // Multi-up: the track can hit its max scrollable offset before the index
+    // reaches the last slide (_offsetOf clamps). Once there, index still has
+    // room to climb but there's nothing left to reveal — advancing anyway
+    // produces dead no-op clicks. Non-loop bails (button already disables
+    // via _update); loop wraps straight back to the start.
+    if (this._offsetOf(this.index) >= this._maxOffset() - OFFSET_EPSILON) {
+      if (this.options.loop) this._goTo(0);
       return;
     }
     this._goTo(this.index + 1);
   }
 
   scrollPrev() {
+    if (this.options.loop) {
+      // Mirror of scrollNext's wrap: from the start, jump to the FIRST index
+      // that reaches the max offset (not count - 1 — with multi-up layouts
+      // every later index clamps to the same offset, so landing on count - 1
+      // would make the following Prev presses dead clicks).
+      if (this._offsetOf(this.index) <= OFFSET_EPSILON) {
+        this._goTo(this._lastReachableIndex());
+        return;
+      }
+      // A resize can strand the index in the clamped zone past the last
+      // reachable position — step to just before the clamp so Prev moves.
+      const last = this._lastReachableIndex();
+      if (this.index > last) {
+        this._goTo(last - 1);
+        return;
+      }
+    }
     this._goTo(this.index - 1);
   }
 
@@ -129,14 +149,18 @@ export default class extends Controller {
 
   _update() {
     this._applyTransform();
+    // Loop mode wraps, so the buttons stay enabled as long as there is any
+    // travel to wrap through — with every slide already visible (_maxOffset
+    // is 0) a wrap is a permanent no-op, so disable then too.
+    const canLoop = this.slides.length > 1 && this._maxOffset() > OFFSET_EPSILON;
     const canNext = this.options.loop
-      ? this.slides.length > 1
+      ? canLoop
       // Offset-based, not index-based: with multi-up layouts the track
       // reaches its max scrollable offset (_maxOffset) before this.index
       // reaches the last slide, and _offsetOf clamps to that max — an
       // index-based check left Next enabled for several dead clicks.
       : this._offsetOf(this.index) < this._maxOffset() - OFFSET_EPSILON;
-    const canPrev = this.options.loop ? this.slides.length > 1 : this.index > 0;
+    const canPrev = this.options.loop ? canLoop : this.index > 0;
     this.nextButtonTargets.forEach((button) => (button.disabled = !canNext));
     this.prevButtonTargets.forEach((button) => (button.disabled = !canPrev));
   }
@@ -178,16 +202,16 @@ export default class extends Controller {
     if (!drag.moved) return;
 
     let offset = drag.offset - drag.delta;
-    if (!this.options.loop) {
-      // rubber-band past the ends
-      const max = this._offsetOf(this.slides.length - 1);
-      if (offset < 0) offset = offset / 3;
-      if (offset > max) offset = max + (offset - max) / 3;
-    }
+    // Rubber-band past the ends — in loop mode too: the translate engine has
+    // no cloned slides, so past-the-end is blank space either way (releasing
+    // still wraps via scrollNext/scrollPrev when looping).
+    const max = this._maxOffset();
+    if (offset < 0) offset = offset / 3;
+    if (offset > max) offset = max + (offset - max) / 3;
     this._translateTo(offset);
   }
 
-  _onPointerUp() {
+  _onPointerUp(e) {
     const drag = this.drag;
     this.drag = null;
     this.viewportTarget.removeEventListener("pointermove", this._onPointerMove);
@@ -197,7 +221,10 @@ export default class extends Controller {
 
     this.track.style.transition = "";
     this.viewportTarget.classList.remove("dragging");
-    this.suppressClick = true; // a drag must not activate links in the slide
+    // A drag must not activate links in the slide — but a cancelled pointer
+    // sequence never fires a click, so arming the flag on pointercancel
+    // would silently swallow the next (e.g. keyboard-initiated) click.
+    this.suppressClick = e?.type !== "pointercancel";
 
     const elapsed = Math.max(performance.now() - drag.startedAt, 1);
     const velocity = Math.abs(drag.delta) / elapsed;
@@ -260,6 +287,18 @@ export default class extends Controller {
     const trackSize = vertical ? this.track.scrollHeight : this.track.scrollWidth;
     const viewportSize = vertical ? this.viewportTarget.clientHeight : this.viewportTarget.clientWidth;
     return Math.max(0, trackSize - viewportSize);
+  }
+
+  // First index whose (clamped) offset reaches the max scrollable offset —
+  // the last position Next can travel to. count - 1 for single-up layouts;
+  // earlier with multi-up layouts, where the trailing slides all clamp to
+  // the same offset.
+  _lastReachableIndex() {
+    const max = this._maxOffset();
+    for (let i = 0; i < this.slides.length; i += 1) {
+      if (this._offsetOf(i) >= max - OFFSET_EPSILON) return i;
+    }
+    return Math.max(0, this.slides.length - 1);
   }
 
   _slideSize() {
