@@ -10,6 +10,7 @@ module Docs
         demo Docs::Examples::Sheet::Side, title: "Side"
         demo Docs::Examples::Sheet::NoCloseButton, title: "No Close Button"
         demo Docs::Examples::Sheet::WithNestedDialog, title: "With Nested Dialog"
+        demo Docs::Examples::Sheet::WithNestedMenu, title: "With Nested Menu"
       end
     end
   end

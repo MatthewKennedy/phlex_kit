@@ -95,12 +95,18 @@ export default class extends Controller {
     // handle the keyboard, or one Escape would close every layer at once.
     if (!this.#topmost()) return;
     if (event.key === "Escape") {
-      // A native <dialog> nested inside this panel (e.g. a Dialog opened
-      // from within AlertDialogContent) owns its own Escape handling; this
-      // document-level listener still sees the keydown since it bubbles all
-      // the way up — ignore it so one Escape doesn't also dismiss the alert
-      // dialog underneath (mirrors sheet_content_controller's guard).
+      // Yield to any inner overlay that owns this Escape so one keypress
+      // doesn't also dismiss the alert dialog underneath: a native <dialog>
+      // (its own Escape handling), or an open [popover] menu — Select /
+      // DropdownMenu / Combobox, all popover=manual — rendered inside the
+      // panel. Two signals make the outcome independent of whether the inner
+      // handler fires before or after this document-level one:
+      // event.defaultPrevented catches an inner handler (menu, native dialog)
+      // that already consumed the key; the live :popover-open check catches a
+      // menu still open because this handler ran first.
+      if (event.defaultPrevented) return;
       if (event.target.closest("dialog[open]")) return;
+      if (this.#panel()?.querySelector("[popover]:popover-open")) return;
       event.preventDefault();
       this.dismiss();
       return;
@@ -140,8 +146,12 @@ export default class extends Controller {
     return clones.length > 0 && clones[clones.length - 1] === this.element;
   }
 
+  // Select the panel structurally, not by role: AlertDialogContent lets the
+  // caller override role: (the default is skipped when attr_set?(:role)), so a
+  // role-based lookup would fail to find a custom-role panel and silently
+  // break the whole modal contract (focus trap, aria wiring, dismiss).
   #panel() {
-    return this.element.querySelector('[role="alertdialog"]');
+    return this.element.querySelector(".pk-alert-dialog-panel");
   }
 
   #focusables() {

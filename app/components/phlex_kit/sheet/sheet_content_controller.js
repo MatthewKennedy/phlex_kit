@@ -63,12 +63,19 @@ export default class extends Controller {
   }
 
   keydown(event) {
-    // A native <dialog> nested inside this panel (e.g. a Dialog opened from
-    // within SheetContent) owns its own Escape handling; the keydown still
-    // bubbles through this element-scoped listener since dialog is a DOM
-    // descendant — ignore it so one Escape doesn't also close the sheet
-    // underneath.
+    // Yield to any inner overlay that owns this Escape so one keypress doesn't
+    // also close the sheet/drawer underneath: a native <dialog> (its own
+    // Escape handling), or an open [popover] menu — Select / DropdownMenu /
+    // Combobox, all popover=manual — rendered inside the panel. Two signals
+    // make the outcome independent of ordering: event.defaultPrevented catches
+    // an inner handler that already consumed the key (Select's Escape is
+    // element-scoped and fires deeper in the bubble, so it runs first); the
+    // live :popover-open check catches a menu whose Escape handler is
+    // document-level (DropdownMenu) and thus still open when this
+    // element-scoped listener runs.
+    if (event.key === "Escape" && event.defaultPrevented) return
     if (event.key === "Escape" && event.target.closest("dialog[open]")) return
+    if (event.key === "Escape" && this.panel.querySelector("[popover]:popover-open")) return
     if (event.key === "Escape") {
       event.preventDefault()
       // Stop the keydown from reaching a lower/outer overlay's own

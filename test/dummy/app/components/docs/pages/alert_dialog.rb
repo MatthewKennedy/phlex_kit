@@ -12,6 +12,8 @@ module Docs
         demo Docs::Examples::AlertDialog::Destructive, title: "Destructive"
         demo Docs::Examples::AlertDialog::WithNestedSheet, title: "With Nested Sheet"
         demo Docs::Examples::AlertDialog::WithNestedDialog, title: "With Nested Dialog"
+        demo Docs::Examples::AlertDialog::WithNestedMenu, title: "With Nested Menu"
+        demo Docs::Examples::AlertDialog::CustomRole, title: "Custom Role"
       end
     end
   end
