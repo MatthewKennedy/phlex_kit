@@ -44,4 +44,12 @@ class Audit9Phase2MiscTest < Minitest::Test
     assert_includes html, %(aria-hidden="true")
     refute_includes html, %(role="status")
   end
+
+  # -- command_empty: server-rendered hidden so it doesn't flash / show with
+  #    JS off; the controller reveals it only on a no-match query. --
+
+  def test_command_empty_is_server_rendered_hidden
+    html = render(PhlexKit::CommandEmpty.new { "No results" })
+    assert_includes html, "pk-command-empty pk-hidden"
+  end
 end

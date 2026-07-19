@@ -42,6 +42,10 @@ export default class extends Controller {
     // itemTargetConnected uses must be initialized here.
     this.itemIdCounter = 0
     this.refocusing = false
+    // The query the list is currently filtered by. Initialized to "" so a
+    // caret/modifier keyup on an empty, unfiltered field reads as unchanged
+    // and filterItems skips re-running (which would wipe the highlight).
+    this._lastFilter = ""
   }
 
   connect() {
@@ -109,14 +113,18 @@ export default class extends Controller {
   }
 
   inputChanged(e) {
+    // Uncheck "select all" BEFORE updateTriggerContent: syncAriaSelected reads
+    // the toggle-all checkbox to set its row's aria-selected, so syncing first
+    // left the row marked aria-selected="true" while its checkbox showed
+    // unchecked.
+    if (this.hasToggleAllTarget && !e.target.checked) {
+      this.toggleAllTarget.checked = false
+    }
+
     this.updateTriggerContent()
 
     if (e.target.type == "radio") {
       this.closePopover()
-    }
-
-    if (this.hasToggleAllTarget && !e.target.checked) {
-      this.toggleAllTarget.checked = false
     }
 
     // Selecting from a chip trigger consumes the query: clear it and reshow
@@ -336,6 +344,15 @@ export default class extends Controller {
     if (this.hasPopoverTarget && this.popoverTarget.matches(":popover-open")) this.popoverTarget.hidePopover()
     this.updateTriggerContent() // reflect the selection into an input trigger
 
+    // Reset the filter so a REOPEN shows the full list, not the last query's
+    // leftover pk-hidden classes. The input trigger keeps showing the
+    // selection label (updateTriggerContent, above) but that's display-only —
+    // the active query is empty until the user types again; an in-popover or
+    // badge search field is cleared to match.
+    if (this.hasSearchInputTarget) this.searchInputTarget.value = ""
+    if (this.hasBadgeInputTarget) this.badgeInputTarget.value = ""
+    this.applyFilter("")
+
     if (focusWasInside) {
       const field = this.filterField()
       // Input/badge layouts: back to the filter field (it lives outside the
@@ -392,7 +409,25 @@ export default class extends Controller {
     const field = (e.target instanceof HTMLInputElement) ? e.target : this.filterField()
     if (!field) return
 
-    this.applyFilter(field.value.toLowerCase())
+    const term = field.value.toLowerCase()
+    // Only re-filter when the query text actually changed. filterItems runs on
+    // every keyup, so caret/modifier keys the exclusion list above misses
+    // (ArrowLeft/Right/Home/End, releasing Shift) would otherwise re-run
+    // applyFilter on the unchanged query and wipe the keyboard highlight
+    // (selectedItemIndex, aria-current, aria-activedescendant).
+    if (term === this._lastFilter) return
+
+    // Typing into a CLOSED input/badge trigger must reveal the results — the
+    // filtering is otherwise invisible (only click/focusin/Arrow keys opened
+    // it). Open without openPopover()'s field.select(), which would select the
+    // just-typed text so the next keystroke replaced it. The button layout's
+    // search field lives inside the popover, so it can't be typed while closed.
+    if (!this.isOpen() && term && (this.hasInputTriggerTarget || this.hasBadgeInputTarget)) {
+      this.setExpanded(true)
+      this.popoverTarget.showPopover()
+    }
+
+    this.applyFilter(term)
   }
 
   // Strips combining diacritical marks after an NFD decomposition, so "é"
@@ -402,6 +437,10 @@ export default class extends Controller {
   }
 
   applyFilter(filterTerm) {
+    // The query the list is currently filtered by — filterItems reads this to
+    // skip re-filtering (and re-wiping the highlight) on caret/modifier keys.
+    this._lastFilter = filterTerm
+
     if (this.hasToggleAllTarget) {
       if (filterTerm) this.toggleAllTarget.parentElement.classList.add("pk-hidden")
       else this.toggleAllTarget.parentElement.classList.remove("pk-hidden")

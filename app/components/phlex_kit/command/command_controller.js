@@ -75,7 +75,15 @@ export default class extends Controller {
     // Only the cloned dialog overlay grabs focus on connect — an inline
     // palette connecting at page load must not steal it.
     if (this.isDialogClone()) this.inputTarget.focus();
-    this.toggleVisibility(this.emptyTargets, false);
+    // Re-derive item + empty-state visibility from the LIVE input value, not an
+    // unconditional hide: a Turbo cache restore of an inline palette can
+    // reconnect with an active no-match query still in the input — hiding the
+    // empty row then showed the query with neither items NOR a "No results".
+    if (this.inputTarget.value) {
+      this.filter({ target: this.inputTarget });
+    } else {
+      this.toggleVisibility(this.emptyTargets, false);
+    }
   }
 
   // The command-dialog controller clones its <template> content into <body>;
