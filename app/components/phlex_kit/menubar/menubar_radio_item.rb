@@ -11,12 +11,12 @@ module PhlexKit
     end
 
     def view_template(&block)
-      label(**mix({
-        class: "pk-menubar-item pk-menubar-radio-item",
-        role: "menuitemradio",
-        tabindex: "-1",
-        aria: { checked: @checked ? "true" : "false" }
-      }, @attrs)) do
+      base = { class: "pk-menubar-item pk-menubar-radio-item" }
+      # Defaults only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "menuitemradio" unless attr_set?(:role)
+      base[:tabindex] = "-1" unless attr_set?(:tabindex)
+      base[:"aria-checked"] = (@checked ? "true" : "false") unless aria_key_set?(:checked)
+      label(**mix(base, @attrs)) do
         input(type: :radio, class: "pk-menubar-item-input", name: @name, value: @value, checked: @checked,
               tabindex: "-1", data: { action: "change->phlex-kit--menubar#syncChecked" })
         span(class: "pk-menubar-item-indicator", aria: { hidden: "true" }) do

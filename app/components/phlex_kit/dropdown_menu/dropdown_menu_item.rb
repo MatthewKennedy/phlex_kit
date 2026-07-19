@@ -13,11 +13,12 @@ module PhlexKit
 
     def view_template(&block)
       base = {
-        role: "menuitem",
-        tabindex: "-1",
         class: [ "pk-dropdown-menu-item", fetch_option(VARIANTS, @variant, :variant) ].compact.join(" "),
         data: { phlex_kit__dropdown_menu_target: "menuItem", action: "click->phlex-kit--dropdown-menu#close" }
       }
+      # Defaults only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "menuitem" unless attr_set?(:role)
+      base[:tabindex] = "-1" unless attr_set?(:tabindex)
       base[:href] = @href unless @as == :div
       send(@as, **mix(base, @attrs), &block)
     end

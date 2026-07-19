@@ -8,7 +8,10 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({ class: "pk-alert-dialog-media", aria: { hidden: "true" } }, @attrs), &)
+      base = { class: "pk-alert-dialog-media" }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:aria] = { hidden: "true" } unless aria_key_set?(:hidden)
+      div(**mix(base, @attrs), &)
     end
   end
 end

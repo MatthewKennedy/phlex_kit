@@ -9,7 +9,11 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({ id: @id, class: "pk-menubar-content", popover: "manual", role: "menu" }, @attrs), &)
+      base = { id: @id, class: "pk-menubar-content" }
+      # Defaults only when the caller didn't supply their own — `mix` fuses.
+      base[:popover] = "manual" unless attr_set?(:popover)
+      base[:role] = "menu" unless attr_set?(:role)
+      div(**mix(base, @attrs), &)
     end
   end
 end

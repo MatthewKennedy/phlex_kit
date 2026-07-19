@@ -18,11 +18,14 @@ module PhlexKit
 
     def view_template(&block)
       classes = [ "pk-context-menu-item", fetch_option(VARIANTS, @variant, :variant) ].compact.join(" ")
-      base = { href: @href, role: "menuitem", tabindex: "-1", class: classes,
+      base = { href: @href, class: classes,
                data: { action: ("click->phlex-kit--context-menu#close" unless @disabled),
                        phlex_kit__context_menu_target: "menuItem",
                        disabled: (@disabled ? "true" : nil) }.compact }
-      base[:aria] = { disabled: "true" } if @disabled
+      # Defaults only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "menuitem" unless attr_set?(:role)
+      base[:tabindex] = "-1" unless attr_set?(:tabindex)
+      base[:"aria-disabled"] = "true" if @disabled && !aria_key_set?(:disabled)
       a(**mix(base, @attrs)) do
         if @checked
           span(class: "pk-context-menu-check") do

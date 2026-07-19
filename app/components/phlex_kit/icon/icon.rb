@@ -23,9 +23,13 @@ module PhlexKit
       base = base_attrs(icon)
       # `mix` merges duplicate string attrs ("16 24") — drop a generated attr
       # whenever the caller supplies their own copy, so theirs wins.
-      %i[width height viewbox aria-hidden].each do |key|
+      %i[width height viewbox].each do |key|
         base.delete(key) if attr_set?(key)
       end
+      # aria-hidden needs the aria-aware guard: the aria: hash and underscore
+      # spellings must also suppress the default (a caller-supplied
+      # accessible name must not be hidden from AT by our default).
+      base.delete(:"aria-hidden") if aria_key_set?(:hidden) || aria_labelled?
       svg(**mix(base, @attrs)) do |s|
         icon[:elements].each { |tag, attrs| s.public_send(tag, **attrs) }
       end

@@ -4,7 +4,10 @@ module PhlexKit
   class MenubarGroup < BaseComponent
     def initialize(**attrs) = (@attrs = attrs)
     def view_template(&)
-      div(**mix({ class: "pk-menubar-group", role: "group" }, @attrs), &)
+      base = { class: "pk-menubar-group" }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "group" unless attr_set?(:role)
+      div(**mix(base, @attrs), &)
     end
   end
 end

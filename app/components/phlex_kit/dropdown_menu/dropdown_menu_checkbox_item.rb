@@ -12,13 +12,15 @@ module PhlexKit
     end
 
     def view_template(&block)
-      label(**mix({
+      base = {
         class: "pk-dropdown-menu-item pk-dropdown-menu-checkbox-item",
-        role: "menuitemcheckbox",
-        tabindex: "-1",
-        aria: { checked: @checked ? "true" : "false" },
         data: { phlex_kit__dropdown_menu_target: "menuItem" }
-      }, @attrs)) do
+      }
+      # Defaults only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "menuitemcheckbox" unless attr_set?(:role)
+      base[:tabindex] = "-1" unless attr_set?(:tabindex)
+      base[:"aria-checked"] = (@checked ? "true" : "false") unless aria_key_set?(:checked)
+      label(**mix(base, @attrs)) do
         input(type: :checkbox, class: "pk-dropdown-menu-item-input", name: @name, value: @value, checked: @checked,
               tabindex: "-1", data: { action: "change->phlex-kit--dropdown-menu#syncChecked" })
         span(class: "pk-dropdown-menu-item-indicator", aria: { hidden: "true" }) { check_icon }

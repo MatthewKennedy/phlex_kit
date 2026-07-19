@@ -11,9 +11,8 @@ module PhlexKit
     end
 
     def view_template(&)
-      div(**mix({
+      base = {
         class: "pk-menubar",
-        role: "menubar",
         data: {
           controller: "phlex-kit--menubar",
           # focusout: tabbing out of the bar closes the open [popover=manual]
@@ -22,7 +21,10 @@ module PhlexKit
           # NOT bound by navigation_menu.rb — nav menus are non-modal).
           action: "mousedown@window->phlex-kit--menubar#onMousedownOutside click@window->phlex-kit--menubar#onClickOutside keydown->phlex-kit--menubar#onKeydown focusout->phlex-kit--menubar#onFocusout"
         }
-      }, @attrs), &)
+      }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "menubar" unless attr_set?(:role)
+      div(**mix(base, @attrs), &)
     end
   end
 end

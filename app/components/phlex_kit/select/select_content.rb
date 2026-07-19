@@ -14,17 +14,19 @@ module PhlexKit
     end
 
     def view_template(&block)
-      div(**mix({
+      base = {
         id: @id,
-        role: "listbox",
-        tabindex: "-1",
         class: "pk-select-content",
-        popover: "manual",
         data: {
           phlex_kit__select_target: "content",
           action: "keydown->phlex-kit--select#typeahead"
         }
-      }, @attrs)) do
+      }
+      # Defaults only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "listbox" unless attr_set?(:role)
+      base[:tabindex] = "-1" unless attr_set?(:tabindex)
+      base[:popover] = "manual" unless attr_set?(:popover)
+      div(**mix(base, @attrs)) do
         div(class: "pk-select-viewport", &block)
       end
     end

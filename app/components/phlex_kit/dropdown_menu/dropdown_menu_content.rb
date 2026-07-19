@@ -14,9 +14,12 @@ module PhlexKit
 
     def view_template(&block)
       div(class: wrapper_classes, popover: "manual", data: { phlex_kit__dropdown_menu_target: "content" }) do
+        base = { class: "pk-dropdown-menu-viewport" }
         # role="menu" on the items' direct parent — the rows render
         # role="menuitem", which is invalid ARIA without a menu ancestor.
-        div(**mix({ class: "pk-dropdown-menu-viewport", role: "menu" }, @attrs), &block)
+        # Default only when the caller didn't supply their own — `mix` fuses.
+        base[:role] = "menu" unless attr_set?(:role)
+        div(**mix(base, @attrs), &block)
       end
     end
 

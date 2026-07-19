@@ -4,7 +4,10 @@ module PhlexKit
   class DropdownMenuRadioGroup < BaseComponent
     def initialize(**attrs) = (@attrs = attrs)
     def view_template(&)
-      div(**mix({ class: "pk-dropdown-menu-group", role: "radiogroup" }, @attrs), &)
+      base = { class: "pk-dropdown-menu-group" }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "radiogroup" unless attr_set?(:role)
+      div(**mix(base, @attrs), &)
     end
   end
 end

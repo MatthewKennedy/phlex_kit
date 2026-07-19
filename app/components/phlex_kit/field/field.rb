@@ -29,7 +29,10 @@ module PhlexKit
       data = { slot: "field", orientation: fetch_option(ORIENTATIONS, @orientation, :orientation) }
       data[:invalid] = "true" if @invalid
       data[:disabled] = "true" if @disabled
-      div(**mix({ class: "pk-field", role: "group", data: data }, @attrs), &)
+      base = { class: "pk-field", data: data }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "group" unless attr_set?(:role)
+      div(**mix(base, @attrs), &)
     end
   end
 end

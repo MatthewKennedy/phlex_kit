@@ -11,12 +11,15 @@ module PhlexKit
     end
 
     def view_template(&)
-      label(**mix({
+      base = {
         class: "pk-combobox-item",
-        role: "option",
-        aria: { selected: "false" },
         data: { phlex_kit__combobox_target: "item" }
-      }, @attrs), &)
+      }
+      # Defaults only when the caller didn't supply their own — `mix` fuses
+      # (a server-rendered initially-selected option sets its own selected).
+      base[:role] = "option" unless attr_set?(:role)
+      base[:aria] = { selected: "false" } unless aria_key_set?(:selected)
+      label(**mix(base, @attrs), &)
     end
   end
 end

@@ -24,8 +24,12 @@ module PhlexKit
       if @include_hidden && @attrs[:name] && !@attrs[:name].to_s.end_with?("[]")
         # Disabled in lockstep with the checkbox (Rails' check_box idiom) —
         # a disabled checkbox must not still post its unchecked value.
+        # form: rides along too (Rails' check_box slices name/disabled/form
+        # onto the hidden field) — a form-attributed checkbox outside its
+        # <form> must post the unchecked value to the same form.
         input(type: "hidden", name: @attrs[:name], value: @unchecked_value,
-          disabled: @attrs[:disabled] ? true : nil)
+          disabled: @attrs[:disabled] ? true : nil,
+          form: @attrs[:form] || @attrs["form"])
       end
       input(**mix({
         type: :checkbox,

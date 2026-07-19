@@ -4,7 +4,10 @@ module PhlexKit
   class ContextMenuRadioGroup < BaseComponent
     def initialize(**attrs) = (@attrs = attrs)
     def view_template(&)
-      div(**mix({ class: "pk-context-menu-group", role: "radiogroup" }, @attrs), &)
+      base = { class: "pk-context-menu-group" }
+      # Default only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "radiogroup" unless attr_set?(:role)
+      div(**mix(base, @attrs), &)
     end
   end
 end

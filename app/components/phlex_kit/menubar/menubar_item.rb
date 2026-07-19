@@ -18,12 +18,13 @@ module PhlexKit
 
     def view_template(&block)
       base = {
-        role: "menuitem",
-        tabindex: "-1",
         class: [ "pk-menubar-item", fetch_option(VARIANTS, @variant, :variant), ("inset" if @inset) ].compact.join(" "),
         data: @disabled ? { disabled: "true" } : { action: "click->phlex-kit--menubar#close" }
       }
-      base[:aria] = { disabled: "true" } if @disabled
+      # Defaults only when the caller didn't supply their own — `mix` fuses.
+      base[:role] = "menuitem" unless attr_set?(:role)
+      base[:tabindex] = "-1" unless attr_set?(:tabindex)
+      base[:"aria-disabled"] = "true" if @disabled && !aria_key_set?(:disabled)
       # No default href: "#" would make Enter/click navigate (hash change +
       # scroll-to-top). tabindex="-1" keeps the row programmatically focusable.
       base[:href] = @href unless @href.nil? || @as == :div || @disabled
