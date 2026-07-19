@@ -111,7 +111,11 @@
   font-size: .875rem;
 }
 .pk-avatar-group-count > svg { width: 1rem; height: 1rem; }
+.pk-avatar-group:has(.pk-avatar.xs) .pk-avatar-group-count { width: 1rem; height: 1rem; font-size: .5rem; }
+.pk-avatar-group:has(.pk-avatar.xs) .pk-avatar-group-count > svg { width: .5rem; height: .5rem; }
 .pk-avatar-group:has(.pk-avatar.sm) .pk-avatar-group-count { width: 1.5rem; height: 1.5rem; font-size: .75rem; }
 .pk-avatar-group:has(.pk-avatar.sm) .pk-avatar-group-count > svg { width: .75rem; height: .75rem; }
 .pk-avatar-group:has(.pk-avatar.lg) .pk-avatar-group-count { width: 2.5rem; height: 2.5rem; font-size: 1rem; }
 .pk-avatar-group:has(.pk-avatar.lg) .pk-avatar-group-count > svg { width: 1.25rem; height: 1.25rem; }
+.pk-avatar-group:has(.pk-avatar.xl) .pk-avatar-group-count { width: 5rem; height: 5rem; font-size: 1.875rem; }
+.pk-avatar-group:has(.pk-avatar.xl) .pk-avatar-group-count > svg { width: 2.5rem; height: 2.5rem; }

@@ -48,6 +48,22 @@
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
 }
 .pk-checkbox[aria-invalid="true"]:checked { border-color: var(--pk-brand); }
+/* Invalid + keyboard focus: the always-on invalid ring above would otherwise
+   swallow the equal-specificity :focus-visible rule, leaving no visible focus
+   change. Keep the red border (invalid stays legible) but switch the ring to
+   the standard focus color — the theme-scoped arms outweigh the theme-scoped
+   invalid copies below. */
+.pk-checkbox[aria-invalid="true"]:focus-visible,
+:root[data-theme="light"] .pk-checkbox[aria-invalid="true"]:focus-visible {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-checkbox[aria-invalid="true"]:focus-visible {
+    border-color: var(--pk-red);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+  }
+}
 .pk-checkbox:disabled { cursor: not-allowed; opacity: .5; }
 :root[data-theme="light"] .pk-checkbox:not(:checked):not(:indeterminate) { background: transparent; }
 :root[data-theme="light"] .pk-checkbox[aria-invalid="true"] {

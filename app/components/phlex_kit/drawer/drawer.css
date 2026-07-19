@@ -20,6 +20,10 @@
   background: var(--pk-surface);
   color: var(--pk-text);
   font-size: .875rem;
+  /* Content taller than the panel's max-height must scroll, not squash/spill
+     (sheet.css does the same on .pk-sheet-content); overflow also keeps the
+     rounded corners clipping. */
+  overflow: auto;
 }
 /* bottom (default) */
 .pk-drawer.bottom {

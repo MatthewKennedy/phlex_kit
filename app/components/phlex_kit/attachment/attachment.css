@@ -118,6 +118,12 @@
   -webkit-text-fill-color: transparent;
   animation: pk-shimmer 2s linear infinite;
 }
+/* Same RTL arm as _tokens.css's .pk-shimmer — the sweep follows reading
+   direction. */
+[dir="rtl"] .pk-attachment[data-state="uploading"] .pk-attachment-title,
+[dir="rtl"] .pk-attachment[data-state="processing"] .pk-attachment-title {
+  animation-direction: reverse;
+}
 /* Same two fallback arms as _tokens.css's .pk-shimmer (:49-54): never let the
    filename disappear under reduced motion or without relative color syntax
    (Safari <16.4 / Chrome <119). */
@@ -163,7 +169,7 @@
   gap: .5rem;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  padding: 2px; /* room for card rings */
+  padding: 3px; /* room for card rings (the trigger focus ring is 3px) */
   mask-image: linear-gradient(var(--pk-scroll-fade-dir),
     transparent 0, black var(--pk-scroll-fade-size),
     black calc(100% - var(--pk-scroll-fade-size)), transparent 100%);

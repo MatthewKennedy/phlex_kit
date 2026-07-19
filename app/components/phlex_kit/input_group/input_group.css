@@ -34,7 +34,10 @@
   border-color: color-mix(in oklab, var(--pk-red) 50%, transparent);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
 }
-.pk-input-group:has(:disabled) {
+/* Group-disabled presentation follows the CONTROL only (the direct-child
+   input/textarea/select) — a disabled addon button must not dim a group whose
+   input is still editable. */
+.pk-input-group:has(> input:disabled, > textarea:disabled, > select:disabled) {
   opacity: .5;
   background: color-mix(in oklab, var(--pk-input) 80%, transparent);
 }
@@ -97,14 +100,14 @@
 .pk-input-group-text svg { pointer-events: none; }
 
 :root[data-theme="light"] .pk-input-group { background: transparent; }
-:root[data-theme="light"] .pk-input-group:has(:disabled) { background: color-mix(in oklab, var(--pk-input) 50%, transparent); }
+:root[data-theme="light"] .pk-input-group:has(> input:disabled, > textarea:disabled, > select:disabled) { background: color-mix(in oklab, var(--pk-input) 50%, transparent); }
 :root[data-theme="light"] .pk-input-group:has([aria-invalid="true"]) {
   border-color: var(--pk-red);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);
 }
 @media (prefers-color-scheme: light) {
   :root[data-theme="system"] .pk-input-group { background: transparent; }
-  :root[data-theme="system"] .pk-input-group:has(:disabled) { background: color-mix(in oklab, var(--pk-input) 50%, transparent); }
+  :root[data-theme="system"] .pk-input-group:has(> input:disabled, > textarea:disabled, > select:disabled) { background: color-mix(in oklab, var(--pk-input) 50%, transparent); }
   :root[data-theme="system"] .pk-input-group:has([aria-invalid="true"]) {
     border-color: var(--pk-red);
     box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 20%, transparent);

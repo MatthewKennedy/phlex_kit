@@ -9,4 +9,9 @@
   line-height: 1;
   user-select: none;
 }
-.pk-label:has(+ :disabled), .pk-label:has(:disabled), :disabled + .pk-label { cursor: not-allowed; opacity: .5; }
+/* The wrapper arms cover controls whose root is a <label> around a nested
+   input (e.g. Switch's <label class="pk-switch">) — scoped to label so an
+   unrelated container with a disabled control somewhere inside can't dim a
+   neighboring Label. */
+.pk-label:has(+ :disabled), .pk-label:has(:disabled), :disabled + .pk-label,
+.pk-label:has(+ label:has(:disabled)), label:has(:disabled) + .pk-label { cursor: not-allowed; opacity: .5; }
