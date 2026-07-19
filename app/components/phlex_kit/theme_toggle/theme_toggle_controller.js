@@ -25,12 +25,23 @@ export default class extends Controller {
     // echo guard in apply().
     this._rootObserver = new MutationObserver(() => this.syncPressed())
     this._rootObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] })
+    // Cross-tab sync: `storage` fires only in OTHER tabs when localStorage.theme
+    // changes, so another tab's toggle re-applies here. Without this, this tab's
+    // DOM went stale while storedTheme() (read fresh from localStorage) already
+    // returned the new value — the echo guard in apply() then swallowed a
+    // genuine click because resolvedTheme() already matched.
+    this._onStorage = (e) => {
+      if (e.key !== "theme") return
+      this.applyTheme(this.storedTheme() || "system")
+    }
+    window.addEventListener("storage", this._onStorage)
     this.applyTheme(this.storedTheme() || "system")
   }
 
   disconnect() {
     this._media?.removeEventListener("change", this._onMediaChange)
     this._rootObserver?.disconnect()
+    window.removeEventListener("storage", this._onStorage)
   }
 
   syncPressed() {
@@ -41,12 +52,19 @@ export default class extends Controller {
 
   apply(e) {
     const theme = e.detail?.pressed ? "dark" : "light"
-    // connect()'s own pressed-state sync re-enters here via the toggle's
-    // change event (Stimulus value observation is async, so a flag can't
-    // gate it). If the incoming theme already matches the resolved one this
-    // is that echo, not a user toggle — persisting it would silently pin
-    // the visitor's OS preference in localStorage on first visit.
-    if (theme === this.resolvedTheme()) return
+    // Skip when this isn't a genuine user toggle — two echo shapes:
+    // - the incoming theme already matches the RESOLVED one: connect()'s own
+    //   pressed-state sync re-enters here via the toggle's change event
+    //   (Stimulus value observation is async, so a flag can't gate it), and a
+    //   "system" resolution lands here too — persisting either would silently
+    //   pin the visitor's OS preference in localStorage on first visit.
+    // - the root's data-theme ALREADY equals it: host code (or a cross-tab
+    //   storage sync) wrote the theme directly. The contract is that only a
+    //   user toggle persists, and a real user toggle reaches here BEFORE
+    //   applyTheme updates the root, so the root still holds the OLD value —
+    //   a match therefore means "not a user action, don't persist".
+    const rootTheme = document.documentElement.getAttribute("data-theme")
+    if (theme === this.resolvedTheme() || theme === rootTheme) return
     this.storeTheme(theme)
     this.applyTheme(theme)
   }

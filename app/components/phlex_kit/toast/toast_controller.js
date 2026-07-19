@@ -16,6 +16,11 @@ export default class extends Controller {
   }
 
   connect() {
+    // Inherit the region's duration when this item didn't set its own: a
+    // block-rendered ToastItem carries no duration-value, so without this the
+    // Stimulus 4000ms default would win and ToastRegion(duration:) would be
+    // dead config for block items (skeleton/flash items already stamp it).
+    this._inheritRegionDuration()
     this._timer = null
     this._unmountTimer = null
     this._startedAt = 0
@@ -35,7 +40,16 @@ export default class extends Controller {
     this._onPointerLeave = () => { if (!this._swipe.active) this._resume("hover") }
     // Keyboard parity with hover: tabbing into the toast (e.g. to reach its
     // action button) must pause auto-dismiss just like pointerenter does.
-    this._onFocusIn = () => this._pause("focus")
+    this._onFocusIn = (e) => {
+      this._pause("focus")
+      // Remember where focus came from the FIRST time it enters from outside
+      // the toaster, so dismissing the last focused toast can hand focus back
+      // instead of dropping it on <body>.
+      const list = this.element.closest(".pk-toast-list") || this.element
+      if (this._focusReturn == null && e.relatedTarget && !list.contains(e.relatedTarget)) {
+        this._focusReturn = e.relatedTarget
+      }
+    }
     this._onFocusOut = (e) => { if (!this.element.contains(e.relatedTarget)) this._resume("focus") }
     this._onKeyDown = this._onKeyDown.bind(this)
     this._onForceDismiss = (e) => { e.stopPropagation(); this._close() }
@@ -103,9 +117,40 @@ export default class extends Controller {
   _close(reason) {
     if (this.element.dataset.state === "closing") return
     this.element.dataset.state = "closing"
+    // If focus is inside this toast, move it BEFORE removal so it doesn't drop
+    // to <body> when the element is gone (Escape, close button, or action).
+    const hadFocus = this.element.contains(document.activeElement)
     this.element.dispatchEvent(new CustomEvent(reason === "auto" ? "phlex-kit:toast:auto-close" : "phlex-kit:toast:dismiss", { bubbles: true, detail: { id: this.element.id } }))
     this._invokeCallback(reason === "auto" ? this.onAutoCloseValue : this.onDismissValue)
+    if (hadFocus) this._restoreFocusOnClose()
     this._unmountTimer = setTimeout(() => this.element.remove(), TIME_BEFORE_UNMOUNT)
+  }
+
+  // Keep keyboard focus inside the toaster when a focused toast is dismissed:
+  // hand it to an adjacent remaining toast, else back to wherever focus came
+  // from before it entered the toaster (tracked on first focusin).
+  _restoreFocusOnClose() {
+    const list = this.element.closest(".pk-toast-list")
+    const others = list
+      ? [...list.querySelectorAll("[data-controller~='phlex-kit--toast']")]
+          .filter((t) => t !== this.element && t.dataset.state !== "closing")
+      : []
+    if (others.length) {
+      const children = [...list.children]
+      const myIdx = children.indexOf(this.element)
+      const next = others.find((t) => children.indexOf(t) > myIdx) || others[others.length - 1]
+      next.focus()
+      return
+    }
+    if (this._focusReturn?.isConnected) this._focusReturn.focus()
+  }
+
+  _inheritRegionDuration() {
+    if (this.element.hasAttribute("data-phlex-kit--toast-duration-value")) return
+    const region = this.element.closest("[data-phlex-kit--toaster-duration-value]")
+    if (!region) return
+    const inherited = Number(region.getAttribute("data-phlex-kit--toaster-duration-value"))
+    if (Number.isFinite(inherited)) this.durationValue = inherited
   }
 
   // on_dismiss:/on_auto_close: name a global function (Sonner-style callback

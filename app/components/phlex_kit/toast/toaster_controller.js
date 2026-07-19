@@ -80,9 +80,17 @@ export default class extends Controller {
     this._onWindowDismissId = (e) => this._dismissById(e.detail?.id)
     this._onKey = this._onKey.bind(this)
 
+    // The region is data-turbo-permanent (in-flight toasts survive a Turbo
+    // Drive visit), but that means Turbo KEEPS this old region and DISCARDS
+    // the incoming page's — throwing away any server-rendered flash toasts it
+    // holds. Adopt them into this permanent list before the transplant so
+    // flash: works on Turbo Drive visits, not only full page loads.
+    this._onBeforeRender = (e) => this._adoptIncomingToasts(e)
+
     window.addEventListener("phlex-kit:toast", this._onWindowToast)
     window.addEventListener("phlex-kit:toast:dismiss-all", this._onWindowDismissAll)
     window.addEventListener("phlex-kit:toast:dismiss", this._onWindowDismissId)
+    document.addEventListener("turbo:before-render", this._onBeforeRender)
     this._listEl.addEventListener("pointerenter", this._onPointerEnter)
     this._listEl.addEventListener("pointerleave", this._onPointerLeave)
     document.addEventListener("keydown", this._onKey)
@@ -96,6 +104,7 @@ export default class extends Controller {
     window.removeEventListener("phlex-kit:toast", this._onWindowToast)
     window.removeEventListener("phlex-kit:toast:dismiss-all", this._onWindowDismissAll)
     window.removeEventListener("phlex-kit:toast:dismiss", this._onWindowDismissId)
+    document.removeEventListener("turbo:before-render", this._onBeforeRender)
     this._listEl?.removeEventListener("pointerenter", this._onPointerEnter)
     this._listEl?.removeEventListener("pointerleave", this._onPointerLeave)
     document.removeEventListener("keydown", this._onKey)
@@ -170,7 +179,10 @@ export default class extends Controller {
       node.appendChild(btn)
     }
 
-    if (detail.closeButton && this.hasCloseTplTarget) {
+    // Don't append a second close button when the skeleton already baked one
+    // in (region rendered with close_button: true) — spawning with
+    // closeButton: true would otherwise stack two ×'s.
+    if (detail.closeButton && this.hasCloseTplTarget && !node.querySelector('[data-slot="close"]')) {
       const x = this._cloneSlot(this.closeTplTarget)
       node.classList.add("pk-toast-with-close")
       node.appendChild(x)
@@ -178,6 +190,22 @@ export default class extends Controller {
 
     this._listEl.appendChild(node)
     return node.id
+  }
+
+  // Move server-rendered flash toasts from the incoming (about-to-be-discarded)
+  // page's matching region into this permanent list, so a Turbo Drive visit
+  // doesn't silently drop them. Runs on turbo:before-render, before Turbo
+  // transplants this permanent element into the new body (children ride along).
+  _adoptIncomingToasts(e) {
+    const newBody = e.detail?.newBody
+    if (!newBody || !this._listEl?.id) return
+    const incomingList = newBody.querySelector(`#${CSS.escape(this._listEl.id)}`)
+    if (!incomingList) return
+    incomingList.querySelectorAll(":scope > [data-phlex-kit--toaster-target='toast']").forEach((el) => {
+      // Skip a flash id already showing here, so a re-render doesn't dupe it.
+      if (el.id && this._listEl.querySelector(`#${CSS.escape(el.id)}`)) return
+      this._listEl.appendChild(el.cloneNode(true))
+    })
   }
 
   // True when this region should act on a toast event carrying `region`
