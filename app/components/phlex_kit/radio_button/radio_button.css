@@ -38,6 +38,22 @@
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-red) 40%, transparent);
 }
 .pk-radio[aria-invalid="true"]:checked { border-color: var(--pk-brand); }
+/* Invalid + keyboard focus: the always-on invalid ring above would otherwise
+   swallow the equal-specificity :focus-visible rule, leaving no visible focus
+   change (and the theme-scoped invalid arms below beat it outright in light).
+   Keep the red border (invalid stays legible) but switch the ring to the
+   standard focus color — mirrors checkbox.css. */
+.pk-radio[aria-invalid="true"]:focus-visible,
+:root[data-theme="light"] .pk-radio[aria-invalid="true"]:focus-visible {
+  border-color: var(--pk-red);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+}
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] .pk-radio[aria-invalid="true"]:focus-visible {
+    border-color: var(--pk-red);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--pk-ring) 50%, transparent);
+  }
+}
 .pk-radio:disabled { cursor: not-allowed; opacity: .5; }
 :root[data-theme="light"] .pk-radio:not(:checked) { background: transparent; }
 :root[data-theme="light"] .pk-radio[aria-invalid="true"] {

@@ -16,6 +16,10 @@ export default class extends Controller {
     const invoker = this.triggerTarget.querySelector("button")
     if (invoker) {
       invoker.popoverTargetElement = this.contentTarget
+      // popoverTargetElement gives native aria-expanded but not haspopup —
+      // shadcn/Radix Popover.Trigger ships aria-haspopup="dialog", so add it
+      // (leave a caller-set value alone) to match the button-less path below.
+      if (!invoker.hasAttribute("aria-haspopup")) invoker.setAttribute("aria-haspopup", "dialog")
     } else {
       // Button-less fallback: keyboard toggling and popup semantics don't
       // come for free like they do with popoverTargetElement — wire Enter

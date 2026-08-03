@@ -1,5 +1,20 @@
 import { Controller } from "@hotwired/stimulus";
 
+// One-shot capture listener swallowing the click an outside mousedown is about
+// to produce (see onMousedownOutside; same helper in dropdown/context/menubar
+// — duplicated per controller by design). Select is a MODAL menu: the
+// dismissing outside click ONLY dismisses, never also acts on what sits under
+// the pointer. Armed at MOUSEDOWN because for a focusable click target the same
+// gesture's focusout closes the panel before the click fires (a click-time
+// check would already see it closed and skip the swallow — audit round 8).
+const swallowClick = (ev) => {
+  ev.preventDefault();
+  ev.stopPropagation();
+};
+function armSwallowClick() {
+  window.addEventListener("click", swallowClick, { once: true, capture: true });
+}
+
 // Ported from ruby_ui's phlex-kit--select controller, minus the
 // @floating-ui/dom dependency: the panel is a native [popover=manual] in the
 // top layer, anchor-positioned with viewport-edge flipping by select.css
@@ -53,6 +68,12 @@ export default class extends Controller {
     const newValue = item.dataset.value;
 
     this.inputTarget.value = newValue;
+    // Also set the value ATTRIBUTE, not just the .value property: a Turbo
+    // snapshot restore clones the DOM (dropping the dirty property) and would
+    // otherwise revert the hidden input to its server value while the label
+    // and aria-selected still show the chosen item — submitting the wrong
+    // value behind a correct-looking UI. (re-derive-from-live-truth rule.)
+    this.inputTarget.setAttribute("value", newValue);
     this.valueTarget.innerText = item.innerText;
 
     this.dispatchOnChange(oldValue, newValue);
@@ -160,6 +181,17 @@ export default class extends Controller {
 
   resetCurrent() {
     this.itemTargets.forEach((item) => item.removeAttribute("aria-current"));
+  }
+
+  // Modal dismiss: arm the swallow at mousedown so the outside click that
+  // dismisses an open select doesn't ALSO activate a focusable control under
+  // the pointer (the same gesture's focusout closes the panel before the
+  // click, so clickOutside below would already see it closed). Mirrors
+  // dropdown/context/menubar.
+  onMousedownOutside(event) {
+    if (!this.contentTarget.matches(":popover-open")) return;
+    if (this.element.contains(event.target)) return;
+    armSwallowClick();
   }
 
   clickOutside(event) {

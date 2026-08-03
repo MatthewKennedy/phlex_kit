@@ -495,6 +495,10 @@ module Gallery
           group.ToggleGroupItem(value: "center") { "Center" }
           group.ToggleGroupItem(value: "right") { "Right" }
         end
+        render PhlexKit::ToggleGroup.new(type: :single, name: "align_disabled", value: "left", disabled: true, id: "pk-toggle-group-disabled") do |group|
+          group.ToggleGroupItem(value: "left") { "Left" }
+          group.ToggleGroupItem(value: "center") { "Center" }
+        end
         render PhlexKit::ThemeToggle.new { "🌓" }
       end
     end
