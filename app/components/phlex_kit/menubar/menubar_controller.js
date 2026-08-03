@@ -210,7 +210,7 @@ export default class extends Controller {
       }
       return
     }
-    const items = this.items(this.openMenu)
+    const items = this.rovingItems()
     const index = items.indexOf(document.activeElement)
     switch (e.key) {
       case "Escape":
@@ -331,6 +331,22 @@ export default class extends Controller {
 
   panel(menu) {
     return menu.querySelector("[role=\"menu\"], .pk-menubar-content, .pk-navigation-menu-content")
+  }
+
+  // The list ArrowUp/Down/Home/End rove — level-aware. A submenu reveals on
+  // :focus-within, so focusing a sub-trigger makes its rows visible and
+  // items() would pick them up; roving would then dive into the submenu on
+  // ArrowDown instead of moving to the next PARENT item (APG reserves
+  // ArrowRight/enterKey for entering). When focus is inside a sub panel, rove
+  // that panel's own rows; otherwise rove the top-level rows, excluding any
+  // sub-content the reveal exposed. Mirrored in dropdown/context (shared model).
+  rovingItems() {
+    const menu = this.openMenu
+    if (!menu) return []
+    const rows = this.items(menu)
+    const sub = document.activeElement?.closest(".pk-menubar-sub-content")
+    if (sub) return rows.filter((el) => el.closest(".pk-menubar-sub-content") === sub)
+    return rows.filter((el) => !el.closest(".pk-menubar-sub-content"))
   }
 
   items(menu) {

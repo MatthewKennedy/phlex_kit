@@ -164,7 +164,7 @@ export default class extends Controller {
     // trigger still counts). Escape stays global while the menu is open (APG).
     if (e.key !== "Escape" && !this.element.contains(document.activeElement)) return
 
-    const items = this.items()
+    const items = this.rovingItems()
     const index = items.indexOf(document.activeElement)
     switch (e.key) {
       case "Escape":
@@ -253,5 +253,19 @@ export default class extends Controller {
     return this.menuItemTargets.filter(
       (el) => !el.closest("[data-disabled]") && el.getClientRects().length > 0
     )
+  }
+
+  // The list ArrowUp/Down/Home/End rove — level-aware. A submenu reveals on
+  // :focus-within, so focusing a sub-trigger makes its rows visible and
+  // items() would pick them up; roving would then dive into the submenu on
+  // ArrowDown instead of moving to the next PARENT item (APG reserves
+  // ArrowRight/enterKey for entering). When focus is inside a sub panel, rove
+  // that panel's own rows; otherwise rove the top-level rows, excluding any
+  // sub-content the reveal exposed. Mirrored in menubar/dropdown (shared model).
+  rovingItems() {
+    const rows = this.items()
+    const sub = document.activeElement?.closest(".pk-context-menu-sub-content")
+    if (sub) return rows.filter((el) => el.closest(".pk-context-menu-sub-content") === sub)
+    return rows.filter((el) => !el.closest(".pk-context-menu-sub-content"))
   }
 }
