@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Connects to data-controller="phlex-kit--toggle-group"
 export default class extends Controller {
   static targets = ["item", "input"]
-  static values = { type: String, name: String }
+  static values = { type: String, name: String, disabled: Boolean }
 
   connect() { this.reconcile() }
 
@@ -100,6 +100,11 @@ export default class extends Controller {
     input.type = "hidden"
     input.name = name
     input.value = value
+    // A disabled group's hidden input is server-rendered `disabled` so it
+    // won't submit (toggle_group.rb). rebuildInputs() removes that server
+    // input and recreates it here on connect() — carry the disabled flag or
+    // the group would start submitting its value post-hydration.
+    if (this.disabledValue) input.disabled = true
     input.setAttribute("data-phlex-kit--toggle-group-target", "input")
     return input
   }

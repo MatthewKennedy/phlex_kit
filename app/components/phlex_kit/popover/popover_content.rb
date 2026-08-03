@@ -13,7 +13,14 @@ module PhlexKit
 
     def view_template(&)
       classes = [ "pk-popover-content", fetch_option(ALIGNS, @align, :align) ].compact.join(" ")
-      div(**mix({ class: classes, popover: "auto", data: { phlex_kit__popover_target: "content", state: "closed" } }, @attrs), &)
+      # `popover:` is a named default, not a merged attr: `mix` joins duplicate
+      # attrs (a caller's `popover: "manual"` would fuse into "auto manual",
+      # which the browser normalizes to manual — killing the native light
+      # dismiss/Escape this controller relies on). Skip the default when the
+      # caller sets it (mirrors MenubarContent).
+      base = { class: classes, data: { phlex_kit__popover_target: "content", state: "closed" } }
+      base[:popover] = "auto" unless attr_set?(:popover)
+      div(**mix(base, @attrs), &)
     end
   end
 end

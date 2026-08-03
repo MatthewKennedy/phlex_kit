@@ -88,6 +88,7 @@ module PhlexKit
         data: { controller: "phlex-kit--toggle-group",
           phlex_kit__toggle_group_type_value: @type.to_s,
           phlex_kit__toggle_group_name_value: @name.to_s,
+          phlex_kit__toggle_group_disabled_value: @disabled.to_s,
           orientation: @orientation.to_s, spacing: @spacing.to_s } }
       # spacing: N gaps the items by N × .25rem (Tailwind-style scale) via the
       # custom property toggle_group.css reads. Trailing ";" so a caller
