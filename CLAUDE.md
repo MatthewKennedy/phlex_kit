@@ -287,14 +287,25 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
 
 ## Releasing
 
-1. Bump `lib/phlex_kit/version.rb`, run the suite, commit, push.
-2. `git tag -a vX.Y.Z && git push origin vX.Y.Z`; `gem build phlex_kit.gemspec`;
-   `gh release create vX.Y.Z phlex_kit-X.Y.Z.gem --title … --notes …`.
-3. rubygems publish is interactive (MFA) — the user runs
-   `gem push phlex_kit-X.Y.Z.gem --otp <code>` in their own terminal.
-   Credentials live at `~/.local/share/gem/credentials` (XDG path); the API
-   key needs the *push rubygem* scope and must not be gem-scoped for a
-   first-time push.
+Pushing a `v*` tag publishes the gem — no `gem push`, no OTP, no API key.
+`.github/workflows/release.yml` runs `rubygems/release-gem`, which mints a
+short-lived OIDC token and exchanges it with RubyGems.org for a push-scoped
+credential (Trusted Publishing). The trusted publisher is registered for
+owner `MatthewKennedy`, repo `phlex_kit`, workflow `release.yml`,
+environment `release` — all four must match or the exchange is refused.
+
+1. Bump `lib/phlex_kit/version.rb`, run the suite, `bundle install` (picks up
+   the new version in Gemfile.lock), commit, push. Wait for CI green — the
+   release workflow does NOT re-run the suite.
+2. `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin vX.Y.Z` — this publishes.
+3. `gh release create vX.Y.Z --title … --notes …` for the human-readable
+   notes. Attaching the .gem file is optional now that RubyGems has it.
+
+The workflow runs `bundle exec rake release`; Bundler skips tagging when the
+tag already exists, so a tag-triggered run only builds and pushes. If it ever
+fails, the manual path still works: `gem build phlex_kit.gemspec` then
+`gem push phlex_kit-X.Y.Z.gem --otp <code>` from the user's own terminal
+(credentials at `~/.local/share/gem/credentials`, XDG path).
 
 CI (`.github/workflows/ci.yml`) runs lint + suite + a gem-contents assertion
 on Ruby 3.2/3.3/3.4/4.0. Keep it green before tagging.
