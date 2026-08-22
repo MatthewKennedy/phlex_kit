@@ -86,7 +86,13 @@ class Audit5InputScrollerSystemTest < SystemTestCase
       c.__endCalls = 0
       const orig = c.scrollToEnd.bind(c)
       c.scrollToEnd = (...a) => { c.__endCalls++; return orig(...a) }
-      const content = el.querySelector('[data-phlex-kit--message-scroller-target="content"]')
+    JS
+    # A middle insert only "must not scroll" if the reader IS following —
+    # otherwise the assertion below passes for the wrong reason.
+    scroll_message_scroller_to_end
+
+    page.execute_script(<<~JS)
+      const content = document.querySelector('#ms-history [data-phlex-kit--message-scroller-target="content"]')
       const mid = document.createElement("div")
       mid.textContent = "edited into the middle"
       content.insertBefore(mid, content.children[4])
@@ -99,6 +105,14 @@ class Audit5InputScrollerSystemTest < SystemTestCase
         document.getElementById("ms-history"), "phlex-kit--message-scroller").__endCalls
     JS
 
+    # Inserting a row ABOVE the viewport lets Chrome's scroll anchoring nudge
+    # scrollTop, which fires onScroll and flips `following` to false. Both
+    # halves of this test are then vacuous: a non-following scroller declines
+    # to scroll for ANY mutation, so the append below would never fire and the
+    # poll would time out (this flaked on slow CI runners twice). Re-pin to the
+    # live edge and wait for the controller to agree before appending.
+    scroll_message_scroller_to_end
+
     page.execute_script(<<~JS)
       const content = document.querySelector('#ms-history [data-phlex-kit--message-scroller-target="content"]')
       const row = document.createElement("div")
@@ -109,6 +123,24 @@ class Audit5InputScrollerSystemTest < SystemTestCase
       page.evaluate_script(<<~JS).positive?
         window.Stimulus.getControllerForElementAndIdentifier(
           document.getElementById("ms-history"), "phlex-kit--message-scroller").__endCalls
+      JS
+    end
+  end
+
+  # Pin #ms-history to the live edge natively (not via the stubbed
+  # scrollToEnd, which would skew __endCalls) and wait until the controller's
+  # own onScroll has recorded `following`.
+  def scroll_message_scroller_to_end
+    page.execute_script(<<~JS)
+      const c = window.Stimulus.getControllerForElementAndIdentifier(
+        document.getElementById("ms-history"), "phlex-kit--message-scroller")
+      const pane = c.hasViewportTarget ? c.viewportTarget : c.element
+      pane.scrollTop = pane.scrollHeight
+    JS
+    wait_until("scroller never returned to the live edge") do
+      page.evaluate_script(<<~JS)
+        window.Stimulus.getControllerForElementAndIdentifier(
+          document.getElementById("ms-history"), "phlex-kit--message-scroller").following === true
       JS
     end
   end
