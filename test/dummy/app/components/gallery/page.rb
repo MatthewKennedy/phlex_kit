@@ -710,6 +710,24 @@ module Gallery
             end
           end
         end
+        # Announcement-template fixture: the live region is the only string the
+        # command controller writes itself.
+        div(id: "pk-command-locale-fr") do
+          render PhlexKit::Command.new(
+            results_format: "%{count} résultat(s)",
+            no_results_text: "Aucun résultat",
+            data: { controller: "phlex-kit--command" }
+          ) do
+            render PhlexKit::CommandInput.new
+            render PhlexKit::CommandList.new do
+              render PhlexKit::CommandGroup.new(title: "Pages") do
+                render PhlexKit::CommandItem.new(value: "accueil", href: "#") { "Accueil" }
+                render PhlexKit::CommandItem.new(value: "reglages", href: "#") { "Réglages" }
+              end
+            end
+            render PhlexKit::CommandEmpty.new { "Aucun résultat." }
+          end
+        end
       end
     end
 
@@ -813,12 +831,35 @@ module Gallery
         div(class: "boxed") do
           render PhlexKit::Calendar.new(selected_date: Date.today, min_date: Date.today - 365)
         end
+        # locale: fixture — every string below comes from the controller's Intl
+        # calls, so this doubles as the browser gate for `locale:`.
+        div(class: "boxed", id: "pk-calendar-locale-fr") do
+          render PhlexKit::Calendar.new(
+            selected_date: Date.new(2026, 1, 14),
+            caption_layout: :dropdown,
+            from_year: 2025,
+            to_year: 2027,
+            locale: "fr-FR"
+          )
+        end
       end
     end
 
     def date_picker_demo
       demo("DatePicker") do
         render PhlexKit::DatePicker.new(id: "delivery-date", name: "delivery_date", label: "Delivery date")
+        # locale: + a word-token format — the Ruby-side seed can only write
+        # English, so the controller re-formats it once the outlet connects.
+        div(id: "pk-date-picker-locale-fr") do
+          render PhlexKit::DatePicker.new(
+            id: "date-fr",
+            name: "date_fr",
+            label: "Date de livraison",
+            selected_date: Date.new(2026, 1, 14),
+            date_format: "EEEE dd MMMM yyyy",
+            locale: "fr-FR"
+          )
+        end
       end
     end
 

@@ -16,7 +16,11 @@ module PhlexKit
   # the year list). Pass `input_id:` a CSS selector (e.g. "#due-date") to
   # push the picked date (or "start – end" range) into a
   # phlex-kit--calendar-input outlet — that's how PhlexKit::DatePicker binds
-  # an Input. Sizing rides --pk-cell-size/--pk-cell-radius (calendar.css).
+  # an Input. `locale:` (a BCP 47 tag) drives every Intl call the controller
+  # makes — caption, weekday headers, month dropdown, day accessible names and
+  # the EEEE/MMMM format tokens; unset follows the browser. The server-rendered
+  # month/weekday words stay English as the pre-JS baseline. Note the `do`/PPPP
+  # ordinal suffixes (st/nd/rd/th) are an English rule and stay English. Sizing rides --pk-cell-size/--pk-cell-radius (calendar.css).
   class Calendar < BaseComponent
     MODES = { single: "single", range: "range", multiple: "multiple" }.freeze
     CAPTION_LAYOUTS = %i[label dropdown].freeze
@@ -25,7 +29,7 @@ module PhlexKit
     def initialize(mode: :single, selected_date: nil, selected_dates: [], range_start: nil, range_end: nil,
                    min_date: nil, max_date: nil, disabled_dates: [], week_numbers: false,
                    caption_layout: :label, from_year: nil, to_year: nil,
-                   input_id: nil, date_format: "yyyy-MM-dd", **attrs)
+                   input_id: nil, date_format: "yyyy-MM-dd", locale: nil, **attrs)
       @mode = MODES.fetch(mode.to_sym)
       @selected_date = selected_date
       @selected_dates = Array(selected_dates).map(&:to_s)
@@ -41,6 +45,7 @@ module PhlexKit
       @to_year = to_year
       @input_id = input_id
       @date_format = date_format
+      @locale = locale
       @attrs = attrs
     end
 
@@ -112,6 +117,8 @@ module PhlexKit
       data[:phlex_kit__calendar_selected_dates_value] = JSON.generate(@selected_dates) if @selected_dates.any?
       data[:phlex_kit__calendar_disabled_dates_value] = JSON.generate(@disabled_dates) if @disabled_dates.any?
       data[:phlex_kit__calendar_week_numbers_value] = "true" if @week_numbers
+      # Unset = the runtime's own locale (the controller passes undefined to Intl).
+      data[:phlex_kit__calendar_locale_value] = @locale if @locale
       # Seed the view on the selection so the grid opens on the right month.
       view_seed = @selected_date || @range_start || @selected_dates.first
       data[:phlex_kit__calendar_view_date_value] = view_seed.to_s if view_seed

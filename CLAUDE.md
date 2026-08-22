@@ -79,6 +79,17 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   non-floating show/hide toggles the `.pk-hidden` utility. No npm deps —
   floating-ui → anchor positioning, embla → translate engine, fuse → substring/fuzzy scorer,
   vaul → sheet clone machinery, chart.js → host-supplied `window.Chart`.
+- **Strings a controller writes itself must be localizable** — the kit has no
+  I18n dependency (components load standalone), so there are exactly two
+  shapes: dates/numbers go through `Intl` with a `locale:` Stimulus value
+  (calendar — unset means `undefined`, i.e. the runtime's locale, never a
+  hardcoded "en-US"), and prose goes through a server-stamped template the
+  caller can translate (data_table's `format:`, command's `results_format:`/
+  `no_results_text:`, `%{count}` interpolated). Server-rendered words that the
+  JS later re-renders (calendar's weekday `<th>`s, month `<option>`s) stay
+  English as the pre-JS baseline and get relabelled from `Intl` on render —
+  don't add parallel `month_names:`-style kwargs for them. English ordinal
+  suffixes (`do`/`PPPP` → st/nd/rd/th) are a deliberate exemption.
 - Attribution comment on each lead class (`# … ported from ruby_ui's X` /
   `# … ported from shadcn/ui's X`).
 - Every component: render test in `test/components/`, CSS in the manifest,

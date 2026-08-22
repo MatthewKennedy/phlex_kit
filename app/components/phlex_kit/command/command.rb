@@ -7,7 +7,15 @@ module PhlexKit
   # Upstream's fuse.js fuzzy search is replaced with a dependency-free substring
   # match in the controller. Tailwind → vanilla `.pk-command*` (command.css).
   class Command < BaseComponent
-    def initialize(**attrs)
+    # Announcement templates for the live region — the only strings the
+    # controller writes itself (CommandEmpty is server-rendered, so it
+    # localizes with the rest of your markup). %{count} is interpolated.
+    DEFAULT_RESULTS_FORMAT = "%{count} result(s)"
+    DEFAULT_NO_RESULTS_TEXT = "No results"
+
+    def initialize(results_format: DEFAULT_RESULTS_FORMAT, no_results_text: DEFAULT_NO_RESULTS_TEXT, **attrs)
+      @results_format = results_format
+      @no_results_text = no_results_text
       @attrs = attrs
     end
 
@@ -21,12 +29,17 @@ module PhlexKit
     private
 
     # Screen-reader announcement of the filtered result count — the controller
-    # writes "N results" / "No results" into it from filter().
+    # writes the results_format / no_results_text strings into it from
+    # filter(), interpolating %{count}.
     def live_region
       div(
         class: "pk-sr-only",
         aria: { live: "polite" },
-        data: { phlex_kit__command_target: "liveRegion" }
+        data: {
+          phlex_kit__command_target: "liveRegion",
+          results_format: @results_format,
+          no_results_text: @no_results_text
+        }
       )
     end
   end
