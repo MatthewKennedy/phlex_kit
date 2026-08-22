@@ -60,9 +60,12 @@ export default class extends Controller {
       // Only the initiating pointer drives the drag — a second touch point
       // over the handle must not hijack it.
       if (ev.pointerId !== e.pointerId) return
-      // LTR assumption: clientX grows toward the trailing panel; RTL drag
-      // inversion is a documented limitation.
-      const delta = (horizontal ? ev.clientX : ev.clientY) - drag.startPos
+      // clientX grows toward the trailing panel in LTR but toward the LEADING
+      // one in RTL, where the row runs right-to-left — negate so the divider
+      // follows the pointer in both directions. (Vertical groups are
+      // unaffected: clientY is direction-independent.)
+      const raw = (horizontal ? ev.clientX : ev.clientY) - drag.startPos
+      const delta = horizontal && this.isRtl() ? -raw : raw
       const total = drag.prevSize + drag.nextSize
       const prevSize = Math.min(Math.max(drag.prevSize + delta, 0), total)
       const prevGrow = this.clampPrevGrow(prev, next, (prevSize / total) * drag.pairGrow, drag.pairGrow, drag.groupGrow)
@@ -100,7 +103,7 @@ export default class extends Controller {
     // ArrowLeft must GROW it (move the divider visually left). Only the
     // pointer-drag clientX math keeps its documented LTR exemption; Up/Down
     // never flip. Runtime dir check — reliable after a dynamic flip.
-    const rtl = horizontal && getComputedStyle(this.element).direction === "rtl"
+    const rtl = horizontal && this.isRtl()
     const steps = horizontal
       ? (rtl ? { ArrowLeft: 0.05, ArrowRight: -0.05 } : { ArrowLeft: -0.05, ArrowRight: 0.05 })
       : { ArrowUp: -0.05, ArrowDown: 0.05 }
@@ -123,6 +126,12 @@ export default class extends Controller {
     next.style.flexGrow = pairGrow - prevGrow
     // All handles: sibling dividers share panels in 3+ panel groups.
     this.handleTargets.forEach((h) => this.syncValuenow(h))
+  }
+
+  // Read at use time, not connect: a dynamic dir flip must take effect
+  // immediately (the same reason the keyboard handler checks it inline).
+  isRtl() {
+    return getComputedStyle(this.element).direction === "rtl"
   }
 
   growOf(el) {

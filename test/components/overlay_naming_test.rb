@@ -53,3 +53,34 @@ class OverlayNamingTest < Minitest::Test
     assert_match(/aria: \{ label:/, error.message)
   end
 end
+
+# Sidebar's side: (0.16.0) — logical values, so a bare sidebar follows the
+# reading direction instead of being physically left-pinned.
+class SidebarSideTest < Minitest::Test
+  include RenderHelper
+
+  def test_default_side_is_start_and_adds_no_modifier
+    html = render(PhlexKit::SidebarWrapper.new) { "x" }
+    assert_includes html, "pk-sidebar-wrapper"
+    refute_includes html, "side-end"
+  end
+
+  def test_side_end_stamps_the_modifier
+    html = render(PhlexKit::SidebarWrapper.new(side: :end)) { "x" }
+    assert_includes html, "side-end"
+  end
+
+  def test_side_end_survives_a_collapsible_wrapper
+    html = render(PhlexKit::SidebarWrapper.new(side: :end, collapsible: :offcanvas)) { "x" }
+    assert_includes html, "side-end"
+    assert_includes html, "collapsible-offcanvas"
+  end
+
+  # Physical spellings are NOT the contract here — fail loud rather than
+  # silently ignoring side: :left.
+  def test_unknown_side_raises_naming_the_valid_keys
+    error = assert_raises(KeyError) { render(PhlexKit::SidebarWrapper.new(side: :left)) { "x" } }
+    assert_match(/unknown side :left/, error.message)
+    assert_match(/:start/, error.message)
+  end
+end

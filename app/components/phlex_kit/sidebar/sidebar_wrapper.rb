@@ -20,12 +20,20 @@ module PhlexKit
   # `default_collapsed: cookies[:pk_sidebar_state] == "collapsed"` from the
   # host layout to render the collapsed rail server-side with no flash.
   # Add a PhlexKit::SidebarRail inside the Sidebar for the edge grab-strip.
+  # `side:` is logical — :start (default) pins it to the reading-start edge,
+  # :end to the far edge; both flip with the document direction.
   # See sidebar.rb.
   class SidebarWrapper < BaseComponent
     COLLAPSIBLE = { none: nil, offcanvas: "collapsible-offcanvas", icon: "collapsible-icon" }.freeze
+    # Logical, not physical: :start is the reading-start edge (left in LTR,
+    # right in RTL), so a bare sidebar follows the document direction. The
+    # CSS is written in logical properties to match — physical :left/:right
+    # deliberately raise.
+    SIDES = { start: nil, end: "side-end" }.freeze
 
-    def initialize(collapsible: :none, default_collapsed: false, **attrs)
+    def initialize(collapsible: :none, side: :start, default_collapsed: false, **attrs)
       @collapsible = collapsible.to_sym
+      @side = side.to_sym
       @default_collapsed = default_collapsed
       @attrs = attrs
     end
@@ -59,7 +67,8 @@ module PhlexKit
     def collapsible? = @collapsible != :none
 
     def classes
-      [ "pk-sidebar-wrapper", fetch_option(COLLAPSIBLE, @collapsible, :collapsible) ].compact.join(" ")
+      [ "pk-sidebar-wrapper", fetch_option(COLLAPSIBLE, @collapsible, :collapsible),
+        fetch_option(SIDES, @side, :side) ].compact.join(" ")
     end
   end
 end

@@ -20,7 +20,7 @@
   width: 16rem;
   flex-shrink: 0;
   background: var(--pk-sidebar, var(--pk-surface));
-  border-right: 1px solid var(--pk-sidebar-border, var(--pk-border));
+  border-inline-end: 1px solid var(--pk-sidebar-border, var(--pk-border));
 }
 
 .pk-sidebar-header { display: flex; flex-direction: column; gap: .5rem; padding: 1rem .75rem .25rem; }
@@ -172,9 +172,9 @@
   /* visibility rides the transition: it stays visible while sliding out and
      flips hidden at the end — hidden also drops the off-screen links from
      the tab order (they stayed focusable while invisible before). */
-  transition: margin-left .2s ease, transform .2s ease, width .2s ease, visibility .2s;
+  transition: margin-inline-start .2s ease, margin-inline-end .2s ease, transform .2s ease, width .2s ease, visibility .2s;
 }
-.pk-sidebar-wrapper.collapsible-offcanvas[data-collapsed] .pk-sidebar { margin-left: -16rem; visibility: hidden; }
+.pk-sidebar-wrapper.collapsible-offcanvas[data-collapsed] .pk-sidebar { margin-inline-start: -16rem; visibility: hidden; }
 
 /* Icon mode: the rail shrinks to a 3rem strip — labels and text hide, menu
    buttons become centered icon squares, hover shows a data-tooltip bubble. */
@@ -203,7 +203,7 @@
 .pk-sidebar-wrapper.collapsible-icon[data-collapsed] .pk-sidebar-menu-button[data-tooltip]:hover::after {
   content: attr(data-tooltip);
   position: absolute;
-  left: calc(100% + .625rem);
+  inset-inline-start: calc(100% + .625rem);
   top: 50%;
   transform: translateY(-50%);
   z-index: 60;
@@ -220,7 +220,7 @@
 .pk-sidebar-rail {
   position: absolute;
   inset-block: 0;
-  right: -.5rem;
+  inset-inline-end: -.5rem;
   z-index: 20;
   width: 1rem;
   border: 0;
@@ -236,7 +236,7 @@
   content: "";
   position: absolute;
   inset-block: 0;
-  left: 50%;
+  inset-inline-start: 50%;
   width: 2px;
   background: var(--pk-sidebar-border, var(--pk-border));
 }
@@ -269,11 +269,15 @@
   .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon) .pk-sidebar {
     position: fixed;
     inset-block: 0;
-    left: 0;
+    inset-inline-start: 0;
     z-index: 50;
     height: 100dvh;
-    margin-left: 0;
-    transform: translateX(-100%);
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    /* translateX is physical, so the hide vector can't be expressed logically:
+       the drawer must slide out through whichever edge it is pinned to.
+       --pk-sidebar-hide-x is flipped by the side-end / [dir=rtl] arms below. */
+    transform: translateX(var(--pk-sidebar-hide-x, -100%));
     /* closed drawer: invisible AND out of the tab order */
     visibility: hidden;
     box-shadow: 0 8px 30px color-mix(in srgb, var(--pk-shadow-color) 35%, transparent);
@@ -294,3 +298,42 @@
 @media (prefers-reduced-motion: reduce) {
   .pk-sidebar-wrapper:is(.collapsible-offcanvas, .collapsible-icon) .pk-sidebar { transition: none; }
 }
+
+/* --- side: :end -----------------------------------------------------------
+   The panel moves to the far edge. `order` flips it inside the wrapper's flex
+   row without touching markup, and every edge-anchored piece mirrors with it:
+   the border, the offcanvas collapse margin, the rail strip and the icon-mode
+   tooltip bubble. All logical, so :start/:end stay reading-relative in RTL. */
+.pk-sidebar-wrapper.side-end .pk-sidebar {
+  order: 1;
+  border-inline-end: 0;
+  border-inline-start: 1px solid var(--pk-sidebar-border, var(--pk-border));
+}
+.pk-sidebar-wrapper.side-end.collapsible-offcanvas[data-collapsed] .pk-sidebar {
+  margin-inline-start: 0;
+  margin-inline-end: -16rem;
+}
+.pk-sidebar-wrapper.side-end .pk-sidebar-rail {
+  inset-inline-end: auto;
+  inset-inline-start: -.5rem;
+}
+.pk-sidebar-wrapper.side-end.collapsible-icon[data-collapsed] .pk-sidebar-menu-button[data-tooltip]:hover::after {
+  inset-inline-start: auto;
+  inset-inline-end: calc(100% + .625rem);
+}
+
+/* The mobile drawer's hide vector, per side x direction. Attribute selectors
+   (not :dir()) so a dynamic dir flip re-styles existing elements — see the
+   kit-wide RTL note. */
+.pk-sidebar-wrapper.side-end { --pk-sidebar-hide-x: 100%; }
+[dir="rtl"] .pk-sidebar-wrapper { --pk-sidebar-hide-x: 100%; }
+[dir="rtl"] .pk-sidebar-wrapper.side-end { --pk-sidebar-hide-x: -100%; }
+
+/* The rail's resize cursor is a physical affordance: which way the panel
+   collapses depends on the side AND the direction. */
+.pk-sidebar-wrapper.side-end .pk-sidebar-rail,
+[dir="rtl"] .pk-sidebar-wrapper .pk-sidebar-rail { cursor: e-resize; }
+.pk-sidebar-wrapper.side-end[data-collapsed] .pk-sidebar-rail,
+[dir="rtl"] .pk-sidebar-wrapper[data-collapsed] .pk-sidebar-rail { cursor: w-resize; }
+[dir="rtl"] .pk-sidebar-wrapper.side-end .pk-sidebar-rail { cursor: w-resize; }
+[dir="rtl"] .pk-sidebar-wrapper.side-end[data-collapsed] .pk-sidebar-rail { cursor: e-resize; }
