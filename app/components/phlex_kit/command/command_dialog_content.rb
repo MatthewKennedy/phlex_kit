@@ -7,9 +7,18 @@ module PhlexKit
   class CommandDialogContent < BaseComponent
     SIZES = { xs: "xs", sm: "sm", md: nil, lg: "lg", xl: "xl", full: "full" }.freeze
 
-    def initialize(size: :md, aria_label: "Command palette", **attrs)
+    DEFAULT_LABEL = "Command palette"
+
+    def initialize(size: :md, labelledby: nil, describedby: nil, **attrs)
+      # aria_label: was the API through 0.15.0 — overlays now name themselves
+      # with labelledby:/describedby: like every other overlay content. A bare
+      # accessible name still rides attrs, same as anywhere else in the kit.
+      if attrs.key?(:aria_label) || attrs.key?("aria_label")
+        raise ArgumentError, "CommandDialogContent does not support aria_label: — pass aria: { label: \"…\" }, or labelledby: for an id reference"
+      end
       @size = size.to_sym
-      @aria_label = aria_label
+      @labelledby = labelledby
+      @describedby = describedby
       @attrs = attrs
     end
 
@@ -35,7 +44,10 @@ module PhlexKit
           panel_attrs[:role] = "dialog" unless attr_set?(:role)
           aria = {}
           aria[:modal] = "true" unless aria_key_set?(:modal)
-          aria[:label] = @aria_label unless aria_labelled?
+          aria[:labelledby] = @labelledby if @labelledby
+          aria[:describedby] = @describedby if @describedby
+          # Falls back to a default name only when nothing else names it.
+          aria[:label] = DEFAULT_LABEL unless @labelledby || aria_labelled?
           panel_attrs[:aria] = aria unless aria.empty?
           div(**mix(panel_attrs, @attrs), &block)
         end

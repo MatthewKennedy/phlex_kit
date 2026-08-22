@@ -6,10 +6,12 @@ module PhlexKit
   # See alert_dialog.rb.
   class AlertDialogContent < BaseComponent
     # size => panel modifier; :sm is shadcn's compact variant.
-    SIZES = { default: nil, sm: "sm" }.freeze
+    SIZES = { md: nil, sm: "sm" }.freeze
 
-    def initialize(size: :default, **attrs)
+    def initialize(size: :md, labelledby: nil, describedby: nil, **attrs)
       @size = size.to_sym
+      @labelledby = labelledby
+      @describedby = describedby
       @attrs = attrs
     end
 
@@ -32,6 +34,8 @@ module PhlexKit
           # tabindex="-1 0" instead of overriding.
           panel_attrs[:role] = "alertdialog" unless attr_set?(:role)
           panel_attrs[:"aria-modal"] = "true" unless aria_key_set?(:modal)
+          panel_attrs[:"aria-labelledby"] = @labelledby if @labelledby
+          panel_attrs[:"aria-describedby"] = @describedby if @describedby
           panel_attrs[:tabindex] = "-1" unless attr_set?(:tabindex)
           div(**mix(panel_attrs, @attrs), &block)
         end

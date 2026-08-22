@@ -15,7 +15,7 @@ class AuditRound3Test < Minitest::Test
   end
 
   def test_toggle_group_item_unknown_variant_fails_loud
-    ctx = { selected_values: [], variant: :default, size: :default, disabled: false }
+    ctx = { selected_values: [], variant: :default, size: :md, disabled: false }
     assert_raises(KeyError) { render(PhlexKit::ToggleGroupItem.new(value: "a", group_context: ctx, variant: :nope) { "A" }) }
   end
 

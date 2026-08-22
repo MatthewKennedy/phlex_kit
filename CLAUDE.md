@@ -79,6 +79,20 @@ File.write(m, header + %(@import url("_tokens.css");\n) + lines.join("\n") + "\n
   non-floating show/hide toggles the `.pk-hidden` utility. No npm deps —
   floating-ui → anchor positioning, embla → translate engine, fuse → substring/fuzzy scorer,
   vaul → sheet clone machinery, chart.js → host-supplied `window.Chart`.
+- **One spelling per concept, kit-wide** (0.16.0 sweep): the neutral `size:`
+  key is `:md` (never `:default` — that spelling is gone from every SIZES
+  map); the value a form control posts when OFF is `unchecked_value:` paired
+  with `include_hidden:` (checkbox/switch/toggle), and the ON value is plain
+  `value:`; overlay contents name themselves with `labelledby:`/`describedby:`
+  (dialog/sheet/drawer/alert_dialog/command_dialog — no per-component
+  `aria_label:`). Renamed kwargs get a fail-loud `ArgumentError` pointing at
+  the new spelling, because an unknown kwarg otherwise lands in `**attrs` and
+  renders as a bogus HTML attribute while the real value silently reverts.
+  NOT drift, don't "fix": `variant:` neutral keys differ by axis on purpose —
+  button/badge/link are an EMPHASIS scale (`:primary`), alert/toast a STATUS
+  scale (`:default`); and toast's `error` variant is its JS API surface
+  (`toast.error`, `promise({ error: })`, the `role="alert"` mapping), so it
+  stays `error`, not `destructive`.
 - **Strings a controller writes itself must be localizable** — the kit has no
   I18n dependency (components load standalone), so there are exactly two
   shapes: dates/numbers go through `Intl` with a `locale:` Stimulus value
