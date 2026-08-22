@@ -89,10 +89,14 @@ class FeedbackSystemTest < SystemTestCase
     end
 
     within(demo("Basic")) do
-      # Day buttons carry full-date accessible names once connected.
-      expected = Date.new(2026, 6, 12).strftime("%A, %B %-d, %Y")
+      # Day buttons carry full-date accessible names once connected. This
+      # demo sets no locale:, so the wording follows the RUNTIME's locale
+      # ("Friday, 12 June 2026" under an en-GB Chrome, "Friday, June 12,
+      # 2026" under en-US) — assert the parts, not the order. The explicit
+      # locale case is pinned by locale_system_test.rb.
       selected = find("td[aria-selected='true'] button[name='day']")
-      assert_equal expected, selected["aria-label"]
+      label = selected["aria-label"]
+      %w[Friday June 12 2026].each { |part| assert_includes label, part }
     end
   end
 end

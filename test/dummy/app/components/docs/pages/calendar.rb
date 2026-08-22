@@ -15,6 +15,7 @@ module Docs
         demo Docs::Examples::Calendar::CustomCellSize, title: "Custom Cell Size"
         demo Docs::Examples::Calendar::DateAndTime, title: "Date and Time Picker"
         demo Docs::Examples::Calendar::MinDate, title: "Disabled past dates"
+        demo Docs::Examples::Calendar::Localized, title: "Localized"
       end
     end
   end

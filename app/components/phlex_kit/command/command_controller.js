@@ -262,8 +262,13 @@ export default class extends Controller {
     if (count === null) {
       this.liveRegionTarget.textContent = "";
     } else {
+      // Templates come from the server (Command's results_format: /
+      // no_results_text: kwargs) — the defaults mirror command.rb's.
+      const data = this.liveRegionTarget.dataset;
       this.liveRegionTarget.textContent =
-        count === 0 ? "No results" : `${count} result${count === 1 ? "" : "s"}`;
+        count === 0
+          ? data.noResultsText || "No results"
+          : (data.resultsFormat || "%{count} result(s)").replace("%{count}", count);
     }
   }
 

@@ -20,6 +20,7 @@ module PhlexKit
       placeholder: "Select a date",
       selected_date: value,
       date_format: "yyyy-MM-dd",
+      locale: nil,
       input_attrs: {},
       calendar_attrs: {},
       trigger_attrs: {},
@@ -31,6 +32,7 @@ module PhlexKit
       @label = label
       @selected_date = selected_date
       @date_format = date_format
+      @locale = locale
       # Seed the input with the same date_format the calendar controller
       # writes — a bare `selected_date.to_s` (ISO) would mismatch the format
       # until the first interaction.
@@ -65,7 +67,8 @@ module PhlexKit
             end
           end
           render PopoverContent.new(**@content_attrs) do
-            render Calendar.new(input_id: input_selector, selected_date: @selected_date, date_format: @date_format, **@calendar_attrs)
+            render Calendar.new(input_id: input_selector, selected_date: @selected_date, date_format: @date_format,
+              locale: @locale, **@calendar_attrs)
           end
         end
       end

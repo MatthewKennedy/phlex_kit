@@ -41,6 +41,10 @@ export default class extends Controller {
     // toISOString() is UTC (wrong day for non-UTC users near midnight).
     viewDate: { type: String, default: "" },
     format: { type: String, default: "yyyy-MM-dd" },
+    // BCP 47 tag for every Intl call below. Unset = "" = undefined to Intl,
+    // i.e. the runtime's own locale (the server markup is English only as the
+    // pre-JS baseline, so the grid localizes itself on first render).
+    locale: { type: String, default: "" },
   };
   static outlets = ["phlex-kit--calendar-input"];
 
@@ -274,6 +278,34 @@ export default class extends Controller {
   // `focusDay` overrides the day to refocus after re-render: on a keyboard
   // month cross the target day lives in the NEW grid, not the pre-render
   // activeElement, so onKeydown passes it explicitly.
+  // undefined (not "") is what Intl wants for "use the runtime default".
+  locale() {
+    return this.localeValue || undefined;
+  }
+
+  // The weekday <th>s are cloned verbatim from a server template and the month
+  // dropdown's <option>s are server-rendered — both English. Relabel them from
+  // Intl on every render so the whole chrome speaks one language.
+  localizeChrome() {
+    const heads = [...this.calendarTarget.querySelectorAll(".pk-calendar-weekday")].filter(
+      (th) => !th.classList.contains("pk-calendar-weeknumber-head"),
+    );
+    // The server row runs Monday..Sunday; 2024-01-01 was a Monday.
+    heads.forEach((th, index) => {
+      const day = new Date(2024, 0, 1 + index);
+      const name = day.toLocaleDateString(this.locale(), { weekday: "long" });
+      th.setAttribute("aria-label", name);
+      th.textContent = day.toLocaleDateString(this.locale(), { weekday: "short" }).slice(0, 2);
+    });
+
+    if (!this.hasMonthSelectTarget) return;
+    [...this.monthSelectTarget.options].forEach((option) => {
+      const month = Number(option.value);
+      if (!Number.isFinite(month)) return;
+      option.textContent = new Date(2024, month, 1).toLocaleDateString(this.locale(), { month: "long" });
+    });
+  }
+
   updateCalendar(focusDay = null) {
     if (this.hasTitleTarget) {
       this.titleTarget.textContent = this.monthAndYear();
@@ -288,6 +320,7 @@ export default class extends Controller {
         ? document.activeElement.dataset?.day
         : null);
     this.calendarTarget.innerHTML = this.calendarHTML();
+    this.localizeChrome();
     this.ensureGridTabStop(focusedDay);
   }
 
@@ -419,7 +452,7 @@ export default class extends Controller {
       dayDate: day.getDate(),
       // full human-readable date for the button's accessible name — a bare
       // day number ("14") is meaningless to a screen reader
-      dayLabel: day.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
+      dayLabel: day.toLocaleDateString(this.locale(), { weekday: "long", month: "long", day: "numeric", year: "numeric" }),
       state: this.dayState(day),
     };
 
@@ -499,10 +532,10 @@ export default class extends Controller {
       .filter(Boolean);
   }
 
+  // One Intl call rather than `${month} ${year}` so locales that order the
+  // parts differently (ja-JP → "2026年1月") come out right, not just translated.
   monthAndYear() {
-    const month = this.viewDate().toLocaleString("en-US", { month: "long" });
-    const year = this.viewDate().getFullYear();
-    return `${month} ${year}`;
+    return this.viewDate().toLocaleDateString(this.locale(), { month: "long", year: "numeric" });
   }
 
   selectedDate() {
@@ -592,8 +625,8 @@ export default class extends Controller {
     const hours = date.getHours();
     const minutes = date.getMinutes();
     const seconds = date.getSeconds();
-    const dayOfWeek = date.toLocaleString("en-US", { weekday: "long" });
-    const monthName = date.toLocaleString("en-US", { month: "long" });
+    const dayOfWeek = date.toLocaleString(this.locale(), { weekday: "long" });
+    const monthName = date.toLocaleString(this.locale(), { month: "long" });
     const daySuffix = this.getDaySuffix(day);
 
     const map = {
