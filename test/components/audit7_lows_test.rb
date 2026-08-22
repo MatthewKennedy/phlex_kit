@@ -53,15 +53,18 @@ class Audit7LowsTest < Minitest::Test
     assert_includes INPUT_OTP_JS, "slot.value = priorValue"
   end
 
-  # --- 5: Switch caller value: must fail loud (checked_value: is the real API).
-  def test_switch_rejects_value_kwarg
-    error = assert_raises(ArgumentError) { PhlexKit::Switch.new(value: "on") }
-    assert_match(/checked_value/, error.message)
+  # --- 5: Switch's checked value is plain value:, matching Checkbox and HTML.
+  # (Inverted from the round-7 rule: checked_value: WAS the API until 0.16.0.)
+  def test_switch_accepts_value_kwarg
+    html = render(PhlexKit::Switch.new(value: "yes"))
+    assert_includes html, %(value="yes")
   end
 
-  def test_switch_accepts_checked_value
-    html = render(PhlexKit::Switch.new(checked_value: "yes"))
-    assert_includes html, %(value="yes")
+  # Without this guard the kwarg lands in **attrs and renders a bogus
+  # checked_value="…" attribute while the real value reverts to the default.
+  def test_switch_rejects_checked_value_kwarg
+    error = assert_raises(ArgumentError) { PhlexKit::Switch.new(checked_value: "on") }
+    assert_match(/value:/, error.message)
   end
 
   # --- 6: Link SIZES gains :xs, matching Button's SIZES 1:1.
