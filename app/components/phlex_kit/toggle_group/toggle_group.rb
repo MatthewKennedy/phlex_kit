@@ -5,7 +5,7 @@ module PhlexKit
   class ToggleGroup < BaseComponent
     VALID_TYPES = %i[single multiple].freeze
 
-    def initialize(type: :single, name: nil, value: nil, variant: :default, size: :default,
+    def initialize(type: :single, name: nil, value: nil, variant: :default, size: :md,
                    disabled: false, spacing: 0, orientation: :horizontal, **attrs)
       @type = type.to_sym
       raise ArgumentError, "type must be :single or :multiple" unless VALID_TYPES.include?(@type)

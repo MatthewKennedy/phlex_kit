@@ -5,8 +5,10 @@ module PhlexKit
   class DrawerContent < BaseComponent
     SIDES = { bottom: "bottom", top: "top", left: "left", right: "right" }.freeze
 
-    def initialize(side: :bottom, **attrs)
+    def initialize(side: :bottom, labelledby: nil, describedby: nil, **attrs)
       @side = side.to_sym
+      @labelledby = labelledby
+      @describedby = describedby
       @attrs = attrs
     end
 
@@ -19,7 +21,11 @@ module PhlexKit
           # would fuse role="dialog region" / aria-modal="true false" /
           # tabindex="-1 0" instead of overriding.
           panel_attrs[:role] = "dialog" unless attr_set?(:role)
-          panel_attrs[:aria] = { modal: "true" } unless aria_key_set?(:modal)
+          aria = {}
+          aria[:modal] = "true" unless aria_key_set?(:modal)
+          aria[:labelledby] = @labelledby if @labelledby
+          aria[:describedby] = @describedby if @describedby
+          panel_attrs[:aria] = aria unless aria.empty?
           panel_attrs[:tabindex] = "-1" unless attr_set?(:tabindex)
           div(**mix(panel_attrs, @attrs)) do
             div(class: "pk-drawer-handle", aria: { hidden: "true" })

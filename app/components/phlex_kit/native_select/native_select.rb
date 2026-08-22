@@ -13,20 +13,20 @@ module PhlexKit
   #
   # The yielded block is the <option>/<optgroup> list; `name:`/`id:`/`required:`/
   # `**on(...)` pass through to the <select> via `mix`. `size:` is the kit's lone
-  # selector here (default | sm) — `SIZES.fetch` fails loud on anything else.
+  # selector here (md | sm) — `SIZES.fetch` fails loud on anything else.
   class NativeSelect < BaseComponent
-    # size => extra class appended after the base select class (nil = default).
+    # size => extra class appended after the base select class (nil = md).
     SIZES = {
-      default: nil,
+      md: nil,
       sm: "sm"
     }.freeze
 
     # An Integer size: is the NATIVE <select size> (multi-row list box) and
     # passes straight through — the kit's visual sizes stay symbols.
-    def initialize(size: :default, **attrs)
+    def initialize(size: :md, **attrs)
       if size.is_a?(Integer)
         @native_size = size
-        @size = :default
+        @size = :md
       else
         @size = size.to_sym
       end

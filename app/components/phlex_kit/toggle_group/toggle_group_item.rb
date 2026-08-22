@@ -4,7 +4,7 @@ module PhlexKit
       # Toggle kwargs this item renders no markup for, or that the group
       # derives itself (pressed: comes from the group's selected_values) —
       # inheriting them silently discarded the caller's input.
-      unsupported = attrs.keys & %i[wrapper name unpressed_value pressed]
+      unsupported = attrs.keys & %i[wrapper name unchecked_value unpressed_value pressed]
       if unsupported.any?
         raise ArgumentError, "ToggleGroupItem does not support #{unsupported.join(", ")} (group items render a bare button)"
       end

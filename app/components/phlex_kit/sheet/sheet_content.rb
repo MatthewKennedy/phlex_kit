@@ -2,9 +2,11 @@ module PhlexKit
   class SheetContent < BaseComponent
     SIDES = { top: "top", right: "right", bottom: "bottom", left: "left" }.freeze
 
-    def initialize(side: :right, show_close_button: true, **attrs)
+    def initialize(side: :right, show_close_button: true, labelledby: nil, describedby: nil, **attrs)
       @side = side.to_sym
       @show_close_button = show_close_button
+      @labelledby = labelledby
+      @describedby = describedby
       @attrs = attrs
     end
     def view_template(&block)
@@ -19,7 +21,11 @@ module PhlexKit
           # would fuse role="dialog region" / aria-modal="true false" /
           # tabindex="-1 0" instead of overriding.
           panel_attrs[:role] = "dialog" unless attr_set?(:role)
-          panel_attrs[:aria] = { modal: "true" } unless aria_key_set?(:modal)
+          aria = {}
+          aria[:modal] = "true" unless aria_key_set?(:modal)
+          aria[:labelledby] = @labelledby if @labelledby
+          aria[:describedby] = @describedby if @describedby
+          panel_attrs[:aria] = aria unless aria.empty?
           panel_attrs[:tabindex] = "-1" unless attr_set?(:tabindex)
           div(**mix(panel_attrs, @attrs)) do
             block&.call

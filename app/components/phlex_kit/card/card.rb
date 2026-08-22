@@ -19,9 +19,9 @@ module PhlexKit
   #   end
   class Card < BaseComponent
     # size => modifier class; :sm tightens --pk-card-spacing (shadcn's size prop).
-    SIZES = { default: nil, sm: "sm" }.freeze
+    SIZES = { md: nil, sm: "sm" }.freeze
 
-    def initialize(size: :default, **attrs)
+    def initialize(size: :md, **attrs)
       @size = size.to_sym
       @attrs = attrs
     end

@@ -8,10 +8,10 @@ module PhlexKit
   # `.pk-attachment*` (attachment.css).
   class Attachment < BaseComponent
     STATES = { idle: "idle", uploading: "uploading", processing: "processing", error: "error", done: "done" }.freeze
-    SIZES = { default: nil, sm: "sm", xs: "xs" }.freeze
+    SIZES = { md: nil, sm: "sm", xs: "xs" }.freeze
     ORIENTATIONS = { horizontal: nil, vertical: "vertical" }.freeze
 
-    def initialize(state: :done, size: :default, orientation: :horizontal, **attrs)
+    def initialize(state: :done, size: :md, orientation: :horizontal, **attrs)
       @state = state.to_sym
       @size = size.to_sym
       @orientation = orientation.to_sym
