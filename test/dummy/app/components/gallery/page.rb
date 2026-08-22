@@ -87,6 +87,7 @@ module Gallery
             data_table_demo
             chart_demo
             sidebar_demo
+            sidebar_side_demo
             shadcn_additions_demo
             slider_otp_drawer_demo
             menubar_nav_resizable_demo
@@ -949,9 +950,24 @@ module Gallery
       end
     end
 
+    # side: fixture — a minimal wrapper on the far edge. The system test reads
+    # its geometry in both directions; :start/:end are reading-relative.
+    def sidebar_side_demo
+      demo("Sidebar (side: :end)") do
+        div(class: "sidebar-frame", id: "pk-sidebar-side-end") do
+          render PhlexKit::SidebarWrapper.new(side: :end) do
+            render PhlexKit::Sidebar.new do
+              render PhlexKit::SidebarHeader.new { "Far edge" }
+            end
+            render PhlexKit::SidebarInset.new { div(class: "boxed") { "Main content" } }
+          end
+        end
+      end
+    end
+
     def sidebar_demo
       demo("Sidebar") do
-        div(class: "sidebar-frame") do
+        div(class: "sidebar-frame", id: "pk-sidebar-default") do
           render PhlexKit::SidebarWrapper.new do
             render PhlexKit::Sidebar.new do
               render PhlexKit::SidebarHeader.new { "Aypex Admin" }
